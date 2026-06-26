@@ -1,4 +1,5 @@
-﻿using GymManagementSystem.Models;
+﻿using GymManagementSystem.Configurations;
+using GymManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymManagementSystem.DbContexts
@@ -9,6 +10,10 @@ namespace GymManagementSystem.DbContexts
         {
             optionsBuilder.UseSqlServer(
                 @"Server=.;Database=PowerFitnessdb;Trusted_Connection=True;TrustServerCertificate=True;");
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration<Plan>(new PlanConfigurations());
         }
         public DbSet<Plan> plans { get; set; }
     }
