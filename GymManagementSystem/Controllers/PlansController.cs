@@ -17,5 +17,13 @@ namespace GymManagementSystem.Controllers
             var plans = await dbContext.plans.ToListAsync();
             return View(plans);
         }
+        public async Task<IActionResult> Details(int Id) { 
+            var plan = await dbContext.plans.FindAsync(Id);
+            if (plan == null) { 
+                return RedirectToAction(nameof(Index));
+            }
+            else
+                return View(plan);
+        }
     }
 }
