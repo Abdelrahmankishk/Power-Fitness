@@ -17,7 +17,7 @@ namespace GymManagementSystem.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.17")
+                .HasAnnotation("ProductVersion", "9.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -60,7 +60,7 @@ namespace GymManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("plans", t =>
+                    b.ToTable("plans", null, t =>
                         {
                             t.HasCheckConstraint("PlanDurationCheck", "DurationDays Between 1 and 365");
                         });
