@@ -1,6 +1,6 @@
 ﻿namespace GymManagementSystem.Models
 {
-    public class Plan
+    internal class Plan
     {
         public int Id { get; set; }
         public DateTime CreatedAt { get; set; }
