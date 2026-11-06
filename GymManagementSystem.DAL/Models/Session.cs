@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GymManagementSystem.DAL.Models
+{
+    public class Session : BaseEntity
+    {
+        public string? Description { get; set; }
+        public int Capacity { get; set; }
+    }
+}
