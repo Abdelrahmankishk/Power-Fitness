@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementSystem.DAL.Models
 {
-    public class HealthRecord
+    public class HealthRecord : BaseEntity
     {
         public decimal Height{ get; set; }
         public decimal Weight{ get; set; }

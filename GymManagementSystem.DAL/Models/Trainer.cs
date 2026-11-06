@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementSystem.DAL.Models
 {
-    public class Trainer: BaseEntity
+    public class Trainer: GymUser
     {
         public TrainerSpecialties Specialtie { get; set; }
     }
