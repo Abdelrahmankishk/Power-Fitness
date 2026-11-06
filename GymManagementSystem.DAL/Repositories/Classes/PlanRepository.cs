@@ -6,13 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymManagementSystem.DAL.Repositories.Classes;
 
-public class PlanRepository : IPlanRepository
+public class PlanRepository(GymDbContext _context) : IPlanRepository
 {
-    private readonly GymDbContext context;
-    public PlanRepository()
-    {
-        context = new();
-    }
+    private readonly GymDbContext context = _context;
+
     public async Task<int> AddAsync(Plan plan, CancellationToken ct = default)
     {
         context.plans.Add(plan);

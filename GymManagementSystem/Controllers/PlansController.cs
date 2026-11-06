@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace GymManagementSystem.Controllers
 {
-    public class PlansController : Controller
+    public class PlansController(IPlanRepository _planRepository) : Controller
     {
-        private readonly IPlanRepository planRepository;
+        private readonly IPlanRepository planRepository = _planRepository;
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var plans = await planRepository.GetAllAsync(ct:ct);
