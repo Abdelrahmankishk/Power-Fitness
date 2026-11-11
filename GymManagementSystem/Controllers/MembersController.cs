@@ -43,7 +43,12 @@ namespace GymManagementSystem.PL.Controllers
 
             var result = await memberService.CreateMemberAsync(model, ct);
 
-            return RedirectToAction(nameof(Index));
+            if (result)
+                TempData["SuccessMessage"] = "Member Created Successfully";
+            else
+                TempData["ErrorMessage"] = "Failed To Create Member";
+
+            return RedirectToActionPermanent(nameof(Index));
         }
         #endregion
 
