@@ -1,14 +1,15 @@
 ﻿using GymManagementSystem.DAL.Repositories.Interfaces;
 using GymManagementSystem.DbContexts;
+using GymManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace GymManagementSystem.Controllers
 {
-    public class PlansController(IPlanRepository _planRepository) : Controller
+    public class PlansController(IGenericRepository<Plan> _planRepository) : Controller
     {
-        private readonly IPlanRepository planRepository = _planRepository;
+        private readonly IGenericRepository<Plan> planRepository = _planRepository;
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var plans = await planRepository.GetAllAsync(ct:ct);
