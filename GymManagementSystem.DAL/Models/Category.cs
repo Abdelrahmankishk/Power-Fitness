@@ -9,7 +9,10 @@ namespace GymManagementSystem.DAL.Models
 {
     public class Category : BaseEntity
     {
-        public string CategoryName { get; set; } 
+        public string CategoryName { get; set; }
 
+        #region Relationships
+        public ICollection<Session> Sessions { get; set; } = default!;
+        #endregion
     }
 }

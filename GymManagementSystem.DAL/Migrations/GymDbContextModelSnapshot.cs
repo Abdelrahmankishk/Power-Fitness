@@ -98,6 +98,9 @@ namespace GymManagementSystem.Migrations
                     b.Property<decimal>("Height")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -108,6 +111,9 @@ namespace GymManagementSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MemberId")
+                        .IsUnique();
 
                     b.ToTable("HealthRecords");
                 });
@@ -165,7 +171,7 @@ namespace GymManagementSystem.Migrations
                         {
                             t.HasCheckConstraint("Email Check", "[Email] LIKE '_%@_%._%'");
 
-                            t.HasCheckConstraint("ValidPhoneNumber", " [Phone] like '01%' and Phone not like '%[^0-9]%'");
+                            t.HasCheckConstraint("ValidPhoneNumber", " [Phone] LIKE '01[0125][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'");
                         });
                 });
 
@@ -178,6 +184,9 @@ namespace GymManagementSystem.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -194,10 +203,17 @@ namespace GymManagementSystem.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("TrainerId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("TrainerId");
 
                     b.ToTable("Sessions", t =>
                         {
@@ -261,7 +277,7 @@ namespace GymManagementSystem.Migrations
                             t.HasCheckConstraint("Email Check", "[Email] LIKE '_%@_%._%'")
                                 .HasName("Email Check1");
 
-                            t.HasCheckConstraint("ValidPhoneNumber", " [Phone] like '01%' and Phone not like '%[^0-9]%'")
+                            t.HasCheckConstraint("ValidPhoneNumber", " [Phone] LIKE '01[0125][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'")
                                 .HasName("ValidPhoneNumber1");
                         });
                 });
@@ -310,6 +326,17 @@ namespace GymManagementSystem.Migrations
                         });
                 });
 
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.HealthRecord", b =>
+                {
+                    b.HasOne("GymManagementSystem.DAL.Models.Member", "Member")
+                        .WithOne("HealthRecord")
+                        .HasForeignKey("GymManagementSystem.DAL.Models.HealthRecord", "MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+                });
+
             modelBuilder.Entity("GymManagementSystem.DAL.Models.Member", b =>
                 {
                     b.OwnsOne("GymManagementSystem.DAL.Models.Address", "Address", b1 =>
@@ -344,6 +371,25 @@ namespace GymManagementSystem.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.Session", b =>
+                {
+                    b.HasOne("GymManagementSystem.DAL.Models.Category", "Category")
+                        .WithMany("Sessions")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GymManagementSystem.DAL.Models.Trainer", "Trainer")
+                        .WithMany("Sessions")
+                        .HasForeignKey("TrainerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Trainer");
+                });
+
             modelBuilder.Entity("GymManagementSystem.DAL.Models.Trainer", b =>
                 {
                     b.OwnsOne("GymManagementSystem.DAL.Models.Address", "Address", b1 =>
@@ -376,6 +422,22 @@ namespace GymManagementSystem.Migrations
 
                     b.Navigation("Address")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.Category", b =>
+                {
+                    b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.Member", b =>
+                {
+                    b.Navigation("HealthRecord")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.Trainer", b =>
+                {
+                    b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618
         }

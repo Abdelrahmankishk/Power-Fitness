@@ -34,7 +34,7 @@ public class GymUserConfiguration<T> : IEntityTypeConfiguration<T> where T : Gym
         builder.ToTable(gu =>
         {
             gu.HasCheckConstraint("Email Check", "[Email] LIKE '_%@_%._%'");
-            gu.HasCheckConstraint("ValidPhoneNumber", " [Phone] like '01%' and Phone not like '%[^0-9]%'");
+            gu.HasCheckConstraint("ValidPhoneNumber", " [Phone] LIKE '01[0125][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'");
         });
 
         builder.OwnsOne(x => x.Address, address =>
