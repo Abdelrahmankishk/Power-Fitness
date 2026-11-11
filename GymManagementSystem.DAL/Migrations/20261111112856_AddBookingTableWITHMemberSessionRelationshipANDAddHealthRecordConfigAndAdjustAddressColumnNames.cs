@@ -6,11 +6,39 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GymManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class AddBookingTableWITHMemberSessionRelationshipANDAddHealthRecordConfig : Migration
+    public partial class AddBookingTableWITHMemberSessionRelationshipANDAddHealthRecordConfigAndAdjustAddressColumnNames : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.RenameColumn(
+                name: "Address_BuildingNumber",
+                table: "Trainers",
+                newName: "BuildingNumber");
+
+            migrationBuilder.RenameColumn(
+                name: "Address_BuildingNumber",
+                table: "Members",
+                newName: "BuildingNumber");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "BuildingNumber",
+                table: "Trainers",
+                type: "varchar(10)",
+                maxLength: 10,
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "BuildingNumber",
+                table: "Members",
+                type: "varchar(10)",
+                maxLength: 10,
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
+
             migrationBuilder.AlterColumn<string>(
                 name: "note",
                 table: "HealthRecords",
@@ -68,6 +96,34 @@ namespace GymManagementSystem.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Bookings");
+
+            migrationBuilder.RenameColumn(
+                name: "BuildingNumber",
+                table: "Trainers",
+                newName: "Address_BuildingNumber");
+
+            migrationBuilder.RenameColumn(
+                name: "BuildingNumber",
+                table: "Members",
+                newName: "Address_BuildingNumber");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "Address_BuildingNumber",
+                table: "Trainers",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "varchar(10)",
+                oldMaxLength: 10);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "Address_BuildingNumber",
+                table: "Members",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "varchar(10)",
+                oldMaxLength: 10);
 
             migrationBuilder.AlterColumn<string>(
                 name: "note",

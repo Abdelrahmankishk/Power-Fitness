@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymManagementSystem.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20261111111933_AddBookingTableWITHMemberSessionRelationshipANDAddHealthRecordConfig")]
-    partial class AddBookingTableWITHMemberSessionRelationshipANDAddHealthRecordConfig
+    [Migration("20261111112856_AddBookingTableWITHMemberSessionRelationshipANDAddHealthRecordConfigAndAdjustAddressColumnNames")]
+    partial class AddBookingTableWITHMemberSessionRelationshipANDAddHealthRecordConfigAndAdjustAddressColumnNames
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -430,8 +430,11 @@ namespace GymManagementSystem.Migrations
                             b1.Property<int>("MemberId")
                                 .HasColumnType("int");
 
-                            b1.Property<int>("BuildingNumber")
-                                .HasColumnType("int");
+                            b1.Property<string>("BuildingNumber")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("varchar")
+                                .HasColumnName("BuildingNumber");
 
                             b1.Property<string>("City")
                                 .IsRequired()
@@ -502,8 +505,11 @@ namespace GymManagementSystem.Migrations
                             b1.Property<int>("TrainerId")
                                 .HasColumnType("int");
 
-                            b1.Property<int>("BuildingNumber")
-                                .HasColumnType("int");
+                            b1.Property<string>("BuildingNumber")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("varchar")
+                                .HasColumnName("BuildingNumber");
 
                             b1.Property<string>("City")
                                 .IsRequired()

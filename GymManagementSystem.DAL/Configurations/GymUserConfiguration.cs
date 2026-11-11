@@ -47,6 +47,10 @@ public class GymUserConfiguration<T> : IEntityTypeConfiguration<T> where T : Gym
                 .HasColumnName("City")
                 .HasColumnType("varchar")
                 .HasMaxLength(30);
+            address.Property(a => a.BuildingNumber)
+                .HasColumnName("BuildingNumber")
+                .HasColumnType("varchar")
+                .HasMaxLength(10);
         });
     }
 }
