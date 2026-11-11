@@ -22,6 +22,33 @@ namespace GymManagementSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.Booking", b =>
+                {
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("BookingDate")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("IsAttended")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("SessionId", "MemberId");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("Bookings");
+                });
+
             modelBuilder.Entity("GymManagementSystem.DAL.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -90,7 +117,8 @@ namespace GymManagementSystem.Migrations
 
                     b.Property<string>("BloodType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -108,7 +136,8 @@ namespace GymManagementSystem.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("note")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -361,6 +390,25 @@ namespace GymManagementSystem.Migrations
                         });
                 });
 
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.Booking", b =>
+                {
+                    b.HasOne("GymManagementSystem.DAL.Models.Member", "Member")
+                        .WithMany("MemberSessions")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GymManagementSystem.DAL.Models.Session", "Session")
+                        .WithMany("SessionMembers")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Session");
+                });
+
             modelBuilder.Entity("GymManagementSystem.DAL.Models.HealthRecord", b =>
                 {
                     b.HasOne("GymManagementSystem.DAL.Models.Member", "Member")
@@ -488,7 +536,14 @@ namespace GymManagementSystem.Migrations
                     b.Navigation("HealthRecord")
                         .IsRequired();
 
+                    b.Navigation("MemberSessions");
+
                     b.Navigation("Memberships");
+                });
+
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.Session", b =>
+                {
+                    b.Navigation("SessionMembers");
                 });
 
             modelBuilder.Entity("GymManagementSystem.DAL.Models.Trainer", b =>

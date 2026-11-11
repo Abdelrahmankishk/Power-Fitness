@@ -18,7 +18,9 @@ namespace GymManagementSystem.DbContexts
             modelBuilder.ApplyConfiguration<Member>(new MemberConfiguration());
             modelBuilder.ApplyConfiguration<Trainer>(new TrainerConfiguration());
             modelBuilder.ApplyConfiguration<Session>(new SessionConfiguration());
+            modelBuilder.ApplyConfiguration<HealthRecord>(new HealthRecordConfigurations());
             modelBuilder.ApplyConfiguration<MemberShip>(new MemberShipConfigurations());
+            modelBuilder.ApplyConfiguration<Booking>(new BookingConfigurations());
         }
         public DbSet<Plan> plans { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -27,5 +29,6 @@ namespace GymManagementSystem.DbContexts
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Trainer> Trainers { get; set; }
         public DbSet<MemberShip> MemberShips { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
         }
 }

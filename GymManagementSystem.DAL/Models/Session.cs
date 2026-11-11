@@ -19,6 +19,8 @@ namespace GymManagementSystem.DAL.Models
 
         public int CategoryId { get; set; }
         public Category Category { get; set; } = default!;
+
+        public ICollection<Booking> SessionMembers { get; set; } = default!;
         #endregion
     }
 }
