@@ -1,5 +1,6 @@
 ﻿using GymManagementSystem.DAL.Models;
 using GymManagementSystem.Models;
+using System.Linq.Expressions;
 
 namespace GymManagementSystem.DAL.Repositories.Interfaces;
 
@@ -10,4 +11,6 @@ public interface IGenericRepository<TEntity> where TEntity : BaseEntity, new()
     Task<int> AddAsync(TEntity entity, CancellationToken ct = default);
     Task<int> UpdateAsync(TEntity entity, CancellationToken ct = default);
     Task<int> DeleteAsync(TEntity entity, CancellationToken ct = default);
+
+    Task<bool> AnyAsync(Expression<Func<TEntity,bool>> predicate, CancellationToken ct = default);
 }

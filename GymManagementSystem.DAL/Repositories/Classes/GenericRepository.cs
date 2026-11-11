@@ -2,6 +2,7 @@
 using GymManagementSystem.DAL.Repositories.Interfaces;
 using GymManagementSystem.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace GymManagementSystem.DAL.Repositories.Classes;
 
@@ -15,6 +16,11 @@ public class GenericRepository<TEntity>(GymDbContext _context) : IGenericReposit
     {
         dbSet.Add(entity);
         return await context.SaveChangesAsync(ct);
+    }
+
+    public Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
+    {
+        return dbSet.AsNoTracking().AnyAsync(predicate, ct);
     }
 
     public async Task<int> DeleteAsync(TEntity entity, CancellationToken ct = default)
