@@ -1,19 +1,21 @@
-﻿using GymManagementSystem.DAL.Models;
+﻿using GymManagementSystem.BLL.Services.Interfaces;
+using GymManagementSystem.DAL.Models;
 using GymManagementSystem.DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementSystem.PL.Controllers
 {
-    public class MembersController(IGenericRepository<Member> _memberRepository) : Controller
+    public class MembersController(IMemberService _memberService) : Controller
     {
-        private readonly IGenericRepository<Member> memberRepository = _memberRepository;
+
+        private readonly IMemberService memberService = _memberService;
 
         // GET BaseURL/Members/Index
         // Index - List all members
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken ct)
         {
-            var members = await memberRepository.GetAllAsync();
+            var members = await memberService.GetAllMemberAsync(ct);
             return View(members);
         }
 
