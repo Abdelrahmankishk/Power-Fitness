@@ -175,6 +175,41 @@ namespace GymManagementSystem.Migrations
                         });
                 });
 
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.MemberShip", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("StartDate")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("MemberShips");
+                });
+
             modelBuilder.Entity("GymManagementSystem.DAL.Models.Session", b =>
                 {
                     b.Property<int>("Id")
@@ -371,6 +406,25 @@ namespace GymManagementSystem.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GymManagementSystem.DAL.Models.MemberShip", b =>
+                {
+                    b.HasOne("GymManagementSystem.DAL.Models.Member", "Member")
+                        .WithMany("Memberships")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GymManagementSystem.Models.Plan", "Plan")
+                        .WithMany("Memberships")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Plan");
+                });
+
             modelBuilder.Entity("GymManagementSystem.DAL.Models.Session", b =>
                 {
                     b.HasOne("GymManagementSystem.DAL.Models.Category", "Category")
@@ -433,11 +487,18 @@ namespace GymManagementSystem.Migrations
                 {
                     b.Navigation("HealthRecord")
                         .IsRequired();
+
+                    b.Navigation("Memberships");
                 });
 
             modelBuilder.Entity("GymManagementSystem.DAL.Models.Trainer", b =>
                 {
                     b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("GymManagementSystem.Models.Plan", b =>
+                {
+                    b.Navigation("Memberships");
                 });
 #pragma warning restore 612, 618
         }
