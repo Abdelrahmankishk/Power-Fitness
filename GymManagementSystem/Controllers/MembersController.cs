@@ -28,7 +28,8 @@ namespace GymManagementSystem.PL.Controllers
         #region Create Member
         // Get - BaseURL/Members/Create
         //Create- Show empty form
-
+        [HttpGet]
+        public IActionResult Create() => View(); 
         // Post - BaseURL/Members/Create {Member}
         // CreateMember - Submits Form
         #endregion
