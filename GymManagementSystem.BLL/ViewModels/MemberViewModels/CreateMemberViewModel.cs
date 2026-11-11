@@ -1,6 +1,4 @@
-﻿
-
-using GymManagementSystem.DAL.Models.Enums;
+﻿using GymManagementSystem.DAL.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace GymManagementSystem.BLL.ViewModels.MemberViewModels;
@@ -44,7 +42,7 @@ public class CreateMemberViewModel
     [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Street can only contain letters, numbers, and spaces")]
     public string Street { get; set; } = default!;
 
-    //[Required(ErrorMessage = "Health record is required")]
-    //public HealthRecordViewModel HealthRecordViewModel { get; set; } = default!;
+    [Required(ErrorMessage = "Health record is required")]
+    public HealthRecordViewModel HealthRecordViewModel { get; set; } = default!;
 }
 
