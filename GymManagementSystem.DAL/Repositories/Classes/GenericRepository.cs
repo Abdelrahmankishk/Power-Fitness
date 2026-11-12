@@ -43,4 +43,10 @@ public class GenericRepository<TEntity>(GymDbContext _context) : IGenericReposit
         dbSet.Update(entity);
         return await context.SaveChangesAsync(ct);
     }
+
+    public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, bool tracking = false, CancellationToken ct = default)
+    {
+        IQueryable<TEntity> query = tracking ? dbSet : dbSet.AsNoTracking();
+        return await query.FirstOrDefaultAsync(predicate, ct);
+    }
 }

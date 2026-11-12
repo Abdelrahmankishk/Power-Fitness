@@ -8,4 +8,9 @@ public class MemberViewModel
     public string Email { get; set; }
     public string Phone { get; set; }
     public string Gender { get; set; }
+    public string? DateOfBirth { get; set; }
+    public string? Address { get; set; }
+    public string? PlanName { get; set; }
+    public string? MembershipStartDate { get; set; }
+    public string? MembershipEndDate { get; set; }
 }

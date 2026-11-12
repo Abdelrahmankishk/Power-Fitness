@@ -7,4 +7,6 @@ public interface IMemberService
     Task<IEnumerable<MemberViewModel>> GetAllMemberAsync(CancellationToken ct = default);
 
     Task<bool> CreateMemberAsync(CreateMemberViewModel member, CancellationToken ct = default);
+
+    Task<MemberViewModel> GetMemberDetailsById(int id, CancellationToken ct = default);
 }
