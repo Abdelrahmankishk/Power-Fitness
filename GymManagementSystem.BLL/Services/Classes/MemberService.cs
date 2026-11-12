@@ -126,7 +126,7 @@ public class MemberService(IGenericRepository<Member> _memberRepository,IGeneric
             };
     }
 
-    public async Task<bool> UpdateMemberDeatails(int id, UpdateMemberViewModel member, CancellationToken ct = default)
+    public async Task<bool> UpdateMemberDetailsAsync(int id, UpdateMemberViewModel member, CancellationToken ct = default)
     {
         var GetMember = await memberRepository.GetByIdAsync(id, ct);
         if(GetMember is null) 

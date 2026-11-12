@@ -96,7 +96,7 @@ namespace GymManagementSystem.PL.Controllers
             if (!ModelState.IsValid)
                 return View(updatedMember);
 
-            var result = await memberService.UpdateMemberDeatails(id, updatedMember,ct);
+            var result = await memberService.UpdateMemberDetailsAsync(id, updatedMember,ct);
             if (result)
                 TempData["SuccessMessage"] = "Member Updated Successfully";
             else

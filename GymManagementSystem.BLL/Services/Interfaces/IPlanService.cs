@@ -8,4 +8,8 @@ public interface IPlanService
 
     Task<PLanViewModel> GetPlanByIdAsync(int id, CancellationToken ct = default);
     Task<bool> ChangePlanStatus(int id , CancellationToken ct = default);
+
+    Task<UpdatePlanViewModel?> GetPlanToUpdateAsync(int id, CancellationToken ct = default);
+
+    Task<bool> UpdatePlanDetailsAsync(int id, UpdatePlanViewModel UpdatedPlan, CancellationToken ct = default);
 }

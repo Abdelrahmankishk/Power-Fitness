@@ -1,13 +1,15 @@
 ﻿using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.PlanViewModels;
+using GymManagementSystem.DAL.Models;
 using GymManagementSystem.DAL.Repositories.Interfaces;
 using GymManagementSystem.Models;
 
 namespace GymManagementSystem.BLL.Services.Classes;
 
-public class PlanService(IPlanRepository _PLanRepository) : IPlanService
+public class PlanService(IPlanRepository _PLanRepository,IGenericRepository<MemberShip> _MembershipRepository) : IPlanService
 {
-    private IPlanRepository PlanRepository = _PLanRepository;
+    private readonly IPlanRepository PlanRepository = _PLanRepository;
+    private readonly IGenericRepository<MemberShip> membershipRepository = _MembershipRepository;
 
     public async Task<bool> ChangePlanStatus(int id, CancellationToken ct = default)
     {
@@ -67,5 +69,39 @@ public class PlanService(IPlanRepository _PLanRepository) : IPlanService
         };
 
         return PlanViewModel;
+    }
+
+    public async Task<UpdatePlanViewModel?> GetPlanToUpdateAsync(int id, CancellationToken ct = default)
+    {
+        var plan = await PlanRepository.GetByIdAsync(id, ct);
+        if (plan == null)
+            return null;
+        else
+            return new UpdatePlanViewModel()
+            {
+                Name = plan.Name,
+                Price = plan.Price,
+                Description = plan.Description,
+                DurationDays = plan.DurationDays
+            };
+
+    }
+
+    public async Task<bool> UpdatePlanDetailsAsync(int id, UpdatePlanViewModel UpdatedPlan, CancellationToken ct = default)
+    {
+        var plan = await PlanRepository.GetPlanWithMembers(id, ct);
+        var ActiveMembership = await membershipRepository.FirstOrDefaultAsync(x => x.Id == id && x.EndDate > DateTime.UtcNow);
+        if (ActiveMembership != null)
+            return false;
+
+        if (plan == null)
+            return false;
+
+        plan.DurationDays = UpdatedPlan.DurationDays;
+        plan.Price = UpdatedPlan.Price;
+        plan.Description = UpdatedPlan.Description;
+        
+        var result =  await PlanRepository.UpdateAsync(plan);
+        return result > 0 ? true : false;
     }
 }

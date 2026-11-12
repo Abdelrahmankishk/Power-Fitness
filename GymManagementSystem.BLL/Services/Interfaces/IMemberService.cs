@@ -12,5 +12,5 @@ public interface IMemberService
 
     Task<HealthRecordViewModel?> GetMemberHealthRecordAsync(int id, CancellationToken ct = default); 
     Task<UpdateMemberViewModel?> GetMemberToUpdateAsync(int id, CancellationToken ct = default);
-    Task<bool> UpdateMemberDeatails(int id, UpdateMemberViewModel member, CancellationToken ct = default);
+    Task<bool> UpdateMemberDetailsAsync(int id, UpdateMemberViewModel member, CancellationToken ct = default);
 }
