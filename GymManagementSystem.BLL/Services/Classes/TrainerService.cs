@@ -49,9 +49,29 @@ public class TrainerService(IGenericRepository<Trainer> _TrainerRepository) : IT
             Email = x.Email,
             Gender = x.Gender.ToString(),
             Phone = x.Phone,
-            specialtie = x.Specialtie
+            specialtie = x.Specialtie.ToString()
         });
 
         return TrainersViewModels;
+    }
+
+    public async Task<TrainerViewModel> GetTrainerByIdAsync(int id, CancellationToken ct = default)
+    {
+        var trainer = await trainerRepository.GetByIdAsync(id, ct);
+        if (trainer == null)
+            return null!;
+
+        var trainerViewModel = new TrainerViewModel()
+        {
+            Id = trainer.Id,
+            Name = trainer.Name,
+            Email = trainer.Email,
+            Gender = trainer.Gender.ToString(),
+            DateofBirth = trainer.DateOfBirth.ToString(),
+            Phone = trainer.Phone,
+            specialtie = trainer.Specialtie.ToString(),
+            Address = $"{trainer.Address.BuildingNumber} - {trainer.Address.Street} - {trainer.Address.City}"
+        };
+        return trainerViewModel;
     }
 }

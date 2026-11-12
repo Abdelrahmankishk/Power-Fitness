@@ -7,4 +7,5 @@ public interface ITrainerService
     Task<IEnumerable<TrainerViewModel>> GetAllTrainersAsync(CancellationToken ct = default);
 
     Task<bool> CreateTrainerAsync(CreateTrainerViewModel trainer,CancellationToken ct = default);
+    Task<TrainerViewModel> GetTrainerByIdAsync(int id,CancellationToken ct = default);
 }

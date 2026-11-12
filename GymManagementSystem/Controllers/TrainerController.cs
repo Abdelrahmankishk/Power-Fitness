@@ -1,5 +1,6 @@
 ﻿using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.TrainerViewModels;
+using GymManagementSystem.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -18,7 +19,16 @@ namespace GymManagementSystem.PL.Controllers
 
         // Get BaseURL/Trainers/Details/{id}
         //Details - read-only profile for a single trainer.
+        public async Task<IActionResult> Details(int id,CancellationToken ct)
+        {
+            var trainer = await trainerService.GetTrainerByIdAsync(id, ct);
 
+            if (trainer == null)
+                return RedirectToActionPermanent(nameof(Index));
+            else
+                return View(trainer);
+
+        }
 
         #region Create Trainer
         // Get - BaseURL/Trainers/Create
