@@ -82,7 +82,7 @@ namespace GymManagementSystem.PL.Controllers
             var member = await memberService.GetMemberToUpdateAsync(id,ct);
             if(member == null)
             {
-                TempData["ErrorMessage"] = "Health Record Not Found";
+                TempData["ErrorMessage"] = "Member Not Found";
                 return RedirectToActionPermanent(nameof(Index));
             }
             return View(member);

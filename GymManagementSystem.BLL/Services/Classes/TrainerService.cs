@@ -73,4 +73,44 @@ public class TrainerService(IGenericRepository<Trainer> _TrainerRepository) : IT
         };
         return trainerViewModel;
     }
+
+    public async Task<UpdateTrainerViewModel> GetTrainerToUpdateAsync(int id, CancellationToken ct = default)
+    {
+        var trainer = await trainerRepository.GetByIdAsync(id, ct);
+        if (trainer == null)
+            return null!;
+        else
+            return new UpdateTrainerViewModel()
+            {
+                Name = trainer.Name,
+                Email = trainer.Email,
+                Phone = trainer.Phone,
+                Street = trainer.Address.Street,
+                City = trainer.Address.City,
+                BuildingNumber = trainer.Address.BuildingNumber,
+                specialtie = trainer.Specialtie
+            };
+    }
+
+    public async Task<bool> UpdateTrainerDetailsAsync(int id, UpdateTrainerViewModel UpdatedTrainer, CancellationToken ct = default)
+    {
+        var trainer = await trainerRepository.GetByIdAsync(id, ct);
+        if (trainer == null)
+            return false;
+        var emailExists = await trainerRepository.AnyAsync(x => x.Email == UpdatedTrainer.Email && x.Id != id, ct);
+        var PhoneExists = await trainerRepository.AnyAsync(x => x.Phone == UpdatedTrainer.Phone && x.Id != id, ct);
+
+        if (emailExists || PhoneExists)
+            return false;
+
+        trainer.Email = UpdatedTrainer.Email;
+        trainer.Phone = UpdatedTrainer.Phone;
+        trainer.Address.BuildingNumber = UpdatedTrainer.BuildingNumber;
+        trainer.Address.Street = UpdatedTrainer.Street;
+        trainer.Address.City = UpdatedTrainer.City;
+        trainer.Specialtie = UpdatedTrainer.specialtie;
+        trainer.UpdatedAt = DateTime.Now;
+        var result = await trainerRepository.UpdateAsync(trainer,ct);
+        return result > 0;
+    }
 }
