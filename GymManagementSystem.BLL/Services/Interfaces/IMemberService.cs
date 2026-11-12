@@ -10,5 +10,7 @@ public interface IMemberService
 
     Task<MemberViewModel> GetMemberDetailsById(int id, CancellationToken ct = default);
 
-    Task<HealthRecordViewModel?> GetMemberHealthRecordAsync(int id, CancellationToken ct = default);  
+    Task<HealthRecordViewModel?> GetMemberHealthRecordAsync(int id, CancellationToken ct = default); 
+    Task<UpdateMemberViewModel?> GetMemberToUpdateAsync(int id, CancellationToken ct = default);
+    Task<bool> UpdateMemberDeatails(int id, UpdateMemberViewModel member, CancellationToken ct = default);
 }

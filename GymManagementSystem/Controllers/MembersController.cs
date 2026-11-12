@@ -77,9 +77,33 @@ namespace GymManagementSystem.PL.Controllers
         #region Edit Member
         // Get - BaseURL/Members/Edit/{id}
         //Edit - Diplay edit form
+        [HttpGet]
+        public async Task<IActionResult> EditMember(int id, CancellationToken ct) { 
+            var member = await memberService.GetMemberToUpdateAsync(id,ct);
+            if(member == null)
+            {
+                TempData["ErrorMessage"] = "Health Record Not Found";
+                return RedirectToActionPermanent(nameof(Index));
+            }
+            return View(member);
+        }
 
         // Post - BaseURL/Members/Edit {Member}
         // Edit - Submits Form
+        [HttpPost]
+        public async Task<IActionResult> EditMember([FromRoute]int id, UpdateMemberViewModel updatedMember, CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+                return View(updatedMember);
+
+            var result = await memberService.UpdateMemberDeatails(id, updatedMember,ct);
+            if (result)
+                TempData["SuccessMessage"] = "Member Updated Successfully";
+            else
+                TempData["ErrorMessage"] = "Failed to Update Member";
+
+            return RedirectToAction(nameof(Index));
+        }
         #endregion
 
         #region Delete Member

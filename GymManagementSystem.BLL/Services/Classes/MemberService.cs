@@ -108,4 +108,44 @@ public class MemberService(IGenericRepository<Member> _memberRepository,IGeneric
                 BloodType = healthRecord.BloodType,
             };
     }
+
+    public async Task<UpdateMemberViewModel?> GetMemberToUpdateAsync(int id, CancellationToken ct = default)
+    {
+        var ReturnMember = await memberRepository.GetByIdAsync(id, ct);
+        if (ReturnMember is null)
+            return null;
+        else
+            return new UpdateMemberViewModel() { 
+                Name = ReturnMember.Name,
+                Phone = ReturnMember.Phone,
+                Street= ReturnMember.Address.Street,
+                BuildingNumber = ReturnMember.Address.BuildingNumber,
+                City = ReturnMember.Address.City,
+                Email = ReturnMember.Email,
+                Photo = ReturnMember.Photo,
+            };
+    }
+
+    public async Task<bool> UpdateMemberDeatails(int id, UpdateMemberViewModel member, CancellationToken ct = default)
+    {
+        var GetMember = await memberRepository.GetByIdAsync(id, ct);
+        if(GetMember is null) 
+            return false;
+
+        var emailExists = await memberRepository.AnyAsync(x => x.Email == member.Email && x.Id != id, ct);
+        var PhoneExists = await memberRepository.AnyAsync(x => x.Phone == member.Phone && x.Id != id, ct);
+
+        if (emailExists || PhoneExists)
+            return false;
+
+        GetMember.Email = member.Email;
+        GetMember.Phone = member.Phone;
+        GetMember.Address.BuildingNumber = member.BuildingNumber;
+        GetMember.Address.City = member.City;
+        GetMember.Address.Street = member.Street;
+        GetMember.UpdatedAt = DateTime.Now;
+
+        var result= await memberRepository.UpdateAsync(GetMember);
+        return result > 0 ? true : false;
+    }
 }
