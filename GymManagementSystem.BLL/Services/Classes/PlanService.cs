@@ -59,7 +59,6 @@ public class PlanService(IPlanRepository _PLanRepository) : IPlanService
 
         var PlanViewModel =  new PLanViewModel()
         {
-            Id = plan.Id,
             Name = plan.Name,
             Description = plan.Description,
             DurationDays = plan.DurationDays,

@@ -44,6 +44,7 @@ public class TrainerService(IGenericRepository<Trainer> _TrainerRepository) : IT
 
         var TrainersViewModels = trainers.Select(x => new TrainerViewModel()
         {
+            Id = x.Id,
             Name = x.Name,
             Email = x.Email,
             Gender = x.Gender.ToString(),

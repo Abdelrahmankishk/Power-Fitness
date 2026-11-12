@@ -24,7 +24,10 @@ namespace GymManagementSystem.PL.Controllers
             var trainer = await trainerService.GetTrainerByIdAsync(id, ct);
 
             if (trainer == null)
-                return RedirectToActionPermanent(nameof(Index));
+            {
+                TempData["ErrorMessage"] = "Member Not Found";
+                return RedirectToAction(nameof(Index));
+            }
             else
                 return View(trainer);
 
@@ -49,7 +52,7 @@ namespace GymManagementSystem.PL.Controllers
             else
                 TempData["ErrorMessage"] = "Failed To Create Member";
 
-            return RedirectToActionPermanent(nameof(Index));
+            return RedirectToAction(nameof(Index));
         }
         // Post - BaseURL/Trainers/Create {Trainer}
         // CreateMember - Submits Form
