@@ -25,7 +25,7 @@ namespace GymManagementSystem.PL.Controllers
 
             if (trainer == null)
             {
-                TempData["ErrorMessage"] = "Member Not Found";
+                TempData["ErrorMessage"] = "Trainer Not Found";
                 return RedirectToAction(nameof(Index));
             }
             else

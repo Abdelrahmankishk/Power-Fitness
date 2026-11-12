@@ -17,7 +17,8 @@ namespace GymManagementSystem.Controllers
             var plan = await planService.GetPlanByIdAsync(Id, ct);
             if (plan == null)
             {
-                return RedirectToActionPermanent(nameof(Index));
+                TempData["ErrorMessage"] = "Plan Not Found";
+                return RedirectToAction(nameof(Index));
             }
             else
                 return View(plan);

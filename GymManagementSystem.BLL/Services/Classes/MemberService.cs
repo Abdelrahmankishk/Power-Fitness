@@ -6,11 +6,12 @@ using GymManagementSystem.Models;
 
 namespace GymManagementSystem.BLL.Services.Classes;
 
-public class MemberService(IGenericRepository<Member> _memberRepository,IGenericRepository<MemberShip> _membershipRepository, IGenericRepository<Plan> _planRepository) : IMemberService
+public class MemberService(IGenericRepository<Member> _memberRepository,IGenericRepository<MemberShip> _membershipRepository, IGenericRepository<Plan> _planRepository,IGenericRepository<HealthRecord> _HealthRecordRepository) : IMemberService
 {
     private readonly IGenericRepository<Member> memberRepository = _memberRepository;
     private readonly IGenericRepository<MemberShip> membershipRepository = _membershipRepository;
     private readonly IGenericRepository<Plan> planRepository = _planRepository;
+    private readonly IGenericRepository<HealthRecord> healthRecordRepository = _HealthRecordRepository;
 
     public async Task<bool> CreateMemberAsync(CreateMemberViewModel member, CancellationToken ct = default)
     {
@@ -92,5 +93,19 @@ public class MemberService(IGenericRepository<Member> _memberRepository,IGeneric
         }
 
         return ReturnedMember;
+    }
+
+    public async Task<HealthRecordViewModel?> GetMemberHealthRecordAsync(int id, CancellationToken ct = default)
+    {
+        var healthRecord = await healthRecordRepository.FirstOrDefaultAsync(r => r.MemberId == id, ct: ct);
+        if (healthRecord is null) return null;
+        else
+            return new HealthRecordViewModel()
+            {
+                Weight = healthRecord.Weight,
+                Height = healthRecord.Height,
+                Note = healthRecord.note,
+                BloodType = healthRecord.BloodType,
+            };
     }
 }

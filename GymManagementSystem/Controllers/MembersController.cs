@@ -29,17 +29,25 @@ namespace GymManagementSystem.PL.Controllers
             if (member == null)
             {
                 TempData["ErrorMessage"] = "Member Not Found";
-                RedirectToActionPermanent(nameof(Index));
+                return RedirectToActionPermanent(nameof(Index));
             }
-            return View(member);
+
+                return View(member);
         }
 
         // GET BaseURL/Members/HealthRecordDetails/{id}
         // HealthRecordDetails - Show one member's details
-        //public IActionResult HealthRecordDetails(int id, CancellationToken ct)
-        //{
-
-        //}
+        public async Task<IActionResult> HealthRecordDetails(int id, CancellationToken ct)
+        {
+            var healthRecord = await memberService.GetMemberHealthRecordAsync(id);
+            if(healthRecord == null)
+            {
+                TempData["ErrorMessage"] = "Health Record Not Found";
+                return RedirectToActionPermanent(nameof(Index));
+            }
+            return View(healthRecord);
+                
+        }
 
         #region Create Member
         // Get - BaseURL/Members/Create
