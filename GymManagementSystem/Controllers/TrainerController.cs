@@ -1,5 +1,7 @@
 ﻿using GymManagementSystem.BLL.Services.Interfaces;
+using GymManagementSystem.BLL.ViewModels.TrainerViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace GymManagementSystem.PL.Controllers
 {
@@ -24,6 +26,21 @@ namespace GymManagementSystem.PL.Controllers
         [HttpGet]
         public IActionResult Create() => View();
 
+        [HttpPost]
+        public async Task<IActionResult> CreateTrainer(CreateTrainerViewModel createTrainer,CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+                return View(nameof(Create), createTrainer);
+
+            var result = await trainerService.CreateTrainerAsync(createTrainer, ct);
+
+            if (result)
+                TempData["SuccessMessage"] = "Member Created Successfully";
+            else
+                TempData["ErrorMessage"] = "Failed To Create Member";
+
+            return RedirectToActionPermanent(nameof(Index));
+        }
         // Post - BaseURL/Trainers/Create {Trainer}
         // CreateMember - Submits Form
         #endregion
