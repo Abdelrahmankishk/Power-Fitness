@@ -6,19 +6,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymManagementSystem.DAL.Repositories.Classes;
 
-public class PlanRepository : GenericRepository<Plan>,IPlanRepository
+public class PlanRepository : GenericRepository<Plan>, IPlanRepository
 {
     public PlanRepository(GymDbContext _context):base(_context)
     {
 
     }
 
-
-    public Task<IEnumerable<Plan>> GetPlanWithMembers()
+    public async Task<Plan> GetPlanWithMembers(int id, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var plan = await dbSet.Include(p=>p.Memberships)
+            .FirstOrDefaultAsync(x => x.Id == id,ct);
+
+        return plan!;
     }
-
-
 }
 

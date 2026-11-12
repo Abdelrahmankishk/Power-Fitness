@@ -5,9 +5,33 @@ using GymManagementSystem.Models;
 
 namespace GymManagementSystem.BLL.Services.Classes;
 
-public class PlanService(IGenericRepository<Plan> _PLanRepository) : IPlanService
+public class PlanService(IPlanRepository _PLanRepository) : IPlanService
 {
-    private IGenericRepository<Plan> PlanRepository = _PLanRepository;
+    private IPlanRepository PlanRepository = _PLanRepository;
+
+    public async Task<bool> ChangePlanStatus(int id, CancellationToken ct = default)
+    {
+        var Plan = await PlanRepository.GetPlanWithMembers(id, ct);
+        if (Plan == null)
+            return false;
+
+        if (Plan.IsActive)
+        {
+            if (Plan.Memberships.Any())
+            {
+                return false;
+            }
+            Plan.IsActive = false;
+        }
+        else
+        {
+            Plan.IsActive = true;
+        }
+        int result = await  PlanRepository.UpdateAsync(Plan);
+
+        return result>0 ? true : false;
+    }
+
     public async Task<IEnumerable<PLanViewModel>> GetAllPlansAsync(CancellationToken ct = default)
     {
         var plans = await PlanRepository.GetAllAsync(ct: ct);

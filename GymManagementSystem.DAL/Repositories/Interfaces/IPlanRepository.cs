@@ -5,7 +5,7 @@ namespace GymManagementSystem.DAL.Repositories.Interfaces;
 
     public interface IPlanRepository : IGenericRepository<Plan>
     {
-    Task<IEnumerable<Plan>> GetPlanWithMembers();
+        Task<Plan> GetPlanWithMembers(int id,CancellationToken ct);
 
     }
 

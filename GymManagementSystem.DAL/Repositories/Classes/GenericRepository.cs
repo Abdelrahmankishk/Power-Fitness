@@ -9,7 +9,7 @@ namespace GymManagementSystem.DAL.Repositories.Classes;
 public class GenericRepository<TEntity>(GymDbContext _context) : IGenericRepository<TEntity> where TEntity : BaseEntity, new()
 {
     private readonly GymDbContext context = _context;
-    private readonly DbSet<TEntity> dbSet = _context.Set<TEntity>();
+    protected readonly DbSet<TEntity> dbSet = _context.Set<TEntity>();
 
 
     public async Task<int> AddAsync(TEntity entity, CancellationToken ct = default)

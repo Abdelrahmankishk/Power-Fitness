@@ -1,10 +1,6 @@
 ﻿using GymManagementSystem.BLL.Services.Interfaces;
-using GymManagementSystem.DAL.Repositories.Interfaces;
-using GymManagementSystem.DbContexts;
-using GymManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+
 
 namespace GymManagementSystem.Controllers
 {
@@ -25,6 +21,18 @@ namespace GymManagementSystem.Controllers
             }
             else
                 return View(plan);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Status(int Id, CancellationToken ct)
+        {
+            var StatusResult = await planService.ChangePlanStatus(Id, ct);
+            if (StatusResult)
+                TempData["SuccessMessage"] = "Plan Status Changed";
+            else
+                TempData["ErrorMessage"] = "Failed To Change Status";
+
+            return RedirectToActionPermanent(nameof(Index));
         }
     }
 }
