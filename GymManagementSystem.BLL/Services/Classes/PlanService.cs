@@ -26,4 +26,23 @@ public class PlanService(IGenericRepository<Plan> _PLanRepository) : IPlanServic
 
         return PlansViewModel;
     }
+
+    public async Task<PLanViewModel> GetPlanByIdAsync(int id, CancellationToken ct = default)
+    {
+        var plan = await PlanRepository.GetByIdAsync(id, ct);
+        if (plan == null)
+            return null!;
+
+        var PlanViewModel =  new PLanViewModel()
+        {
+            Id = plan.Id,
+            Name = plan.Name,
+            Description = plan.Description,
+            DurationDays = plan.DurationDays,
+            IsActive = plan.IsActive,
+            Price = plan.Price
+        };
+
+        return PlanViewModel;
+    }
 }

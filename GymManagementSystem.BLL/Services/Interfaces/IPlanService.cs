@@ -5,4 +5,6 @@ namespace GymManagementSystem.BLL.Services.Interfaces;
 public interface IPlanService
 {
     Task<IEnumerable<PLanViewModel>> GetAllPlansAsync(CancellationToken ct = default);
+
+    Task<PLanViewModel> GetPlanByIdAsync(int id, CancellationToken ct = default);
 }

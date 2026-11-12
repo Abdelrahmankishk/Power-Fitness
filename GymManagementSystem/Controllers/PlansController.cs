@@ -16,13 +16,15 @@ namespace GymManagementSystem.Controllers
             var plans = await planService.GetAllPlansAsync(ct:ct);
             return View(plans);
         }
-        //public async Task<IActionResult> Details(int Id,CancellationToken ct) { 
-        //    var plan = await planRepository.GetByIdAsync(Id,ct);
-        //    if (plan == null) { 
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    else
-        //        return View(plan);
-        //}
+        public async Task<IActionResult> Details(int Id, CancellationToken ct)
+        {
+            var plan = await planService.GetPlanByIdAsync(Id, ct);
+            if (plan == null)
+            {
+                return RedirectToActionPermanent(nameof(Index));
+            }
+            else
+                return View(plan);
+        }
     }
 }
