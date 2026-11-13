@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using GymManagementSystem.BLL.ViewModels.MemberViewModels;
+using GymManagementSystem.BLL.ViewModels.PlanViewModels;
 using GymManagementSystem.DAL.Models;
+using GymManagementSystem.Models;
 
 
 namespace GymManagementSystem.BLL;
@@ -9,6 +11,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        #region Member Mapping
         CreateMap<Member, MemberViewModel>()
             .ForMember(dst => dst.Address, opt => opt.MapFrom(src => $"{src.Address.BuildingNumber} - {src.Address.Street} - {src.Address.City}"))
             .ForMember(dst => dst.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth.ToString()));
@@ -35,6 +38,13 @@ public class MappingProfile : Profile
                 City = src.City,
                 BuildingNumber = src.BuildingNumber
             }))
-            .ForMember(dst=>dst.HealthRecord, opt=>opt.MapFrom(src=>src.HealthRecordViewModel));
+            .ForMember(dst => dst.HealthRecord, opt => opt.MapFrom(src => src.HealthRecordViewModel));
+        #endregion
+
+        #region Plan Mapping
+        CreateMap<Plan, PLanViewModel>();
+
+        CreateMap<Plan, UpdatePlanViewModel>().ReverseMap();
+        #endregion
     }
 }

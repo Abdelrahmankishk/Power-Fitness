@@ -1,4 +1,5 @@
-﻿using GymManagementSystem.BLL.Services.Interfaces;
+﻿using AutoMapper;
+using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.PlanViewModels;
 using GymManagementSystem.DAL.Models;
 using GymManagementSystem.DAL.Repositories.Interfaces;
@@ -6,9 +7,10 @@ using GymManagementSystem.Models;
 
 namespace GymManagementSystem.BLL.Services.Classes;
 
-public class PlanService(IUnitOfWork _unitOfWork) : IPlanService
+public class PlanService(IUnitOfWork _unitOfWork,IMapper _mapper) : IPlanService
 {
     private readonly IUnitOfWork unitOfWork = _unitOfWork;
+    private readonly IMapper mapper = _mapper;
 
     public async Task<bool> ChangePlanStatus(int id, CancellationToken ct = default)
     {
@@ -33,16 +35,7 @@ public class PlanService(IUnitOfWork _unitOfWork) : IPlanService
         if (!plans.Any())
             return [];
 
-        var PlansViewModel = plans.Select(p => new PLanViewModel()
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Description = p.Description,
-            DurationDays = p.DurationDays,
-            IsActive = p.IsActive,
-            Price= p.Price
-        });
-
+        var PlansViewModel = mapper.Map<IEnumerable<Plan>, IEnumerable<PLanViewModel>>(plans);
         return PlansViewModel;
     }
 
@@ -52,14 +45,7 @@ public class PlanService(IUnitOfWork _unitOfWork) : IPlanService
         if (plan == null)
             return null!;
 
-        var PlanViewModel =  new PLanViewModel()
-        {
-            Name = plan.Name,
-            Description = plan.Description,
-            DurationDays = plan.DurationDays,
-            IsActive = plan.IsActive,
-            Price = plan.Price
-        };
+        var PlanViewModel = mapper.Map<Plan, PLanViewModel>(plan);
 
         return PlanViewModel;
     }
@@ -72,13 +58,7 @@ public class PlanService(IUnitOfWork _unitOfWork) : IPlanService
         if(await HasAnyMemeberships(id,ct))
             return null!;
         else
-            return new UpdatePlanViewModel()
-            {
-                Name = plan.Name,
-                Price = plan.Price,
-                Description = plan.Description,
-                DurationDays = plan.DurationDays
-            };
+            return mapper.Map<Plan,UpdatePlanViewModel>(plan);
 
     }
 
@@ -92,9 +72,7 @@ public class PlanService(IUnitOfWork _unitOfWork) : IPlanService
         if (plan == null)
             return false;
 
-        plan.DurationDays = UpdatedPlan.DurationDays;
-        plan.Price = UpdatedPlan.Price;
-        plan.Description = UpdatedPlan.Description;
+        mapper.Map(UpdatedPlan, plan);
         plan.UpdatedAt = DateTime.Now;
         
         unitOfWork.GetRepository<Plan>().Update(plan);
