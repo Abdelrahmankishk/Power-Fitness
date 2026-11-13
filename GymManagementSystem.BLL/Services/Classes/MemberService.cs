@@ -6,12 +6,13 @@ using GymManagementSystem.Models;
 
 namespace GymManagementSystem.BLL.Services.Classes;
 
-public class MemberService(IGenericRepository<Member> _memberRepository,IGenericRepository<MemberShip> _membershipRepository, IGenericRepository<Plan> _planRepository,IGenericRepository<HealthRecord> _HealthRecordRepository) : IMemberService
+public class MemberService(IGenericRepository<Member> _memberRepository,IGenericRepository<MemberShip> _membershipRepository, IGenericRepository<Plan> _planRepository,IGenericRepository<HealthRecord> _HealthRecordRepository,IGenericRepository<Booking> _bookingRepository) : IMemberService
 {
     private readonly IGenericRepository<Member> memberRepository = _memberRepository;
     private readonly IGenericRepository<MemberShip> membershipRepository = _membershipRepository;
     private readonly IGenericRepository<Plan> planRepository = _planRepository;
     private readonly IGenericRepository<HealthRecord> healthRecordRepository = _HealthRecordRepository;
+    private readonly IGenericRepository<Booking> bookingRepository = _bookingRepository;
 
     public async Task<bool> CreateMemberAsync(CreateMemberViewModel member, CancellationToken ct = default)
     {
@@ -45,6 +46,20 @@ public class MemberService(IGenericRepository<Member> _memberRepository,IGeneric
 
         var result = await memberRepository.AddAsync(NewMember);
 
+        return result > 0;
+    }
+
+    public async Task<bool> DeleteMemberAsync(int id, CancellationToken ct = default)
+    {
+        var memeber = await memberRepository.GetByIdAsync(id,ct);
+        if(memeber == null) 
+            return false;
+
+        var hasFuture = await bookingRepository.AnyAsync(b=>b.MemberId == id && b.Session.StartDate > DateTime.Now);
+        if(hasFuture) 
+            return false;
+
+        var result = await memberRepository.DeleteAsync(memeber, ct);
         return result > 0;
     }
 
