@@ -26,6 +26,8 @@ namespace GymManagementSystem
             builder.Services.AddScoped<IPlanService, PlanService>();
             builder.Services.AddScoped<ITrainerService, TrainerService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+            builder.Services.AddScoped<ISessionServices, SessionService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

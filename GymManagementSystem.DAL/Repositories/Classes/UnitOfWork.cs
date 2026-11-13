@@ -4,10 +4,12 @@ using GymManagementSystem.DbContexts;
 
 namespace GymManagementSystem.DAL.Repositories.Classes;
 
-public class UnitOfWork(GymDbContext _context) : IUnitOfWork
+public class UnitOfWork(GymDbContext _context,ISessionRepository _sessionRepository) : IUnitOfWork
 {
     private readonly GymDbContext context = _context;
     private readonly Dictionary<string, object> repositories = [];
+
+    public ISessionRepository SessionRepository { get; } = _sessionRepository;
 
     public IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity, new()
     {
