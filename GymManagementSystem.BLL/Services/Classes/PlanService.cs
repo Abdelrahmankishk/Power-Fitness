@@ -17,18 +17,11 @@ public class PlanService(IPlanRepository _PLanRepository,IGenericRepository<Memb
         if (Plan == null)
             return false;
 
-        if (Plan.IsActive)
-        {
-            if (Plan.Memberships.Any())
-            {
-                return false;
-            }
-            Plan.IsActive = false;
-        }
-        else
-        {
-            Plan.IsActive = true;
-        }
+        if (Plan.IsActive && await HasAnyMemeberships(id,ct))
+            return false;
+
+        Plan.IsActive = !Plan.IsActive;
+        Plan.UpdatedAt = DateTime.Now;
         int result = await  PlanRepository.UpdateAsync(Plan);
 
         return result>0 ? true : false;
@@ -74,8 +67,10 @@ public class PlanService(IPlanRepository _PLanRepository,IGenericRepository<Memb
     public async Task<UpdatePlanViewModel?> GetPlanToUpdateAsync(int id, CancellationToken ct = default)
     {
         var plan = await PlanRepository.GetByIdAsync(id, ct);
-        if (plan == null)
+        if (plan == null || !plan.IsActive)
             return null;
+        if(await HasAnyMemeberships(id,ct))
+            return null!;
         else
             return new UpdatePlanViewModel()
             {
@@ -90,8 +85,8 @@ public class PlanService(IPlanRepository _PLanRepository,IGenericRepository<Memb
     public async Task<bool> UpdatePlanDetailsAsync(int id, UpdatePlanViewModel UpdatedPlan, CancellationToken ct = default)
     {
         var plan = await PlanRepository.GetPlanWithMembers(id, ct);
-        var ActiveMembership = await membershipRepository.FirstOrDefaultAsync(x => x.Id == id && x.EndDate > DateTime.UtcNow);
-        if (ActiveMembership != null)
+        var ActiveMembership = await HasAnyMemeberships(id,ct);
+        if (ActiveMembership)
             return false;
 
         if (plan == null)
@@ -100,8 +95,11 @@ public class PlanService(IPlanRepository _PLanRepository,IGenericRepository<Memb
         plan.DurationDays = UpdatedPlan.DurationDays;
         plan.Price = UpdatedPlan.Price;
         plan.Description = UpdatedPlan.Description;
+        plan.UpdatedAt = DateTime.Now;
         
         var result =  await PlanRepository.UpdateAsync(plan);
         return result > 0 ? true : false;
     }
+    private async Task<bool> HasAnyMemeberships(int id, CancellationToken ct = default) 
+        => await membershipRepository.AnyAsync(x => x.PlanId == id && x.EndDate > DateTime.UtcNow, ct);
 }

@@ -98,7 +98,7 @@ public class MemberService(IGenericRepository<Member> _memberRepository,IGeneric
             Photo = member.Photo,
             DateOfBirth = member.DateOfBirth.ToString(),
         };
-        var ActiveMembership = await membershipRepository.FirstOrDefaultAsync(x=>x.Id == id && x.EndDate > DateTime.Now);
+        var ActiveMembership = await membershipRepository.FirstOrDefaultAsync(x=>x.MemberId == id && x.EndDate > DateTime.Now);
         if(ActiveMembership is not null)
         {
             var ActivePlan = await planRepository.GetByIdAsync(ActiveMembership.Id, ct);
