@@ -12,10 +12,9 @@ public class GenericRepository<TEntity>(GymDbContext _context) : IGenericReposit
     protected readonly DbSet<TEntity> dbSet = _context.Set<TEntity>();
 
 
-    public async Task<int> AddAsync(TEntity entity, CancellationToken ct = default)
+    public void Add(TEntity entity)
     {
         dbSet.Add(entity);
-        return await context.SaveChangesAsync(ct);
     }
 
     public Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
@@ -23,10 +22,9 @@ public class GenericRepository<TEntity>(GymDbContext _context) : IGenericReposit
         return dbSet.AsNoTracking().AnyAsync(predicate, ct);
     }
 
-    public async Task<int> DeleteAsync(TEntity entity, CancellationToken ct = default)
+    public void Delete(TEntity entity)
     {
         dbSet.Remove(entity);
-        return await context.SaveChangesAsync(ct);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(bool tracking = false, CancellationToken ct = default)
@@ -38,10 +36,9 @@ public class GenericRepository<TEntity>(GymDbContext _context) : IGenericReposit
     public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default)=> await dbSet.FindAsync(id, ct);
     
 
-    public async Task<int> UpdateAsync(TEntity entity, CancellationToken ct = default)
+    public void Update(TEntity entity)
     {
         dbSet.Update(entity);
-        return await context.SaveChangesAsync(ct);
     }
 
     public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, bool tracking = false, CancellationToken ct = default)
