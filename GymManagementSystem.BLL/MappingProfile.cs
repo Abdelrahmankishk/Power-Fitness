@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GymManagementSystem.BLL.ViewModels.MemberViewModels;
 using GymManagementSystem.BLL.ViewModels.PlanViewModels;
+using GymManagementSystem.BLL.ViewModels.SessionViewModels;
 using GymManagementSystem.BLL.ViewModels.TrainerViewModels;
 using GymManagementSystem.DAL.Models;
 using GymManagementSystem.Models;
@@ -75,6 +76,13 @@ public class MappingProfile : Profile
                 dst.Address.Street = src.Street;
                 dst.Address.City = src.City;
             });
+        #endregion
+
+        #region Session Mapping
+        CreateMap<Session, SessionViewModel>()
+            .ForMember(dst => dst.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
+            .ForMember(dst => dst.TrainerName, opt => opt.MapFrom(src => src.Trainer.Name));
+
         #endregion
     }
 }
