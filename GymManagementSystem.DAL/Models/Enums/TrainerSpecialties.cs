@@ -8,6 +8,6 @@ namespace GymManagementSystem.DAL.Models.Enums
 {
     public enum TrainerSpecialties
     {
-        GeneralFitness =1 , Yoga, Boxing, CrossFit
+        Cardio =1, Strength , Yoga, Boxing, CrossFit
     }
 }

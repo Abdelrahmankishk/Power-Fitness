@@ -13,6 +13,16 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        MapMember();
+
+        MapPlan();
+
+        MapTrainer();
+        
+        MapSession();
+    }
+    private void MapMember()
+    {
         #region Member Mapping
         CreateMap<Member, MemberViewModel>()
             .ForMember(dst => dst.Address, opt => opt.MapFrom(src => $"{src.Address.BuildingNumber} - {src.Address.Street} - {src.Address.City}"))
@@ -43,12 +53,17 @@ public class MappingProfile : Profile
             .ForMember(dst => dst.HealthRecord, opt => opt.MapFrom(src => src.HealthRecordViewModel));
         #endregion
 
+    }
+    private void MapPlan()
+    {
         #region Plan Mapping
         CreateMap<Plan, PLanViewModel>();
 
         CreateMap<Plan, UpdatePlanViewModel>().ReverseMap();
         #endregion
-
+    }
+    private void MapTrainer()
+    {
         #region Trainer Mapping
         CreateMap<CreateTrainerViewModel, Trainer>()
             .ForMember(dst => dst.Address, opt => opt.MapFrom(src => new Address()
@@ -68,9 +83,9 @@ public class MappingProfile : Profile
             .ForMember(dst => dst.Street, opt => opt.MapFrom(src => src.Address.Street))
             .ForMember(dst => dst.City, opt => opt.MapFrom(src => src.Address.City));
 
-        CreateMap<UpdateTrainerViewModel,Trainer>()
-            .ForMember(dst=>dst.Name,opt=>opt.Ignore())
-            .AfterMap((src,dst) =>
+        CreateMap<UpdateTrainerViewModel, Trainer>()
+            .ForMember(dst => dst.Name, opt => opt.Ignore())
+            .AfterMap((src, dst) =>
             {
                 dst.Address.BuildingNumber = src.BuildingNumber;
                 dst.Address.Street = src.Street;
@@ -78,11 +93,18 @@ public class MappingProfile : Profile
             });
         #endregion
 
+    }
+
+    private void MapSession()
+    {
         #region Session Mapping
         CreateMap<Session, SessionViewModel>()
             .ForMember(dst => dst.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
             .ForMember(dst => dst.TrainerName, opt => opt.MapFrom(src => src.Trainer.Name));
 
+        CreateMap<CreateSessionViewModel, Session>();
+        CreateMap<Trainer, TrainerSessionSelectViewModel>();
+        CreateMap<Category, CategorySessionSelectViewModel>();
         #endregion
     }
 }
