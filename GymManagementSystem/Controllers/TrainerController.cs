@@ -47,11 +47,12 @@ namespace GymManagementSystem.PL.Controllers
             var result = await trainerService.CreateTrainerAsync(createTrainer, ct);
 
             if (result)
+            {
                 TempData["SuccessMessage"] = "Member Created Successfully";
-            else
-                TempData["ErrorMessage"] = "Failed To Create Member";
-
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
+            }
+            TempData["ErrorMessage"] = "Failed To Create Member";
+            return View(nameof(Create), createTrainer);
         }
         // Post - BaseURL/Trainers/Create {Trainer}
         // CreateMember - Submits Form
@@ -113,7 +114,6 @@ namespace GymManagementSystem.PL.Controllers
                 TempData["ErrorMessage"] = "Failed to Delete Trainer";
 
             return RedirectToActionPermanent(nameof(Index));
-
         }
         #endregion
     }
