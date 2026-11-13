@@ -1,6 +1,5 @@
 ﻿using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.TrainerViewModels;
-using GymManagementSystem.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -91,10 +90,31 @@ namespace GymManagementSystem.PL.Controllers
 
         #region Delete Trainer
         // Get - BaseURL/Trainers/Delete/{id}
-        //Delete - Show Confermatiob Form
+        //Delete - Show Confermatiob Form]
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id, CancellationToken ct) { 
+            var trainer = await trainerService.GetTrainerByIdAsync(id,ct);
+            if (trainer == null)
+            {
+                TempData["ErrorMessage"] = "Trainer Not Found";
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
+        }
 
         // Post - BaseURL/Trainers/Delete {Trainer}
         // DeleteConfirmed - Submits Form
+        public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)
+        {
+            var result = await trainerService.DeleteTrainerAsync(id,ct);
+            if (result)
+                TempData["SuccessMessage"] = "Trainer Deleted Successfully";
+            else
+                TempData["ErrorMessage"] = "Failed to Delete Trainer";
+
+            return RedirectToActionPermanent(nameof(Index));
+
+        }
         #endregion
     }
 }

@@ -5,9 +5,10 @@ using GymManagementSystem.DAL.Repositories.Interfaces;
 
 namespace GymManagementSystem.BLL.Services.Classes;
 
-public class TrainerService(IGenericRepository<Trainer> _TrainerRepository) : ITrainerService
+public class TrainerService(IGenericRepository<Trainer> _TrainerRepository,IGenericRepository<Session> _sessionRepository) : ITrainerService
 {
     private readonly IGenericRepository<Trainer> trainerRepository = _TrainerRepository;
+    private readonly IGenericRepository<Session> sessionRepository = _sessionRepository;
 
     public async Task<bool> CreateTrainerAsync(CreateTrainerViewModel trainer, CancellationToken ct = default)
     {
@@ -34,6 +35,19 @@ public class TrainerService(IGenericRepository<Trainer> _TrainerRepository) : IT
         };
         var result = await trainerRepository.AddAsync(newTrainer, ct);
         return result > 0 ? true : false;
+    }
+
+    public async Task<bool> DeleteTrainerAsync(int id, CancellationToken ct = default)
+    {
+        var trainer = await trainerRepository.GetByIdAsync(id,ct);
+        if (trainer == null) 
+            return false;
+        var HasSessions = await sessionRepository.AnyAsync(s => s.TrainerId == id && s.StartDate > DateTime.Now);
+        if(HasSessions)
+            return false;
+
+        var result = await trainerRepository.DeleteAsync(trainer, ct);
+        return result > 0;
     }
 
     public async Task<IEnumerable<TrainerViewModel>> GetAllTrainersAsync(CancellationToken ct = default)
