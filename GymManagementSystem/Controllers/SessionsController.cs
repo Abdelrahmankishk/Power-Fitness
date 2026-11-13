@@ -1,4 +1,5 @@
-﻿using GymManagementSystem.BLL.Services.Interfaces;
+﻿using GymManagementSystem.BLL.Common;
+using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.SessionViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,7 +15,10 @@ public class SessionsController(ISessionServices _sessionService) : Controller
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         var Sessions = await sessionService.GetAllSessionsAsync(ct);
-        return View(Sessions);
+        if(!Sessions.success)
+            TempData["ErrorMessage"] = Sessions.message;
+
+        return View(Sessions.Value);
     }
 
     #region Create
@@ -31,12 +35,12 @@ public class SessionsController(ISessionServices _sessionService) : Controller
             return View(newSession);
 
         var result= await sessionService.CreateSessionAsync(newSession);
-        if (result)
+        if (result.success)
         {
             TempData["SuccessMessage"] = "Session Created Successfully";
             return RedirectToAction(nameof(Index));
         }
-        TempData["ErrorMessage"] = "Failed to Create Session";
+        TempData["ErrorMessage"] = result.message;
         await RedirectWithData();
         return View(newSession);
     }
