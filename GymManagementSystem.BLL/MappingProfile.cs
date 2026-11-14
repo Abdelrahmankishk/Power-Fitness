@@ -105,6 +105,7 @@ public class MappingProfile : Profile
         CreateMap<CreateSessionViewModel, Session>();
         CreateMap<Trainer, TrainerSessionSelectViewModel>();
         CreateMap<Category, CategorySessionSelectViewModel>();
+        CreateMap<Session, UpdateSessionViewModel>().ReverseMap();
         #endregion
     }
 }

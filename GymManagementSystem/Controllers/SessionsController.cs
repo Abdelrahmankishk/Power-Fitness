@@ -10,6 +10,11 @@ namespace GymManagementSystem.PL.Controllers;
 
 public class SessionsController(ISessionServices _sessionService) : Controller
 {
+    private async Task RedirectWithData()
+    {
+        ViewBag.Trainers = new SelectList(await sessionService.GetTrainersFromSessionAsync(), "Id", "Name");
+        ViewBag.Categories = new SelectList(await sessionService.GetCategoriesFromSessionAsync(), "Id", "CategoryName");
+    }
     private readonly ISessionServices sessionService = _sessionService;
 
     public async Task<IActionResult> Index(CancellationToken ct)
@@ -46,9 +51,42 @@ public class SessionsController(ISessionServices _sessionService) : Controller
     }
     #endregion
 
-    private async Task RedirectWithData()
+    #region Edit
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id, CancellationToken ct)
     {
-        ViewBag.Trainers = new SelectList(await sessionService.GetTrainersFromSessionAsync(), "Id", "Name");
-        ViewBag.Categories = new SelectList(await sessionService.GetCategoriesFromSessionAsync(), "Id", "CategoryName");
+        var result = await sessionService.GetSessionToUpdateAsync(id, ct);
+        if (result.success) {
+            ViewBag.Trainers = new SelectList(await sessionService.GetTrainersFromSessionAsync(), "Id", "Name");
+            return View(result.Value);
+        }
+        else
+        {
+            TempData["ErrorMessage"] = result.message;
+            return RedirectToAction(nameof(Index));
+        }
     }
+    [HttpPost]
+    public async Task<IActionResult> Edit(int id, UpdateSessionViewModel updatedSession,CancellationToken ct)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Trainers = new SelectList(await sessionService.GetTrainersFromSessionAsync(), "Id", "Name");
+            return View(updatedSession);
+        }
+        var result = await sessionService.UpdateSessionAsync(id, updatedSession, ct);
+        if (result.success)
+        {
+            TempData["SuccessMessage"] = "Session Updated Successfully";
+            return RedirectToAction(nameof(Index));
+        }
+        else
+        {
+            TempData["ErrorMessage"] = result.message;
+            ViewBag.Trainers = new SelectList(await sessionService.GetTrainersFromSessionAsync(), "Id", "Name");
+            return View(updatedSession);
+        }
+    }
+    #endregion
+
 }

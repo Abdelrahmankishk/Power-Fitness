@@ -9,4 +9,6 @@ public interface ISessionServices
     Task<Result> CreateSessionAsync(CreateSessionViewModel NewSession ,CancellationToken ct = default);
     Task<IEnumerable<TrainerSessionSelectViewModel>> GetTrainersFromSessionAsync(CancellationToken ct = default);
     Task<IEnumerable<CategorySessionSelectViewModel>> GetCategoriesFromSessionAsync(CancellationToken ct = default);
+    Task<Result<UpdateSessionViewModel>> GetSessionToUpdateAsync(int id , CancellationToken ct = default);
+    Task<Result> UpdateSessionAsync(int id, UpdateSessionViewModel updatedSession  , CancellationToken ct = default);
 }
