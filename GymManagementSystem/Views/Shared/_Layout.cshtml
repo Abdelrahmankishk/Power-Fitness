@@ -1,4 +1,22 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    bool IsActive(string controller, string? action = null)
+    {
+        return string.Equals(
+            currentController,
+            controller,
+            StringComparison.OrdinalIgnoreCase)
+            &&
+            (action == null ||
+             string.Equals(
+                 currentAction,
+                 action,
+                 StringComparison.OrdinalIgnoreCase));
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <head>
@@ -34,19 +52,19 @@
                     <ul class="navbar-nav m-auto mb-2 mb-lg-0 mt-3 mt-lg-0">
                         <li class="nav-item">
                         <li class="nav-item">
-                            <a class="nav-link active px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @(IsActive("Home") ? "active" : "") px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Members" asp-action="Index">Members</a>
+                            <a class ="nav-link @(IsActive("Members") ? "active" : "")  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Members" asp-action="Index">Members</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Trainer" asp-action="Index">Trainers</a>
+                            <a class="nav-link @(IsActive("Trainer") ? "active" : "")  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Trainer" asp-action="Index">Trainers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Sessions" asp-action="Index">Sessions</a>
+                           <a class="nav-link @(IsActive("Sessions") ? "active" : "")  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Sessions" asp-action="Index">Sessions</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Plans" asp-action="index">Plans</a>
+                            <a class="nav-link @(IsActive("Plans") ? "active" : "")  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Plans" asp-action="index">Plans</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link  px-3 py-2 mx-2 fw-bolder fs-5" aria-current="page" href="#">Memberships</a>
