@@ -12,28 +12,28 @@ namespace GymManagementSystem.Controllers
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var plans = await planService.GetAllPlansAsync(ct:ct);
-            return View(plans);
+            return View(plans.Value);
         }
         public async Task<IActionResult> Details(int Id, CancellationToken ct)
         {
             var plan = await planService.GetPlanByIdAsync(Id, ct);
-            if (plan == null)
+            if (!plan.success)
             {
-                TempData["ErrorMessage"] = "Plan Not Found";
+                TempData["ErrorMessage"] = plan.message;
                 return RedirectToAction(nameof(Index));
             }
             else
-                return View(plan);
+                return View(plan.Value);
         }
 
         [HttpPost]
         public async Task<IActionResult> Status(int Id, CancellationToken ct)
         {
             var StatusResult = await planService.ChangePlanStatus(Id, ct);
-            if (StatusResult)
+            if (StatusResult.success)
                 TempData["SuccessMessage"] = "Plan Status Changed";
             else
-                TempData["ErrorMessage"] = "Failed To Change Status";
+                TempData["ErrorMessage"] = StatusResult.message;
 
             return RedirectToActionPermanent(nameof(Index));
         }
@@ -42,12 +42,12 @@ namespace GymManagementSystem.Controllers
         public async Task<IActionResult> EditPlan(int Id, CancellationToken ct)
         {
             var plan = await planService.GetPlanToUpdateAsync(Id, ct);
-            if (plan == null)
+            if (!plan.success)
             {
-                TempData["ErrorMessage"] = "Plan Not Found";
+                TempData["ErrorMessage"] = plan.message;
                 return RedirectToAction(nameof(Index));
             }
-            return View(plan);
+            return View(plan.Value);
         }
         [HttpPost]
         public async Task<IActionResult> EditPlan(int id, UpdatePlanViewModel UpdatedPlan, CancellationToken ct)
@@ -56,10 +56,10 @@ namespace GymManagementSystem.Controllers
                 return View(UpdatedPlan);
 
             var result= await planService.UpdatePlanDetailsAsync(id, UpdatedPlan, ct);
-            if (result)
+            if (result.success)
                 TempData["SuccessMessage"] = "Plan Updated Successfully";
             else
-                TempData["ErrorMessage"] = "Failed to Plan Member";
+                TempData["ErrorMessage"] = result.message;
 
             return RedirectToActionPermanent(nameof(Index));
         }
