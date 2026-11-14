@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GymManagementSystem.BLL.Common;
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.MemberViewModels;
 using GymManagementSystem.DAL.Models;
@@ -12,54 +13,54 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper) : IMemberSe
     private readonly IUnitOfWork unitOfWork = _unitOfWork;
     private readonly IMapper mapper = _mapper;
 
-    public async Task<bool> CreateMemberAsync(CreateMemberViewModel member, CancellationToken ct = default)
+    public async Task<Result> CreateMemberAsync(CreateMemberViewModel member, CancellationToken ct = default)
     {
         var emailExists = await unitOfWork.GetRepository<Member>().AnyAsync(x=>x.Email == member.Email,ct);
         var PhoneExists = await unitOfWork.GetRepository<Member>().AnyAsync(x=>x.Phone == member.Phone,ct);
 
         if (emailExists || PhoneExists)
-            return false;
+            return Result.Validation("Email or Phone Already exits for other Member");
 
         var NewMember = mapper.Map<Member>(member);
 
         unitOfWork.GetRepository<Member>().Add(NewMember);
         var result=  await unitOfWork.SaveChangesAsync(ct);
 
-        return result > 0;
+        return result > 0 ? Result.OK() : Result.Fail("Failed to Create Member");
     }
 
-    public async Task<bool> DeleteMemberAsync(int id, CancellationToken ct = default)
+    public async Task<Result> DeleteMemberAsync(int id, CancellationToken ct = default)
     {
         var memeber = await unitOfWork.GetRepository<Member>().GetByIdAsync(id,ct);
         if(memeber == null) 
-            return false;
+            return Result.NotFound("Member Not Found");
 
         var hasFuture = await unitOfWork.GetRepository<Booking>().AnyAsync(b=>b.MemberId == id && b.Session.StartDate > DateTime.Now);
         if(hasFuture) 
-            return false;
+            return Result.Validation("Member has Upcoming booked Sessions");
 
  
         unitOfWork.GetRepository<Member>().Delete(memeber);
         var result = await unitOfWork.SaveChangesAsync(ct);
-        return result > 0;
+        return result > 0 ? Result.OK() : Result.Fail("Failed to Delete Member");
     }
 
-    public async Task<IEnumerable<MemberViewModel>> GetAllMemberAsync(CancellationToken ct)
+    public async Task<Result<IEnumerable<MemberViewModel>>> GetAllMemberAsync(CancellationToken ct)
     {
         var members = await unitOfWork.GetRepository<Member>().GetAllAsync(ct: ct);
         if(!members.Any())
-            return [];
+            return Result<IEnumerable<MemberViewModel>>.NotFound("Member Not Found");
 
         var memberViewModel = mapper.Map<IEnumerable<Member>, IEnumerable<MemberViewModel>>(members);
 
-        return memberViewModel;
+        return Result<IEnumerable<MemberViewModel>>.OK(memberViewModel);
     }
 
-    public async Task<MemberViewModel> GetMemberDetailsById(int id, CancellationToken ct = default)
+    public async Task<Result<MemberViewModel>> GetMemberDetailsById(int id, CancellationToken ct = default)
     {
         var member = await unitOfWork.GetRepository<Member>().GetByIdAsync(id, ct);
         if (member == null)
-            return null!;
+            return Result<MemberViewModel>.NotFound("Member Not Found");
 
         var ReturnedMember = mapper.Map<Member,MemberViewModel>(member);
         var ActiveMembership = await unitOfWork.GetRepository<MemberShip>().FirstOrDefaultAsync(x=>x.MemberId == id && x.EndDate > DateTime.Now);
@@ -71,43 +72,43 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper) : IMemberSe
             ReturnedMember.MembershipEndDate = ActiveMembership.EndDate.ToString();
         }
 
-        return ReturnedMember;
+        return Result<MemberViewModel>.OK(ReturnedMember);
     }
 
-    public async Task<HealthRecordViewModel?> GetMemberHealthRecordAsync(int id, CancellationToken ct = default)
+    public async Task<Result<HealthRecordViewModel?>> GetMemberHealthRecordAsync(int id, CancellationToken ct = default)
     {
         var healthRecord = await unitOfWork.GetRepository<HealthRecord>().FirstOrDefaultAsync(r => r.MemberId == id, ct: ct);
-        if (healthRecord is null) return null;
+        if (healthRecord is null) return Result<HealthRecordViewModel?>.NotFound("Health Record Not Found");
         else
-            return mapper.Map<HealthRecordViewModel>(healthRecord);
+            return Result<HealthRecordViewModel?>.OK(mapper.Map<HealthRecordViewModel>(healthRecord));
     }
 
-    public async Task<UpdateMemberViewModel?> GetMemberToUpdateAsync(int id, CancellationToken ct = default)
+    public async Task<Result<UpdateMemberViewModel?>> GetMemberToUpdateAsync(int id, CancellationToken ct = default)
     {
         var ReturnMember = await unitOfWork.GetRepository<Member>().GetByIdAsync(id, ct);
         if (ReturnMember is null)
-            return null;
+            return Result<UpdateMemberViewModel?>.NotFound("Member Not Found");
         else
-            return mapper.Map<UpdateMemberViewModel>(ReturnMember);
+            return Result<UpdateMemberViewModel?>.OK(mapper.Map<UpdateMemberViewModel>(ReturnMember));
     }
 
-    public async Task<bool> UpdateMemberDetailsAsync(int id, UpdateMemberViewModel member, CancellationToken ct = default)
+    public async Task<Result> UpdateMemberDetailsAsync(int id, UpdateMemberViewModel member, CancellationToken ct = default)
     {
         var GetMember = await unitOfWork.GetRepository<Member>().GetByIdAsync(id, ct);
         if(GetMember is null) 
-            return false;
+            return Result.NotFound("Member not Found");
 
         var emailExists = await unitOfWork.GetRepository<Member>().AnyAsync(x => x.Email == member.Email && x.Id != id, ct);
         var PhoneExists = await unitOfWork.GetRepository<Member>().AnyAsync(x => x.Phone == member.Phone && x.Id != id, ct);
 
         if (emailExists || PhoneExists)
-            return false;
+            return Result.Validation("Email or Phone Already exits for other Member");
 
         mapper.Map(member,GetMember);
         GetMember.UpdatedAt = DateTime.Now;
 
         unitOfWork.GetRepository<Member>().Update(GetMember);
         var result = await unitOfWork.SaveChangesAsync(ct);
-        return result > 0 ? true : false;
+        return result > 0 ? Result.OK() : Result.NotFound("Failed to Update Member");
     }
 }
