@@ -101,4 +101,27 @@ public class SessionsController(ISessionServices _sessionService) : Controller
     }
     #endregion
 
+    #region Delete
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        var session = await sessionService.GetSessionByIdAsync(id,ct);
+        if (session.success)
+        {
+            return View(session.Value);
+        }
+        else
+        {
+            TempData["ErrorMessage"] = session.message;
+            return RedirectToAction(nameof(Index));
+        }
+    }
+    [HttpPost]
+    public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct) { 
+        var result = await sessionService.DeleteSessionAsync(id, ct);
+
+        TempData[result.success ? "SuccessMessage" : "ErrorMessage"] = result.success ? "Session Deleted Successfully" : result.message;
+        return RedirectToAction(nameof(Index));
+    }
+    #endregion
 }

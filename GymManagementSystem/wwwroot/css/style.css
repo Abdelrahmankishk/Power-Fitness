@@ -499,8 +499,8 @@ footer .footer-content .location p {
     }
 
 .deactiveButton:hover {
-    background-color: darkred;
-    border-color: darkred;
+    background-color: darkred !important;
+    border-color: darkred !important;
 }
 .activeButton:hover {
     background-color: cornflowerblue;

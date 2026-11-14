@@ -12,4 +12,5 @@ public interface ISessionServices
     Task<IEnumerable<CategorySessionSelectViewModel>> GetCategoriesFromSessionAsync(CancellationToken ct = default);
     Task<Result<UpdateSessionViewModel>> GetSessionToUpdateAsync(int id , CancellationToken ct = default);
     Task<Result> UpdateSessionAsync(int id, UpdateSessionViewModel updatedSession  , CancellationToken ct = default);
+    Task<Result> DeleteSessionAsync(int id, CancellationToken ct = default);
 }

@@ -42,6 +42,21 @@ public class SessionService(IUnitOfWork _unitOfWork, IMapper _mapper) : ISession
         return result > 0 ? Result.OK() : Result.Fail("Failed to Create Session");
     }
 
+    public async Task<Result> DeleteSessionAsync(int id, CancellationToken ct = default)
+    {
+        var session = await unitOfWork.SessionRepository.GetByIdAsync(id,ct);
+        if (session == null)
+            return Result.NotFound("Session Not Found");
+        if (session.EndDate >= DateTime.Now)
+            return Result.Fail("Can not Delete Session That has Not Ended Yet");
+        var BookedCount = await unitOfWork.SessionRepository.GetCountOfBookedPlacesAsync(id,ct);
+        if (BookedCount > 0)
+            return Result.Fail("Can not Delete Session That has Bookings");
+        unitOfWork.SessionRepository.Delete(session);
+        var result = await unitOfWork.SaveChangesAsync(ct);
+        return result > 0 ? Result.OK() : Result.Fail("Failed to Delete Session");
+    }
+
     public async Task<Result<IEnumerable<SessionViewModel>>> GetAllSessionsAsync(CancellationToken ct = default)
     {
         var sessions = await unitOfWork.SessionRepository.GetAllSessionsWithTrainerAndCategoryAsync(ct:ct);
