@@ -62,6 +62,19 @@ public class SessionService(IUnitOfWork _unitOfWork, IMapper _mapper) : ISession
         return mapper.Map<IEnumerable<CategorySessionSelectViewModel>>(result);
     }
 
+    public async Task<Result<SessionViewModel?>> GetSessionByIdAsync(int id, CancellationToken ct = default)
+    {
+        var session = await unitOfWork.SessionRepository.GetSessionByIdWithTrainerAndCategory(id, ct);
+        if (session == null)
+            return Result<SessionViewModel?>.NotFound("Session Not Foud");
+        else
+        {
+            var ReturnSession = mapper.Map<Session,SessionViewModel>(session);
+            ReturnSession.AvailableSlots = ReturnSession.Capacity - await unitOfWork.SessionRepository.GetCountOfBookedPlacesAsync(id, ct);
+            return Result<SessionViewModel?>.OK(ReturnSession);
+        }
+    }
+
     public async Task<Result<UpdateSessionViewModel>> GetSessionToUpdateAsync(int id, CancellationToken ct = default)
     {
         var session = await unitOfWork.SessionRepository.GetByIdAsync(id,ct);

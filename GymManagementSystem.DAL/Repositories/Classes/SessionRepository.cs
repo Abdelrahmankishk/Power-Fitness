@@ -23,4 +23,9 @@ public class SessionRepository : GenericRepository<Session>, ISessionRepository
     {
         return await context.Bookings.AsNoTracking().CountAsync(book => book.SessionId == sessionId);
     }
+
+    public async Task<Session?> GetSessionByIdWithTrainerAndCategory(int id, CancellationToken ct = default)
+    {
+        return await context.Sessions.AsNoTracking().Include(s=>s.Trainer).Include(s=>s.Category).FirstOrDefaultAsync(s=>s.Id == id);
+    }
 }

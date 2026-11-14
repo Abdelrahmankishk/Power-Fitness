@@ -25,6 +25,18 @@ public class SessionsController(ISessionServices _sessionService) : Controller
 
         return View(Sessions.Value);
     }
+    [HttpGet]
+    public async Task<IActionResult> Details(int id , CancellationToken ct)
+    {
+        var session = await sessionService.GetSessionByIdAsync(id,ct);
+        if(session.success)
+            return View(session.Value);
+        else
+        {
+            TempData["ErrorMessage"] = session.message;
+            return RedirectToAction(nameof(Index));
+        }
+    }
 
     #region Create
     [HttpGet]
