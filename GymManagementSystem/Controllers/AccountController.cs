@@ -58,4 +58,9 @@ public class AccountController(UserManager<ApplicationUser> _userManager,ILogger
         await signInManager.SignOutAsync();
         return RedirectToAction(nameof(Login));
     }
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
+    }
 }
