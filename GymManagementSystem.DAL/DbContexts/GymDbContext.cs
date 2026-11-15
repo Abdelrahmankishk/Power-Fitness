@@ -2,17 +2,20 @@
 using GymManagementSystem.DAL.Configurations;
 using GymManagementSystem.DAL.Models;
 using GymManagementSystem.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymManagementSystem.DbContexts
 {
-    public class GymDbContext : DbContext
+    public class GymDbContext : IdentityDbContext<ApplicationUser>
     {
         public GymDbContext(DbContextOptions<GymDbContext> options) : base(options)
         {
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration<Plan>(new PlanConfiguration());
             modelBuilder.ApplyConfiguration<Category>(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration<Member>(new MemberConfiguration());
@@ -21,6 +24,17 @@ namespace GymManagementSystem.DbContexts
             modelBuilder.ApplyConfiguration<HealthRecord>(new HealthRecordConfigurations());
             modelBuilder.ApplyConfiguration<MemberShip>(new MemberShipConfigurations());
             modelBuilder.ApplyConfiguration<Booking>(new BookingConfigurations());
+
+            modelBuilder.Entity<ApplicationUser>(au =>
+            {
+                au.Property(x => x.FirstName)
+                .HasColumnType("varchar")
+                .HasMaxLength(50);
+
+                au.Property(x => x.LastName)
+                .HasColumnType("varchar")
+                .HasMaxLength(50);
+            });
         }
         public DbSet<Plan> plans { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -30,5 +44,5 @@ namespace GymManagementSystem.DbContexts
         public DbSet<Trainer> Trainers { get; set; }
         public DbSet<MemberShip> MemberShips { get; set; }
         public DbSet<Booking> Bookings { get; set; }
-        }
+    }
 }
