@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GymManagementSystem.BLL.Common;
+using GymManagementSystem.BLL.Services.Attachment;
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.MemberViewModels;
 using GymManagementSystem.DAL.Models;
@@ -8,10 +9,11 @@ using GymManagementSystem.Models;
 
 namespace GymManagementSystem.BLL.Services.Classes;
 
-public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper) : IMemberService
+public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachmentService _attachmentService) : IMemberService
 {
     private readonly IUnitOfWork unitOfWork = _unitOfWork;
     private readonly IMapper mapper = _mapper;
+    private readonly IAttachmentService attachmentService = _attachmentService;
 
     public async Task<Result> CreateMemberAsync(CreateMemberViewModel member, CancellationToken ct = default)
     {
@@ -21,12 +23,24 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper) : IMemberSe
         if (emailExists || PhoneExists)
             return Result.Validation("Email or Phone Already exits for other Member");
 
+        var storedPhotoNameResult = await attachmentService.UploadAsync(member.PhotoFile.OpenReadStream(), member.PhotoFile.FileName, "MembersPhotos", ct);
+        if (!storedPhotoNameResult.success)
+            return Result.Fail(storedPhotoNameResult.message!);
+
         var NewMember = mapper.Map<Member>(member);
+        NewMember.Photo = storedPhotoNameResult.Value;
 
         unitOfWork.GetRepository<Member>().Add(NewMember);
         var result=  await unitOfWork.SaveChangesAsync(ct);
 
-        return result > 0 ? Result.OK() : Result.Fail("Failed to Create Member");
+        if (result > 0)
+        {
+            return Result.OK();
+        }
+        else
+        {
+            return Result.Fail("Failed to Create Member");
+        }
     }
 
     public async Task<Result> DeleteMemberAsync(int id, CancellationToken ct = default)

@@ -1,4 +1,5 @@
 using GymManagementSystem.BLL;
+using GymManagementSystem.BLL.Services.Attachment;
 using GymManagementSystem.BLL.Services.Classes;
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.DAL.DataSeeder;
@@ -34,6 +35,7 @@ namespace GymManagementSystem
             builder.Services.AddScoped<ISessionServices, SessionService>();
             builder.Services.AddAutoMapper(m => m.AddProfile(new MappingProfile()));
             builder.Services.AddScoped<IHomeService, HomeService>();
+            builder.Services.AddScoped<IAttachmentService, AttachmentService>();
             var app = builder.Build();
 
             await app.MigrateAndSeedDatabaseAsync();

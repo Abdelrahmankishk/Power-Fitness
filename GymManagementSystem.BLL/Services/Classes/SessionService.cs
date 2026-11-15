@@ -21,7 +21,7 @@ public class SessionService(IUnitOfWork _unitOfWork, IMapper _mapper) : ISession
         if (NewSession.StartDate <= DateTime.Now)
             return Result.Validation("Start Date must be in the Future");
 
-        if (NewSession.Capacity <= 1 || NewSession.Capacity > 25)
+        if (NewSession.Capacity < 1 || NewSession.Capacity > 25)
             return Result.Validation("Capacity must be between 1 and 25");
 
         var trainer = await unitOfWork.GetRepository<Trainer>().GetByIdAsync(NewSession.TrainerId);
