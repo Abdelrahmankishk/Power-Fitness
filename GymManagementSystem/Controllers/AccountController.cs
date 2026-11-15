@@ -15,14 +15,27 @@ public class AccountController(UserManager<ApplicationUser> _userManager,ILogger
     private readonly SignInManager<ApplicationUser> signInManager = _signInManager;
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult Login()
     {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
         return View();
     }
     [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel AdminLogin, CancellationToken ct)
     {
-        if(!ModelState.IsValid)
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        if (!ModelState.IsValid)
             return View(AdminLogin);
 
         var user = await userManager.FindByEmailAsync(AdminLogin.Email);

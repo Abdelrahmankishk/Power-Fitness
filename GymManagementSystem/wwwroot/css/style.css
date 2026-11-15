@@ -509,8 +509,8 @@ footer .footer-content .location p {
     border-color: darkred !important;
 }
 .activeButton:hover {
-    background-color: cornflowerblue;
-    border-color: cornflowerblue;
+    background-color: #c5f04d;
+    border-color: #c5f04d;
 }
 .session-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
