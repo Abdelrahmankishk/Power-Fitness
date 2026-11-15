@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementSystem.PL.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "SuperAdmin")]
     public class TrainerController(ITrainerService _trainerService) : Controller
     {
         private readonly ITrainerService trainerService = _trainerService;
