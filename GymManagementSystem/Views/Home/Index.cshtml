@@ -7,407 +7,1436 @@
     ViewData["Title"] = "Home";
 }
 
-    
-    <div class="container">
-        <main role="main" class="pb-3">
-            <div class="row">
-                <div class="col-md-6 col-lg-7 col-12 text-center">
-                    <div class="info mt-4">
-                        <header class="text-black-alternative">
-                            <h2 class="fw-bolder display-2 mb-4">
-                                Your body can
-                                <span class="text-primary-color">stand almost</span> anything
-                            </h2>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('pf-js');</script>
 
-                            <p class="mb-6">
-                                It's your mind that needs convincing. Push past your limits,
-                                stay <br />
-                                committed, and watch as your body transform into powerhouse of
-                                <br />
-                                strength and resilience. Start your journey today & truly
-                                capable of!
-                            </p>
-                        </header>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-home {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark: #e9f4ee;
+        --on-dark-muted: #a9c4b6;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1240px;
+        margin-inline: auto;
 
-                    <div class="stats-bar text-center">
-                        <div class="row g-3 pb-3">
-                                <div class="col-4">
-                                    <div class="stat">
-                                        <span class="fw-bolder fs-5 d-block mb-3 ">@Model.TotalMembers</span>
-                                        <h3 class="fs-5 fw-normal">Total Members</h3>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="stat">
-                                        <span class="fw-bolder fs-5 d-block mb-3">@Model.ActiveMembers</span>
-                                        <h3 class="fs-5 fw-normal">Active Members</h3>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="stat">
-                                        <span class="fw-bolder fs-5 d-block mb-3">@Model.TotalTrainers</span>
-                                        <h3 class="fs-5 fw-normal">Trainers</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-4">
-                                    <div class="stat">
-                                        <span class="fw-bolder fs-5 d-block mb-3">@Model.UpcomingSessions</span>
-                                        <h3 class="fs-5 fw-normal">Upcoming Sessions</h3>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="stat">
-                                        <span class="fw-bolder fs-5 d-block mb-3">@Model.OngoingSessions</span>
-                                        <h3 class="fs-5 fw-normal">Ongoing Sessions</h3>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="stat">
-                                        <span class="fw-bolder fs-5 d-block mb-3">@Model.CompletedSessions</span>
-                                        <h3 class="fs-5 fw-normal">Completed Sessions</h3>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        display: flex;
+        flex-direction: column;
+        gap: clamp(3rem, 7vw, 6rem);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
 
-                        <div class="buttons my-4 text-center">
-                            <button class="get-started bg-primary-color text-white btn rounded-5 fw-medium px-3 py-2 me-5 border-2 border-primary-color">
-                                Get Started
-                            </button>
+        .pf-home *, .pf-home *::before, .pf-home *::after {
+            box-sizing: border-box;
+        }
 
-                            <button class="explore-more border-primary-color btn rounded-5 fw-medium px-3 py-2 border-2 text-primary-color fw-medium">
-                                Explore More
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        .pf-home h1, .pf-home h2, .pf-home h3, .pf-home p,
+        .pf-home ul, .pf-home ol {
+            margin: 0;
+            padding: 0;
+        }
 
-                <div class="col-md-1 offset-md-2 col-12 order-first order-md-last">
-                    <div class="character d-md-block d-flex justify-content-center">
-                        <img src="~/images/Theo Vance.jpg" alt="Theo Vance" />
-                    </div>
+        .pf-home ul, .pf-home ol {
+            list-style: none;
+        }
+
+        .pf-home a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .pf-home img {
+            display: block;
+            max-width: 100%;
+        }
+
+        .pf-home [id] {
+            scroll-margin-top: 6rem;
+        }
+
+    @@media (prefers-reduced-motion: no-preference) {
+        html:has(.pf-home) {
+            scroll-behavior: smooth;
+        }
+    }
+
+    /* ============ Shared bits ============ */
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    .pf-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.75rem;
+        border: 0;
+        border-radius: var(--radius);
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .pf-btn:active {
+            transform: translateY(3px);
+        }
+
+        .pf-btn:focus-visible {
+            outline: 3px solid var(--lime);
+            outline-offset: 3px;
+        }
+
+    .pf-btn--lime {
+        background: var(--lime);
+        color: var(--ink);
+        box-shadow: 0 4px 0 #7fa11f;
+    }
+
+        .pf-btn--lime:hover {
+            background: #d6f77a;
+        }
+
+        .pf-btn--lime:active {
+            box-shadow: 0 1px 0 #7fa11f;
+        }
+
+    .pf-btn--ghost {
+        border: 2px solid rgba(233, 244, 238, 0.6);
+        background: transparent;
+        color: #fff;
+    }
+
+        .pf-btn--ghost:hover {
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+    .pf-btn--green {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 4px 0 var(--primary-press);
+    }
+
+        .pf-btn--green:hover {
+            background: var(--primary-dark);
+        }
+
+        .pf-btn--green:active {
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .pf-btn--green:focus-visible {
+            outline-color: var(--primary);
+        }
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+        .eyebrow img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+    .section-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    .section-title--md {
+        font-size: clamp(2rem, 3.8vw, 3rem);
+    }
+
+    /* Scroll reveal (only hidden when JS is running) */
+    .pf-js .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1);
+    }
+
+        .pf-js .reveal.in {
+            opacity: 1;
+            transform: none;
+        }
+
+    /* ============ Hero + scoreboard ============ */
+    .hero {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: clamp(2rem, 5vw, 4rem);
+        align-items: center;
+        padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem) clamp(5rem, 9vw, 7rem);
+        border-radius: 28px;
+        background: radial-gradient(900px 480px at 100% 0%, rgba(20, 108, 67, 0.65), transparent 60%), radial-gradient(600px 400px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        color: var(--on-dark);
+    }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.75rem, 6.4vw, 5.25rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: #fff;
+        animation: pf-rise .6s cubic-bezier(.2, .7, .2, 1) .05s backwards;
+    }
+
+    .hero-text {
+        max-width: 34rem;
+        margin-top: 1.25rem;
+        font-size: 1.125rem;
+        line-height: 1.65;
+        color: var(--on-dark-muted);
+        animation: pf-rise .6s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+        animation: pf-rise .6s cubic-bezier(.2, .7, .2, 1) .25s backwards;
+    }
+
+    .hero-visual {
+        position: relative;
+        justify-self: center;
+        width: 100%;
+        max-width: 420px;
+        animation: pf-pop .7s cubic-bezier(.2, .7, .2, 1) .2s backwards;
+    }
+
+    .hero-frame {
+        aspect-ratio: 4 / 5;
+        overflow: hidden;
+        border: 4px solid var(--lime);
+        border-radius: 999px 999px 28px 28px;
+        background: var(--primary);
+        box-shadow: 14px 14px 0 var(--primary);
+    }
+
+        .hero-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+    .hero-badge {
+        position: absolute;
+        left: -1.25rem;
+        bottom: 2.5rem;
+        width: 104px;
+        height: 104px;
+    }
+
+        .hero-badge svg {
+            width: 100%;
+            height: 100%;
+        }
+
+    .badge-ring {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .badge-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .badge-bolt {
+        fill: var(--lime);
+    }
+
+    .hero-wrap {
+        position: relative;
+    }
+
+    .scoreboard {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        margin: -3rem clamp(0.75rem, 4vw, 3rem) 0;
+        padding: clamp(1.25rem, 3vw, 2rem) clamp(0.5rem, 2vw, 1.5rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .6s cubic-bezier(.2, .7, .2, 1) .4s backwards;
+    }
+
+    .stat {
+        padding: 0.25rem 0.75rem;
+        text-align: center;
+    }
+
+        .stat:not(:first-child) {
+            border-left: 2px dashed #c9d3cb;
+        }
+
+    .stat-num {
+        display: block;
+        font-family: var(--font-display);
+        font-size: clamp(2.25rem, 4vw, 3.25rem);
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        color: var(--primary);
+    }
+
+    .stat-label {
+        display: block;
+        margin-top: 0.4rem;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        line-height: 1.3;
+        color: var(--text-muted);
+    }
+
+    /* ============ Marquee ribbons ============ */
+    .ribbon {
+        overflow: hidden;
+        padding: 1.75rem 0;
+    }
+
+    .marquee {
+        margin-inline: -3%;
+        overflow: hidden;
+        background: var(--primary);
+        color: #fff;
+        transform: rotate(-1.5deg);
+        box-shadow: 0 6px 0 var(--ink);
+    }
+
+    .ribbon--alt .marquee {
+        transform: rotate(1.5deg);
+    }
+
+    .marquee-track {
+        display: flex;
+        width: max-content;
+        animation: pf-marquee 34s linear infinite;
+    }
+
+    .ribbon--alt .marquee-track {
+        animation-direction: reverse;
+    }
+
+    .marquee:hover .marquee-track {
+        animation-play-state: paused;
+    }
+
+    .marquee-group {
+        display: flex;
+        flex: none;
+        align-items: center;
+        padding: 1rem 0;
+    }
+
+        .marquee-group li {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding-right: 1.25rem;
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+            .marquee-group li img {
+                width: 26px;
+                height: 26px;
+            }
+
+    /* ============ About ============ */
+    .about {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: clamp(2rem, 5vw, 4.5rem);
+        align-items: center;
+        padding-bottom : 30px;
+    }
+
+    .about-photo {
+        aspect-ratio: 4 / 5;
+        max-width: 480px;
+        overflow: hidden;
+        border-radius: 6px 28px 28px 28px;
+        background: var(--paper);
+        box-shadow: 14px 14px 0 var(--primary);
+    }
+
+        .about-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .about-copy .section-title {
+        margin: 0.75rem 0 1rem;
+    }
+
+    .about-text {
+        max-width: 36rem;
+        font-size: 1.0625rem;
+        color: var(--text-muted);
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .feature {
+        padding: 1.25rem;
+        border: 1.5px solid #d9ded4;
+        border-radius: 16px;
+        background: var(--paper);
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+        .feature:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 0 rgba(20, 108, 67, 0.15);
+        }
+
+    .feature-head {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+        .feature-head img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+        .feature-head h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: var(--ink);
+        }
+
+    .feature p {
+        font-size: 0.9375rem;
+        color: var(--text-muted);
+    }
+
+    .about-cta {
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    /* ============ Workouts slider ============ */
+    .workouts {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        padding: clamp(1.75rem, 4vw, 3.5rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 420px at 0% 0%, rgba(20, 108, 67, 0.55), transparent 60%), var(--ink);
+        color: #fff;
+    }
+
+        .workouts::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+        .workouts .eyebrow {
+            color: var(--lime);
+        }
+
+        .workouts .section-title {
+            max-width: 36rem;
+            margin-top: 0.5rem;
+            color: #fff;
+        }
+
+    .workouts-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .slider-nav {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .nav-btn {
+        display: grid;
+        place-items: center;
+        width: 52px;
+        height: 52px;
+        padding: 0;
+        border: 2px solid var(--lime);
+        border-radius: 50%;
+        background: transparent;
+        color: var(--lime);
+        cursor: pointer;
+        transition: background-color .2s ease, color .2s ease, opacity .2s ease;
+    }
+
+        .nav-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--lime);
+            color: var(--ink);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        .nav-btn:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
+
+    .slider {
+        display: flex;
+        gap: 1.25rem;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding-bottom: 0.25rem;
+    }
+
+        .slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .slider:focus-visible {
+            outline: 3px solid var(--lime);
+            outline-offset: 6px;
+            border-radius: 12px;
+        }
+
+    .slide {
+        flex: 0 0 clamp(270px, 36%, 420px);
+        overflow: hidden;
+        scroll-snap-align: start;
+        border-radius: 20px;
+        background: #fff;
+        color: var(--text);
+    }
+
+    .slide-img {
+        aspect-ratio: 5 / 4;
+        overflow: hidden;
+    }
+
+        .slide-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .5s cubic-bezier(.2, .7, .2, 1);
+        }
+
+    .slide:hover .slide-img img {
+        transform: scale(1.06);
+    }
+
+    .slide-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+    }
+
+        .slide-foot h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--primary);
+        }
+
+    .slide-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 0.25rem;
+        font-weight: 600;
+        color: var(--ink);
+        text-decoration: underline;
+        text-decoration-color: var(--lime);
+        text-decoration-thickness: 3px;
+        text-underline-offset: 5px;
+    }
+
+        .slide-link:hover {
+            color: var(--primary);
+        }
+
+        .slide-link:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+    .indicators {
+        display: flex;
+        justify-content: center;
+        gap: 0.6rem;
+        margin-top: 1.5rem;
+    }
+
+    .indicator {
+        position: relative;
+        width: 12px;
+        height: 12px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(233, 244, 238, 0.35);
+        cursor: pointer;
+        transition: width .25s ease, background-color .25s ease;
+    }
+
+        .indicator::after {
+            content: '';
+            position: absolute;
+            inset: -16px -6px;
+        }
+
+        .indicator.active {
+            width: 36px;
+            background: var(--lime);
+        }
+
+        .indicator:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
+
+    /* ============ Why us ============ */
+    .why {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: clamp(2rem, 5vw, 4.5rem);
+        align-items: center;
+    }
+
+    .why-copy .section-title {
+        margin: 0.75rem 0 1rem;
+    }
+
+    .why-text {
+        max-width: 36rem;
+        font-size: 1.0625rem;
+        color: var(--text-muted);
+    }
+
+    .why-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .why-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+
+    .count {
+        flex: none;
+        min-width: 4rem;
+        font-family: var(--font-display);
+        font-size: 3.25rem;
+        font-weight: 700;
+        line-height: 0.9;
+        color: transparent;
+        -webkit-text-stroke: 2px var(--primary);
+    }
+
+    .why-item h3 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    .why-item p {
+        margin-top: 0.25rem;
+        color: var(--text-muted);
+    }
+
+    .why-visual {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        align-self: stretch;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        min-height: 420px;
+        padding: 1.5rem 1.5rem 0;
+        border-radius: 28px;
+        background: radial-gradient(520px 320px at 80% 0%, rgba(197, 240, 77, 0.18), transparent 60%), var(--primary);
+    }
+
+        .why-visual::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 16px);
+        }
+
+        .why-visual img {
+            width: 100%;
+            height: 100%;
+            max-height: 560px;
+            object-fit: contain;
+            object-position: bottom;
+        }
+
+    /* ============ Footer ============ */
+    .pf-footer {
+        position: relative;
+        overflow: hidden;
+        padding: calc(14px + 2.5rem) clamp(1.5rem, 4vw, 3rem) 3rem;
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        text-align: center;
+    }
+
+        .pf-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 14px;
+            background: repeating-linear-gradient(-45deg, var(--ink) 0 12px, var(--lime) 12px 24px);
+        }
+
+    .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 2.5rem;
+    }
+
+    .footer-logo img {
+        width: 88px;
+        height: auto;
+        margin: 0 auto 0.75rem;
+        mix-blend-mode: multiply;
+    }
+
+    .footer-logo p {
+        color: var(--text-muted);
+    }
+
+    .footer-col h3 {
+        margin-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .contact-list li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .contact-list img {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+        mix-blend-mode: multiply;
+    }
+
+    .time-label {
+        font-weight: 600;
+        color: var(--ink);
+    }
+
+    .time-slot {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-pop {
+        from {
+            opacity: 0;
+            transform: scale(0.94);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes pf-marquee {
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 991.98px) {
+        .hero {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-visual {
+            max-width: 340px;
+        }
+
+        .scoreboard {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            row-gap: 1.5rem;
+        }
+
+        .stat:nth-child(3n + 1) {
+            border-left: 0;
+        }
+
+        .stat:nth-child(3n + 2), .stat:nth-child(3n) {
+            border-left: 2px dashed #c9d3cb;
+        }
+
+        .about {
+            grid-template-columns: 1fr;
+        }
+
+        .about-photo {
+            margin-inline: auto;
+        }
+
+        .why {
+            grid-template-columns: 1fr;
+        }
+
+        .why-visual {
+            display: none;
+        }
+
+        .footer-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .scoreboard {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .stat:nth-child(odd) {
+            border-left: 0;
+        }
+
+        .stat:nth-child(even) {
+            border-left: 2px dashed #c9d3cb;
+        }
+
+        .hero-frame, .about-photo {
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .hero-badge {
+            left: -0.5rem;
+            width: 84px;
+            height: 84px;
+        }
+
+        .pf-btn {
+            width: 100%;
+        }
+
+        .features {
+            grid-template-columns: 1fr;
+        }
+
+        .footer-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-home *, .pf-home *::before, .pf-home *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .pf-js .reveal {
+            opacity: 1;
+            transform: none;
+        }
+
+        .marquee, .ribbon--alt .marquee {
+            transform: none;
+        }
+
+        .marquee-track {
+            width: auto;
+        }
+
+        .marquee-group {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+            .marquee-group[aria-hidden="true"] {
+                display: none;
+            }
+    }
+</style>
+
+<div class="pf-home">
+
+    <!-- ^ hero + stats -->
+    <div class="hero-wrap">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-copy">
+                <h1 id="hero-title" class="hero-title">
+                    Your body can <span class="hl">stand almost</span> anything
+                </h1>
+
+                <p class="hero-text">
+                    It’s your mind that needs convincing. Push past your limits, stay committed, and watch as your body transform into powerhouse of strength and resilience. Start your journey today &amp; truly capable of!
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#workouts" class="pf-btn pf-btn--lime">Get Started</a>
+                    <a href="#about" class="pf-btn pf-btn--ghost">Explore More</a>
                 </div>
             </div>
 
-            <div class="bar bg-primary-color d-flex p-4 text-white fw-bolder align-items-center">
-                <p class="py-0 my-0 overflow-hidden text-nowrap">
-                    outdoor & online trainers
-                    <img src="~/images/star.svg" alt="star icon" /> personal training
-                    <img src="~/images/star.svg" alt="star icon" /> live classes
-                    <img src="~/images/star.svg" alt="star icon" /> personal trainers
-                    <img src="~/images/star.svg" alt="star icon" /> personal training
+            <div class="hero-visual">
+                <div class="hero-frame">
+                    <img src="~/images/Theo Vance.jpg" alt="Theo Vance" />
+                </div>
+                <div class="hero-badge" aria-hidden="true">
+                    <svg viewBox="0 0 120 120" focusable="false">
+                        <circle class="badge-ring" cx="60" cy="60" r="56" />
+                        <circle class="badge-plate" cx="60" cy="60" r="44" />
+                        <polygon class="badge-bolt" points="65.6,37.6 48.8,62.8 58.6,62.8 52,82.4 71.2,55.8 61.4,55.8" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <section class="scoreboard" aria-label="Gym statistics">
+            <div class="stat">
+                <span class="stat-num" data-count="@Model.TotalMembers">@Model.TotalMembers</span>
+                <span class="stat-label">Total Members</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num" data-count="@Model.ActiveMembers">@Model.ActiveMembers</span>
+                <span class="stat-label">Active Members</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num" data-count="@Model.TotalTrainers">@Model.TotalTrainers</span>
+                <span class="stat-label">Trainers</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num" data-count="@Model.UpcomingSessions">@Model.UpcomingSessions</span>
+                <span class="stat-label">Upcoming Sessions</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num" data-count="@Model.OngoingSessions">@Model.OngoingSessions</span>
+                <span class="stat-label">Ongoing Sessions</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num" data-count="@Model.CompletedSessions">@Model.CompletedSessions</span>
+                <span class="stat-label">Completed Sessions</span>
+            </div>
+        </section>
+    </div>
+
+    <!-- ^ marquee ribbon -->
+    <section class="ribbon" aria-label="What we offer">
+        <div class="marquee">
+            <div class="marquee-track">
+                <ul class="marquee-group">
+                    <li>outdoor &amp; online trainers <img src="~/images/star.svg" alt="" /></li>
+                    <li>personal training <img src="~/images/star.svg" alt="" /></li>
+                    <li>live classes <img src="~/images/star.svg" alt="" /></li>
+                    <li>certified coaches <img src="~/images/star.svg" alt="" /></li>
+                    <li>strength &amp; conditioning <img src="~/images/star.svg" alt="" /></li>
+                </ul>
+                <ul class="marquee-group" aria-hidden="true">
+                    <li>outdoor &amp; online trainers <img src="~/images/star.svg" alt="" /></li>
+                    <li>personal training <img src="~/images/star.svg" alt="" /></li>
+                    <li>live classes <img src="~/images/star.svg" alt="" /></li>
+                    <li>certified coaches <img src="~/images/star.svg" alt="" /></li>
+                    <li>strength &amp; conditioning <img src="~/images/star.svg" alt="" /></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ^ about section -->
+    <section class="about reveal" id="about" aria-labelledby="about-title">
+        <div class="about-photo">
+            <img src="~/images/about p1.jpg" alt="person" loading="lazy" decoding="async" />
+        </div>
+
+        <div class="about-copy">
+            <p class="eyebrow">
+                <img src="~/images/dumbbell.jpg" alt="dumbbell icon" />
+                About Us
+            </p>
+
+            <h2 id="about-title" class="section-title">
+                Empowering you to achieve <span class="hl">your fitness</span> goals
+            </h2>
+
+            <p class="about-text">
+                We believe fitness is more than just a workout—it’s a lifestyle. With top-of-the-line facilities, certified trainers, and a supportive community, we’re here to inspire and guide you every step of the way.
+            </p>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-head">
+                        <img src="~/images/feature icon.png" alt="icon" />
+                        <h3>Personal Trainer</h3>
+                    </div>
+                    <p>Achieve your fitness goals with the guidance of our certified trainers.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-head">
+                        <img src="~/images/feature icon.png" alt="icon" />
+                        <h3>Modern Equipment</h3>
+                    </div>
+                    <p>Train on quality machines and free weights that are maintained and upgraded regularly.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-head">
+                        <img src="~/images/feature icon.png" alt="icon" />
+                        <h3>Group Classes</h3>
+                    </div>
+                    <p>Join energetic live sessions that keep you motivated and moving alongside the community.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-head">
+                        <img src="~/images/feature icon.png" alt="icon" />
+                        <h3>Flexible Hours</h3>
+                    </div>
+                    <p>Open seven days a week with extended evening hours, so a workout always fits your day.</p>
+                </div>
+            </div>
+
+            <div class="about-cta">
+                <a href="#workouts" class="pf-btn pf-btn--green">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ^ workout section -->
+    <section class="workouts reveal" id="workouts" aria-labelledby="workouts-title">
+        <div class="workouts-head">
+            <div>
+                <p class="eyebrow">Workouts</p>
+                <h2 id="workouts-title" class="section-title section-title--md">
+                    Transform Your Body with Our Dynamic Upcoming Workouts
+                </h2>
+            </div>
+
+            <div class="slider-nav">
+                <button type="button" class="nav-btn" id="sliderPrev" aria-label="Previous workout">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6" /></svg>
+                </button>
+                <button type="button" class="nav-btn" id="sliderNext" aria-label="Next workout">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6" /></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="slider" id="workoutSlider" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Upcoming workouts">
+            <article class="slide">
+                <div class="slide-img">
+                    <img src="~/images/workout 1.jpg" alt="Group workout" loading="lazy" decoding="async" />
+                </div>
+                <div class="slide-foot">
+                    <h3>Group Workout</h3>
+                    <a href="#" class="slide-link">Explore</a>
+                </div>
+            </article>
+
+            <article class="slide">
+                <div class="slide-img">
+                    <img src="~/images/workout 2.jpg" alt="Group workout" loading="lazy" decoding="async" />
+                </div>
+                <div class="slide-foot">
+                    <h3>Cardio Burn</h3>
+                    <a href="#" class="slide-link">Explore</a>
+                </div>
+            </article>
+
+            <article class="slide">
+                <div class="slide-img">
+                    <img src="~/images/workout 3.jpg" alt="Group workout" loading="lazy" decoding="async" />
+                </div>
+                <div class="slide-foot">
+                    <h3>Strength Circuit</h3>
+                    <a href="#" class="slide-link">Explore</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="indicators">
+            <button type="button" class="indicator active" aria-label="Show workout 1" aria-current="true"></button>
+            <button type="button" class="indicator" aria-label="Show workout 2"></button>
+            <button type="button" class="indicator" aria-label="Show workout 3"></button>
+        </div>
+    </section>
+
+    <!-- ^ why-us section -->
+    <section class="why reveal" id="why-us" aria-labelledby="why-title">
+        <div class="why-copy">
+            <p class="eyebrow">
+                <img src="~/images/dumbbell.jpg" alt="dumbbell icon" />
+                Why Us
+            </p>
+
+            <h2 id="why-title" class="section-title">
+                Elevate fitness with <span class="hl">the best</span> way possible
+            </h2>
+
+            <p class="why-text">
+                Choose a gym that puts you first. From your very first session to your hundredth, our team, our space and our programs are built to help you train smarter, stay consistent and enjoy the process.
+            </p>
+
+            <ol class="why-list">
+                <li class="why-item">
+                    <div class="count" aria-hidden="true">01</div>
+                    <div>
+                        <h3>Personalized Fitness Plans</h3>
+                        <p>We tailor every workout to fit your unique goals and fitness level ensuring that you make the most progress.</p>
+                    </div>
+                </li>
+
+                <li class="why-item">
+                    <div class="count" aria-hidden="true">02</div>
+                    <div>
+                        <h3>Certified Expert Trainers</h3>
+                        <p>Our trainers are qualified, experienced and focused on safe technique, so every rep counts.</p>
+                    </div>
+                </li>
+
+                <li class="why-item">
+                    <div class="count" aria-hidden="true">03</div>
+                    <div>
+                        <h3>Supportive Community</h3>
+                        <p>Train alongside motivated members who push you, celebrate your wins and keep you coming back.</p>
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <div class="why-visual">
+            <img src="~/images/why us image.png" alt="characters" loading="lazy" decoding="async" />
+        </div>
+    </section>
+
+    <!-- ^ footer -->
+    <section class="ribbon ribbon--alt" aria-label="What we offer">
+        <div class="marquee">
+            <div class="marquee-track">
+                <ul class="marquee-group">
+                    <li>outdoor &amp; online trainers <img src="~/images/star.svg" alt="" /></li>
+                    <li>personal training <img src="~/images/star.svg" alt="" /></li>
+                    <li>live classes <img src="~/images/star.svg" alt="" /></li>
+                    <li>certified coaches <img src="~/images/star.svg" alt="" /></li>
+                    <li>strength &amp; conditioning <img src="~/images/star.svg" alt="" /></li>
+                </ul>
+                <ul class="marquee-group" aria-hidden="true">
+                    <li>outdoor &amp; online trainers <img src="~/images/star.svg" alt="" /></li>
+                    <li>personal training <img src="~/images/star.svg" alt="" /></li>
+                    <li>live classes <img src="~/images/star.svg" alt="" /></li>
+                    <li>certified coaches <img src="~/images/star.svg" alt="" /></li>
+                    <li>strength &amp; conditioning <img src="~/images/star.svg" alt="" /></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer class="pf-footer reveal">
+        <div class="footer-grid">
+            <div class="footer-logo">
+                <img src="~/images/logo.jpg" style="width:75px; height=75px;" alt="our logo" loading="lazy" decoding="async" />
+                <p>Push harder, go further. Your fitness journey starts today!</p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Contact Us</h3>
+                <ul class="contact-list">
+                    <li>
+                        <img src="~/images/phone icon.jpg" alt="phone icon" />
+                        <p>+91 123 456 789</p>
+                    </li>
+                    <li>
+                        <img src="~/images/message icon.jpg" alt="message icon" />
+                        <p>info@gmail.com</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Our Gym Timing</h3>
+                <p>
+                    <span class="time-label">Mon - Fri :</span>
+                    <span class="time-slot">08:00 AM - 10:00 PM</span>
+                    <span class="time-label">Sat - Sun:</span>
+                    <span class="time-slot">08:00 AM - 09:00 PM</span>
                 </p>
             </div>
 
-            <!-- ^ all other section -->
-            <main>
-                <!-- ^ about section -->
-                <section class="about my-5 text-black-alternative">
-                    <div class="container">
-                        <div class="row g-5 justify-content-center">
-                            <div class="col-12 col-lg-6 w-50 w-md-100">
-                                <div class="characters ">
-                                    <div class="image">
-                                    <img class="w-100 h-50" src="~/images/about p1.jpg" alt="person" />
-                                    </div>
-                                </div>
-                            </div>
+            <div class="footer-col">
+                <h3>Our Location</h3>
+                <p>2715 Ash Dr. San Jose, South Dakota 83475</p>
+            </div>
+        </div>
+    </footer>
 
-                            <div class="col-12 col-lg-6 ">
-                                <div class="title d-flex justify-content-start align-items-start gap-2">
-                                    <img class="" src="~/images/dumbbell.jpg" alt="dumbbell icon" />
-                                    <h2 class="text-primary-color fs-5">About Us</h2>
-                                </div>
+</div>
 
-                                <header>
-                                    <p class="fw-bolder display-6 mb-4">
-                                        EMPOWERING YOU TO ACHIEVE
-                                        <span class="text-primary-color">YOUR FITNESS</span> GOALS
-                                    </p>
-                                    <p class="text mb-0">
-                                        We believe fitness is more than just a workout—it's a
-                                        lifestyle. With top-of- the-line facilities, certified
-                                        trainers, and a supportive community, we're here to inspire
-                                        and guide you every step of the way.
-                                    </p>
-                                </header>
+<script>
+    (function () {
+        var root = document.querySelector('.pf-home');
+        if (!root) return;
 
-                                <div class="features">
-                                    <div class="row row-cols-1 row-cols-sm-2 gx-3 gy-5">
-                                        <div class="feature">
-                                            <div class="inner">
-                                                <div class="title d-flex gap-2">
-                                                    <img src="~/images/feature icon.png" alt="icon" />
-                                                    <h3 class="fw-bold">Personal Trainer</h3>
-                                                </div>
-                                                <div class="info">
-                                                    <p>Achieve your fitness goals with the</p>
-                                                    <p>guidance of our certified trainers.</p>
-                                                </div>
-                                            </div>
-                                        </div>
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-                                        <div class="feature">
-                                            <div class="inner">
-                                                <div class="title d-flex gap-2">
-                                                <img src="~/images/feature icon.png" alt="icon" />
-                                                    <h3 class="fw-bold">Personal Trainer</h3>
-                                                </div>
-                                                <div class="info">
-                                                    <p>Achieve your fitness goals with the</p>
-                                                    <p>guidance of our certified trainers.</p>
-                                                </div>
-                                            </div>
-                                        </div>
+        /* 1. Placeholder links (href="#") should not jump to the top of the page */
+        root.querySelectorAll('a[href="#"]').forEach(function (a) {
+            a.addEventListener('click', function (e) { e.preventDefault(); });
+        });
 
-                                        <div class="feature">
-                                            <div class="inner">
-                                                <div class="title d-flex gap-2">
-                                                <img src="~/images/feature icon.png" alt="icon" />
-                                                    <h3 class="fw-bold">Personal Trainer</h3>
-                                                </div>
-                                                <div class="info">
-                                                    <p>Achieve your fitness goals with the</p>
-                                                    <p>guidance of our certified trainers.</p>
-                                                </div>
-                                            </div>
-                                        </div>
+        /* 2. Scroll reveal */
+        var reveals = root.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window && !reduce) {
+            var revealIO = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in');
+                        revealIO.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            reveals.forEach(function (el) { revealIO.observe(el); });
+        } else {
+            reveals.forEach(function (el) { el.classList.add('in'); });
+        }
 
-                                        <div class="feature">
-                                            <div class="inner">
-                                                <div class="title d-flex gap-2">
-                                                <img src="~/images/feature icon.png" alt="icon" />
-                                                    <h3 class="fw-bold">Personal Trainer</h3>
-                                                </div>
-                                                <div class="info">
-                                                    <p>Achieve your fitness goals with the</p>
-                                                    <p>guidance of our certified trainers.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <div class="text-center">
-                                    <button class="btn bg-primary-color rounded-pill text-white fw-medium px-4 py-2 mt-3">
-                                        Get Started
-                                    </button>
-                                </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+        /* 3. Stats count-up (the real value stays in the markup as the fallback) */
+        var board = root.querySelector('.scoreboard');
+        var nums = root.querySelectorAll('[data-count]');
 
-                <!-- ^ workout section -->
-                <section class="workout">
-                    <div class="container">
-                        <div class="title">
-                            <h2>WORKOUTS</h2>
-                            <p class="text-white fw-bolder fs-2 mb-4">
-                                Transform Your Body with Our Dynamic Upcoming Workouts
-                            </p>
-                        </div>
+        function countUp(el) {
+            var finalText = el.textContent.trim();
+            var target = parseFloat(el.getAttribute('data-count'));
+            if (isNaN(target)) return;
+            var duration = 1400, startTime = null;
 
-                        <div class="row row-cols-md-3 row-cols-12 gy-4 gx-2 gx-md-4">
-                            <div>
-                                <div class="card">
-                                    <img src="~/images/workout 1.jpg" class="card-img-top" alt="..." />
+            function tick(ts) {
+                if (startTime === null) startTime = ts;
+                var p = Math.min((ts - startTime) / duration, 1);
+                var eased = 1 - Math.pow(1 - p, 3);
+                if (p < 1) {
+                    el.textContent = Math.round(target * eased);
+                    requestAnimationFrame(tick);
+                } else {
+                    el.textContent = finalText;
+                }
+            }
+            requestAnimationFrame(tick);
+        }
 
-                                    <footer class="card-footer bg-white">
-                                    <h5 class="card-title text-primary-color text-uppercase fw-bolder">
-                                            group workout
-                                        </h5>
-                                        <a href="#" class="">Explore</a>
-                                    </footer>
-                                </div>
-                            </div>
+        if (board && 'IntersectionObserver' in window && !reduce) {
+            var countIO = new IntersectionObserver(function (entries) {
+                if (entries[0].isIntersecting) {
+                    nums.forEach(countUp);
+                    countIO.disconnect();
+                }
+            }, { threshold: 0.4 });
+            countIO.observe(board);
+        }
 
-                            <div>
-                                <div class="card">
-                                    <img src="~/images/workout 2.jpg" class="card-img-top" alt="..." />
+        /* 4. Workout slider: arrows + indicators + keyboard scrolling */
+        var slider = document.getElementById('workoutSlider');
+        var prev = document.getElementById('sliderPrev');
+        var next = document.getElementById('sliderNext');
+        var dots = root.querySelectorAll('.indicator');
 
-                                    <footer class="card-footer bg-white">
-                                    <h5 class="card-title text-primary-color text-uppercase fw-bolder">
-                                            group workout
-                                        </h5>
-                                        <a href="#" class="">Explore</a>
-                                    </footer>
-                                </div>
-                            </div>
+        if (slider && prev && next) {
+            var slides = slider.querySelectorAll('.slide');
+            var ticking = false;
 
-                            <div>
-                                <div class="card">
-                                    <img src="~/images/workout 3.jpg" class="card-img-top" alt="..." />
+            function stepSize() {
+                var gap = parseFloat(getComputedStyle(slider).columnGap) || 0;
+                return slides[0].getBoundingClientRect().width + gap;
+            }
 
-                                    <footer class="card-footer bg-white">
-                                    <h5 class="card-title text-primary-color text-uppercase fw-bolder">
-                                            group workout
-                                        </h5>
-                                        <a href="#" class="">Explore</a>
-                                    </footer>
-                                </div>
-                            </div>
-                        </div>
+            function maxScroll() {
+                return slider.scrollWidth - slider.clientWidth;
+            }
 
-                        <div class="indicators">
-                            <div class="indicator"></div>
-                            <div class="indicator active"></div>
-                            <div class="indicator"></div>
-                            <div class="indicator"></div>
-                        </div>
-                    </div>
-                </section>
+            function currentIndex() {
+                var max = maxScroll();
+                if (max <= 2) return 0;
+                if (slider.scrollLeft >= max - 2) return slides.length - 1;
+                return Math.min(Math.round(slider.scrollLeft / stepSize()), slides.length - 1);
+            }
 
-                <!-- ^ why-us section -->
-                <section class="why-us my-5">
-                    <div class="container">
-                        <div class="row row-cols-1 row-cols-lg-2">
-                            <div class="info">
-                                <div>
-                                    <div class="title d-flex justify-content-start align-items-start gap-2">
-                                        <img class="" src="~/images/dumbbell.jpg" alt="dumbbell icon" />
-                                        <h2 class="text-primary-color fs-5">Why Us</h2>
-                                    </div>
+            function update() {
+                var i = currentIndex();
+                dots.forEach(function (dot, k) {
+                    dot.classList.toggle('active', k === i);
+                    if (k === i) { dot.setAttribute('aria-current', 'true'); }
+                    else { dot.removeAttribute('aria-current'); }
+                });
+                prev.disabled = slider.scrollLeft <= 2;
+                next.disabled = slider.scrollLeft >= maxScroll() - 2;
+            }
 
-                                    <header>
-                                        <p class="fw-bolder display-5 mb-4">
-                                            Elevate fitness with<br />
-                                            <span class="text-primary-color">the best</span> way
-                                            possible
-                                        </p>
-                                        <p class="text">
-                                            We believe fitness is more than just a workout—it's a
-                                            lifestyle. With top-of- the-line facilities, certified
-                                            trainers, and a supportive community, we're here to inspire
-                                            and guide you every step of the way.
-                                        </p>
-                                    </header>
+            function goTo(i) {
+                slider.scrollTo({ left: i * stepSize(), behavior: reduce ? 'auto' : 'smooth' });
+            }
 
-                                    <ul class="featutes list-unstyled mt-6">
-                                        <li class="feature d-flex gap-4 align-items-center mb-4">
-                                            <div class="count">01</div>
+            prev.addEventListener('click', function () { goTo(Math.max(currentIndex() - 1, 0)); });
+            next.addEventListener('click', function () { goTo(Math.min(currentIndex() + 1, slides.length - 1)); });
+            dots.forEach(function (dot, i) {
+                dot.addEventListener('click', function () { goTo(i); });
+            });
 
-                                            <div class="text">
-                                                <h3 class="text-capitalize fw-bold">
-                                                    personalized fitness plans
-                                                </h3>
-                                                <p class="fs-18">
-                                                    We tailor every workout to fit your unique goals and
-                                                    fitness level ensuring that you make the most progress.
-                                                </p>
-                                            </div>
-                                        </li>
-
-                                        <li class="feature d-flex gap-4 align-items-center mb-4">
-                                            <div class="count">01</div>
-
-                                            <div class="text">
-                                                <h3 class="text-capitalize fw-bold">
-                                                    personalized fitness plans
-                                                </h3>
-                                                <p class="fs-18">
-                                                    We tailor every workout to fit your unique goals and
-                                                    fitness level ensuring that you make the most progress.
-                                                </p>
-                                            </div>
-                                        </li>
-
-                                        <li class="feature d-flex gap-4 align-items-center">
-                                            <div class="count">01</div>
-
-                                            <div class="text">
-                                                <h3 class="text-capitalize fw-bold">
-                                                    personalized fitness plans
-                                                </h3>
-                                                <p class="fs-18">
-                                                    We tailor every workout to fit your unique goals and
-                                                    fitness level ensuring that you make the most progress.
-                                                </p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="characters d-none d-lg-block justify-content-center align-items-center">
-                                <div class="images mt-5 ps-4 h-75">
-                                <img class="w-100 h-100" src="~/images/why us image.png" alt="characters" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </main>
-            <footer class="mt-5">
-                <div class="bar bg-primary-color d-flex py-4 text-white fw-bolder align-items-center">
-                    <p class="py-0 my-0 overflow-hidden text-nowrap">
-                        outdoor & online trainers
-                        <img src="~/images/star.svg" alt="star icon" /> personal training
-                        <img src="~/images/star.svg" alt="star icon" /> live classes
-                        <img src="~/images/star.svg" alt="star icon" /> personal trainers
-                        <img src="~/images/star.svg" alt="star icon" /> personal training
-                    </p>
-                </div>
-
-                <div class="footer-content my-5 text-center">
-                    <div class="container">
-                        <div class="row row-cols-2 row-cols-md-4 g-5">
-                            <div class="logo">
-                                <div class="inner">
-                                    <div class="image">
-                                        <img src="~/images/logo.jpg" class="w-25" alt="our logo" />
-                                    </div>
-                                    <p class="fs-18 mt-2">
-                                        Push harder, go further. Your <br />
-                                        fitness journey starts today!
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="contact">
-                            <h4 class="fw-bolder text-primary-color text-uppercase mb-4">contact us</h4>
-
-                                <ul>
-                                    <li class="d-flex align-items-center gap-2 justify-content-center">
-                                        <div class="icon">
-                                            <img src="~/images/phone icon.jpg" alt="phone icon" />
-                                        </div>
-                                        <p>+91 123 456 789</p>
-                                    </li>
-
-                                <li class="d-flex align-items-center gap-2 justify-content-center">
-                                        <div class="icon">
-                                            <img src="~/images/message icon.jpg" alt="message icon" />
-                                        </div>
-                                        <p> info@gmail.com</p>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="time">
-                            <h4 class="fw-bolder text-primary-color text-uppercase mb-3">our gym timing</h4>
-
-                                <p>
-                                <span class="fs-5">Mon - Fri :</span>  <br /> <span class="text-success-emphasis">08:00 AM - 10:00 PM</span>  <br /><span class="fs-5"> Sat - Sun:</span>  <br /> <span class="text-success-emphasis">
-                                    08:00 AM -
-                                    09:00 PM
-                                </span>
-                            </p>
-                            </div>
-
-                            <div class="location">
-                            <h4 class="fw-bolder text-primary-color text-uppercase mb-4">our location</h4>
-
-                                <p>
-                                    2715 Ash Dr. San Jose, South <br />
-                                    Dakota 83475
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-
-        </main>
-    </div>
+            slider.addEventListener('scroll', function () {
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(function () { update(); ticking = false; });
+            }, { passive: true });
+            window.addEventListener('resize', update);
+            update();
+        }
+    })();
+</script>

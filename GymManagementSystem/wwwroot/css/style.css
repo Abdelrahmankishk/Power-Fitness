@@ -605,3 +605,7 @@ footer .footer-content .location p {
     border-color: rgb(25,135,84) !important;
     box-shadow: 0 0 0 .25rem rgba(20, 108, 67, 0.3) !important;
 }
+
+.nav-link:focus, .nav-link:hover {
+    color: #c5f04d
+}
