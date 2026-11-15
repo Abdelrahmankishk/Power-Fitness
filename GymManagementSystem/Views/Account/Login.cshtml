@@ -1,0 +1,680 @@
+﻿@using GymManagementSystem.BLL.ViewModels.AccountViewModels
+@model LoginViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Power Fitness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #146c43;
+            --primary-dark: #0e5636;
+            --primary-press: #0a3f27;
+            --ink: #062117;
+            --lime: #c5f04d;
+            --paper: #f6f4ec;
+            --text: #10241b;
+            --on-dark: #e9f4ee;
+            --on-dark-muted: #a9c4b6;
+            --line: #6f8578;
+            --danger: #b42318;
+            --danger-bg: #fdecea;
+            --radius: 12px;
+            --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+            --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            color: var(--on-dark);
+            background: radial-gradient(1100px 560px at 90% -10%, rgba(20, 108, 67, 0.6), transparent 60%), radial-gradient(800px 480px at -10% 110%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+            min-height: 100vh;
+        }
+
+            /* Diagonal training-track texture */
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+            }
+
+        .stage {
+            position: relative;
+            min-height: 100vh;
+            min-height: 100dvh;
+            max-width: 1280px;
+            margin-inline: auto;
+            padding: clamp(1.25rem, 4vw, 4rem);
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+            gap: clamp(2rem, 5vw, 6rem);
+            align-items: center;
+        }
+
+        /* ---------- Left : brand + headline ---------- */
+        .intro {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(1.5rem, 4vw, 2.5rem);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .brand-mark {
+            width: 48px;
+            height: 48px;
+            flex: none;
+        }
+
+        .brand-name {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 1.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1;
+            color: #fff;
+        }
+
+        .brand-tagline {
+            margin: 0.3rem 0 0;
+            font-size: 0.875rem;
+            color: var(--on-dark-muted);
+        }
+
+        .hero-title {
+            margin: 0;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(2.6rem, 6.2vw, 5.6rem);
+            line-height: 0.92;
+            letter-spacing: 0.01em;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+            .hero-title span {
+                color: var(--lime);
+            }
+
+        .hero-sub {
+            margin: 0;
+            max-width: 30rem;
+            font-size: 1.125rem;
+            line-height: 1.6;
+            color: var(--on-dark-muted);
+        }
+
+        .power-art {
+            width: min(100%, 560px);
+            height: auto;
+            margin-top: 0.5rem;
+            overflow: visible;
+        }
+
+        .power-lane {
+            stroke: rgba(233, 244, 238, 0.16);
+            stroke-width: 2;
+            stroke-dasharray: 2 10;
+            stroke-linecap: round;
+        }
+
+        .power-bar {
+            stroke: var(--lime);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 1;
+            stroke-dashoffset: 0;
+            animation: draw 1.2s cubic-bezier(.45, .05, .25, 1) .2s backwards;
+        }
+
+        .plate,
+        .collar {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: grow .5s cubic-bezier(.2, .7, .2, 1) var(--d, 0s) backwards;
+        }
+
+        .plate {
+            fill: var(--primary);
+            stroke: var(--lime);
+            stroke-width: 3;
+        }
+
+        .collar {
+            fill: var(--lime);
+        }
+
+        .power-hub {
+            fill: var(--ink);
+            stroke: var(--lime);
+            stroke-width: 4;
+            animation: pop .4s ease-out 1.3s backwards;
+        }
+
+        .power-bolt {
+            fill: var(--lime);
+            animation: pop .4s ease-out 1.5s backwards;
+        }
+
+        /* ---------- Right : access-pass card ---------- */
+        .login {
+            display: flex;
+            justify-content: center;
+        }
+
+        .login-card {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            padding: 3rem clamp(1.5rem, 4vw, 2.5rem) clamp(1.75rem, 4vw, 2.5rem);
+            background: var(--paper);
+            color: var(--text);
+            border-radius: 28px 28px 28px 6px;
+            box-shadow: 12px 12px 0 var(--primary);
+            animation: rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+        }
+
+            /* Lanyard slot */
+            .login-card::before {
+                content: '';
+                position: absolute;
+                top: 16px;
+                left: 50%;
+                width: 56px;
+                height: 8px;
+                margin-left: -28px;
+                border-radius: 999px;
+                background: var(--ink);
+            }
+
+            .login-card .text-danger {
+                color: var(--danger) !important;
+            }
+
+        .badge-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            background: var(--lime);
+            color: #0b2a1c;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+            .badge-tag::before {
+                content: '';
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--primary);
+            }
+
+        .card-title {
+            margin: 0.9rem 0 0.35rem;
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 3.25rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: var(--primary);
+        }
+
+        .card-sub {
+            margin: 0 0 1.75rem;
+            font-size: 1rem;
+            color: #4b5f55;
+        }
+
+        /* ---------- Form ---------- */
+        .alert-slot .field-validation-error {
+            display: block;
+            margin-bottom: 1.25rem;
+            padding: 0.75rem 1rem;
+            border-left: 4px solid var(--danger);
+            border-radius: 8px;
+            background: var(--danger-bg);
+            font-weight: 500;
+        }
+
+        .field {
+            margin-bottom: 0.25rem;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .field-control {
+            position: relative;
+        }
+
+            .field-control i {
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 1.1rem;
+                color: #3f5a4b;
+                pointer-events: none;
+            }
+
+        .field-input {
+            width: 100%;
+            height: 52px;
+            padding: 0 16px 0 48px;
+            font: inherit;
+            font-size: 1rem;
+            color: var(--text);
+            background: #fff;
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius);
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+
+            .field-input::placeholder {
+                color: #5a6d62;
+                opacity: 1;
+            }
+
+            .field-input:hover {
+                border-color: var(--primary);
+            }
+
+            .field-input:focus {
+                outline: 2px solid transparent;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 4px rgba(20, 108, 67, 0.22);
+            }
+
+            .field-input.input-validation-error {
+                border-color: var(--danger);
+            }
+
+                .field-input.input-validation-error:focus {
+                    box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.2);
+                }
+
+            .field-input:-webkit-autofill {
+                -webkit-box-shadow: 0 0 0 1000px #fff inset;
+                -webkit-text-fill-color: var(--text);
+            }
+
+        .field-error {
+            display: block;
+            min-height: 1.25rem;
+            margin-top: 0.35rem;
+            font-size: 0.875rem;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 44px;
+            margin-top: 0.25rem;
+        }
+
+        .check-input {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: none;
+            display: grid;
+            place-content: center;
+            width: 24px;
+            height: 24px;
+            margin: 0;
+            background: #fff;
+            border: 1.5px solid var(--line);
+            border-radius: 7px;
+            cursor: pointer;
+            transition: background-color .2s ease, border-color .2s ease;
+        }
+
+            .check-input:checked {
+                background: var(--primary);
+                border-color: var(--primary);
+            }
+
+                .check-input:checked::after {
+                    content: '';
+                    width: 12px;
+                    height: 6px;
+                    border-left: 3px solid #fff;
+                    border-bottom: 3px solid #fff;
+                    transform: rotate(-45deg) translate(1px, -1px);
+                }
+
+            .check-input:focus-visible {
+                outline: 3px solid var(--primary);
+                outline-offset: 3px;
+            }
+
+        .check-label {
+            font-size: 0.9375rem;
+            color: var(--text);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .validation-summary-valid {
+            display: none;
+        }
+
+        .validation-summary-errors {
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-left: 4px solid var(--danger);
+            border-radius: 8px;
+            background: var(--danger-bg);
+            color: var(--danger);
+            font-size: 0.9375rem;
+        }
+
+            .validation-summary-errors ul {
+                margin: 0;
+                padding-left: 1.1rem;
+            }
+
+        .btn-power {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 56px;
+            margin-top: 1.25rem;
+            padding: 0 1.5rem;
+            border: 0;
+            border-radius: var(--radius);
+            background: var(--primary);
+            color: #fff;
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--primary-press);
+            transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+        }
+
+        .btn-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+            .btn-label i {
+                transition: transform .2s ease;
+            }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-power:hover .btn-label i {
+                transform: translateX(4px);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+        .btn-power:disabled {
+            cursor: progress;
+        }
+
+        /* Loading state */
+        .btn-power.loading .btn-label {
+            visibility: hidden;
+        }
+
+        .btn-power.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 22px;
+            height: 22px;
+            margin: -11px 0 0 -11px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        /* ---------- Motion ---------- */
+        @@keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes draw {
+            from {
+                stroke-dashoffset: 1;
+            }
+
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @@keyframes pop {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes grow {
+            from {
+                opacity: 0;
+                transform: scaleY(0.2);
+            }
+
+            to {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+        }
+
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @@media (prefers-reduced-motion: reduce) {
+            .login-card, .power-bar, .plate, .collar, .power-hub, .power-bolt {
+                animation: none;
+            }
+
+            .btn-power, .btn-label i, .field-input, .check-input {
+                transition: none;
+            }
+        }
+
+        /* ---------- Responsive ---------- */
+        @@media (max-width: 900px) {
+            .stage {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding-block: 1.5rem;
+            }
+
+            .hero-sub, .power-art {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .login-card {
+                box-shadow: 8px 8px 0 var(--primary);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stage">
+
+        <!-- Left Side - Brand & headline -->
+        <section class="intro" aria-label="Power Fitness">
+            <div class="brand">
+                <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                    <rect width="48" height="48" rx="12" fill="#146c43" />
+                    <path d="M12 33 C20 33 18 17 26 17 S33 29 37 15" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" />
+                    <circle cx="12" cy="33" r="3.5" fill="#c5f04d" />
+                    <circle cx="37" cy="15" r="3.5" fill="#c5f04d" />
+                </svg>
+                <div>
+                    <p class="brand-name">Power Fitness</p>
+                    <p class="brand-tagline">Gym Management System</p>
+                </div>
+            </div>
+
+            <p class="hero-title">Keep every<br>member<br><span>powered up.</span></p>
+            <p class="hero-sub">Memberships, trainers and daily operations, managed from one dashboard.</p>
+
+            <svg class="power-art" viewBox="0 0 600 300" fill="none" aria-hidden="true" focusable="false">
+                <path class="power-lane" d="M40 268 H560" />
+                <path class="power-lane" d="M40 286 H560" />
+                <path class="power-bar" pathLength="1" d="M40 150 H560" />
+
+                <rect class="plate" x="100" y="60" width="30" height="180" rx="8" style="--d:.7s" />
+                <rect class="plate" x="134" y="82" width="26" height="136" rx="7" style="--d:.6s" />
+                <rect class="plate" x="164" y="104" width="22" height="92" rx="6" style="--d:.5s" />
+                <rect class="collar" x="190" y="134" width="10" height="32" rx="3" style="--d:.4s" />
+
+                <rect class="plate" x="470" y="60" width="30" height="180" rx="8" style="--d:.7s" />
+                <rect class="plate" x="440" y="82" width="26" height="136" rx="7" style="--d:.6s" />
+                <rect class="plate" x="414" y="104" width="22" height="92" rx="6" style="--d:.5s" />
+                <rect class="collar" x="400" y="134" width="10" height="32" rx="3" style="--d:.4s" />
+
+                <circle class="power-hub" cx="300" cy="150" r="40" />
+                <polygon class="power-bolt" points="308,124 288,153 300,153 292,177 314,145 302,145" />
+            </svg>
+        </section>
+
+        <!-- Right Side - Login card -->
+        <main class="login">
+            <div class="login-card">
+                <header>
+                    <span class="badge-tag">Admin Access</span>
+                    <h1 class="card-title">Admin Login</h1>
+                    <p class="card-sub">Welcome back! Please login to your account</p>
+                </header>
+
+                <form asp-action="Login" asp-controller="Account" method="post" id="loginForm">
+                    <div class="alert-slot" role="alert">
+                        @Html.ValidationMessage("InvalidLogin", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="field">
+                        <label class="field-label" for="floatingEmail">Email address</label>
+                        <div class="field-control">
+                            <i class="bi bi-envelope" aria-hidden="true"></i>
+                            <input asp-for="Email"
+                                   class="field-input"
+                                   id="floatingEmail"
+                                   placeholder="admin@example.com"
+                                   autocomplete="username"
+                                   aria-describedby="emailError" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small field-error" id="emailError"></span>
+                    </div>
+
+                    <div class="field">
+                        <label class="field-label" for="floatingPassword">Password</label>
+                        <div class="field-control">
+                            <i class="bi bi-lock" aria-hidden="true"></i>
+                            <input asp-for="Password"
+                                   class="field-input"
+                                   id="floatingPassword"
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password"
+                                   aria-describedby="passwordError" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small field-error" id="passwordError"></span>
+                    </div>
+
+                    <div class="remember">
+                        <input asp-for="RememberMe" class="check-input" type="checkbox" id="rememberMe">
+                        <label class="check-label" for="rememberMe">Remember me for 24 hours</label>
+                    </div>
+
+                    <div asp-validation-summary="All"></div>
+
+                    <button type="submit" class="btn-power" id="loginBtn">
+                        <span class="btn-label">Login to Dashboard<i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(function() {
+            $('#floatingEmail').focus();
+
+            $('#loginForm').on('submit', function () {
+                if ($(this).valid()) {
+                    const btn = document.getElementById('loginBtn');
+                    btn.classList.add('loading');
+                    btn.disabled = true;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,10 +1,12 @@
 ﻿using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.TrainerViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace GymManagementSystem.PL.Controllers
 {
+    [Authorize]
     public class TrainerController(ITrainerService _trainerService) : Controller
     {
         private readonly ITrainerService trainerService = _trainerService;

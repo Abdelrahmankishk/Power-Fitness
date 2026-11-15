@@ -1,6 +1,7 @@
 ﻿using GymManagementSystem.BLL.Common;
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.SessionViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementSystem.PL.Controllers;
 
+[Authorize]
 public class SessionsController(ISessionServices _sessionService) : Controller
 {
     private async Task RedirectWithData()

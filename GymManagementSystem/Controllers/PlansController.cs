@@ -1,11 +1,13 @@
 ﻿using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.PlanViewModels;
 using GymManagementSystem.DAL.Repositories.Classes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace GymManagementSystem.Controllers
 {
+    [Authorize]
     public class PlansController(IPlanService _planService) : Controller
     {
         private readonly IPlanService planService = _planService;
