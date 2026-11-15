@@ -33,6 +33,7 @@ namespace GymManagementSystem
             builder.Services.AddScoped<ISessionRepository, SessionRepository>();
             builder.Services.AddScoped<ISessionServices, SessionService>();
             builder.Services.AddAutoMapper(m => m.AddProfile(new MappingProfile()));
+            builder.Services.AddScoped<IHomeService, HomeService>();
             var app = builder.Build();
 
             await app.MigrateAndSeedDatabaseAsync();

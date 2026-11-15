@@ -5,7 +5,10 @@
     --main-duration: 300ms;
     --black-alternative: #242424;
 }
-
+::selection {
+    background-color: var(--primary-color);
+    color: white
+}
 button {
     outline: none;
     border: none;

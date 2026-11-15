@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Threading.Tasks;
+using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,15 +9,18 @@ namespace GymManagementSystem.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IHomeService homeService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IHomeService _homeService)
         {
             _logger = logger;
+            homeService = _homeService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(CancellationToken ct)
         {
-            return View();
+            var data = await homeService.GetAllAnalytics(ct);
+            return View(data);
         }
 
         public IActionResult Privacy()
