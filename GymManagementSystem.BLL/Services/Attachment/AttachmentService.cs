@@ -11,6 +11,42 @@ public class AttachmentService(ILogger<AttachmentService> _logger, IWebHostEnvir
     private readonly IWebHostEnvironment env = _env;
     private readonly string[] allowedExtensions = { ".png", ".jpeg", ".jpg" };
 
+    public Result Delete(string fileName, string folderName)
+    {
+        var fullPath = Path.Combine(env.ContentRootPath, folderName,fileName);
+        try
+        {
+            if (!File.Exists(fullPath))
+                return Result.NotFound("File Not Found");
+            File.Delete(fullPath);
+        }
+        catch (Exception ex) {
+            logger.LogError(ex, $"Failed to Delete File {fileName}");
+            return Result.Fail(ex.Message);
+        }
+        return Result.OK();
+    }
+
+    public (Stream stream, string contentType)? GetFile(string fileName, string foldeFileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName) || string.IsNullOrWhiteSpace(foldeFileName))
+            return null;
+
+        var FullPath = Path.Combine(env.ContentRootPath, foldeFileName,fileName);
+        if (!File.Exists(FullPath))
+            return null;
+
+        var stream = new FileStream(FullPath, FileMode.Open, FileAccess.Read);
+        
+        var ext = Path.GetExtension(FullPath).ToLower();
+        var contentType = ext switch { 
+            ".png" => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            _ => "appliaction/octet-stream"
+        };
+        return (stream, contentType);
+    }
+
     public async Task<Result<string?>> UploadAsync(Stream fileStream, string fileName, string folderName, CancellationToken ct = default)
     {
         if (fileStream == null || !fileStream.CanRead || fileStream.Length == 0)

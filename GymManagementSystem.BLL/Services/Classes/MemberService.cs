@@ -39,6 +39,7 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachment
         }
         else
         {
+            attachmentService.Delete(storedPhotoNameResult.Value, "MembersPhotos");
             return Result.Fail("Failed to Create Member");
         }
     }
@@ -53,7 +54,7 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachment
         if(hasFuture) 
             return Result.Validation("Member has Upcoming booked Sessions");
 
- 
+        attachmentService.Delete(memeber.Photo!, "MembersPhotos");
         unitOfWork.GetRepository<Member>().Delete(memeber);
         var result = await unitOfWork.SaveChangesAsync(ct);
         return result > 0 ? Result.OK() : Result.Fail("Failed to Delete Member");
