@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementSystem.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
