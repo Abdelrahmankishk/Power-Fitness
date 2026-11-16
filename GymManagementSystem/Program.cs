@@ -45,6 +45,8 @@ namespace GymManagementSystem
                 config.Lockout.MaxFailedAccessAttempts = 5;
             })
                 .AddEntityFrameworkStores<GymDbContext>();
+            builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
+
             var app = builder.Build();
 
             await app.MigrateAndSeedDatabaseAsync();
