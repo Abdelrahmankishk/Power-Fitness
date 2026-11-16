@@ -1,0 +1,679 @@
+﻿@model CreateMemberShipViewModel
+
+@{
+    ViewData["Title"] = "Create Membership";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --line: #6f8578;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1240px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ============ Alert ============ */
+    .pf-alert {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid currentColor;
+        border-radius: 14px;
+        background: var(--danger-bg);
+        color: var(--danger);
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .pf-alert-text {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .pf-alert-close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.75rem -0.5rem 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+        .pf-alert-close:hover {
+            background: rgba(6, 33, 23, 0.1);
+        }
+
+        .pf-alert-close:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 0;
+        }
+
+    .pf-alert-timer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.4;
+        transform-origin: left;
+        animation: pf-timer var(--t, 10s) linear forwards;
+    }
+
+    .pf-alert:hover .pf-alert-timer,
+    .pf-alert:focus-within .pf-alert-timer {
+        animation-play-state: paused;
+    }
+
+    .pf-alert.is-leaving {
+        max-height: 0 !important;
+        margin-block: -0.75rem;
+        padding-block: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    /* ============ Stage ============ */
+    .stage {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+        gap: clamp(2rem, 5vw, 4rem);
+        align-items: center;
+        padding: clamp(1.75rem, 5vw, 4rem);
+        border-radius: 28px;
+        background: radial-gradient(900px 480px at 100% 0%, rgba(20, 108, 67, 0.65), transparent 60%), radial-gradient(600px 400px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        color: #fff;
+    }
+
+        .stage::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    .page-title {
+        position: relative;
+        padding-bottom: 1.25rem;
+        font-family: var(--font-display);
+        font-size: clamp(2.75rem, 6.4vw, 5rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: #fff;
+        animation: pf-rise .6s cubic-bezier(.2, .7, .2, 1) .05s backwards;
+    }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 88px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--lime);
+        }
+
+    .page-sub {
+        max-width: 28rem;
+        margin-top: 1.25rem;
+        font-size: 1.125rem;
+        line-height: 1.65;
+        color: var(--on-dark-muted);
+        animation: pf-rise .6s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+    }
+
+    .bb-art {
+        width: min(100%, 460px);
+        height: auto;
+        margin-top: 2rem;
+    }
+
+    .bb-lane {
+        stroke: rgba(233, 244, 238, 0.16);
+        stroke-width: 2;
+        stroke-dasharray: 2 10;
+        stroke-linecap: round;
+    }
+
+    .bb-bar {
+        stroke: var(--lime);
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 0;
+        animation: pf-draw 1.2s cubic-bezier(.45, .05, .25, 1) .2s backwards;
+    }
+
+    .bb-plate,
+    .bb-collar {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-grow .5s cubic-bezier(.2, .7, .2, 1) var(--d, 0s) backwards;
+    }
+
+    .bb-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 3;
+    }
+
+    .bb-collar {
+        fill: var(--lime);
+    }
+
+    .bb-hub {
+        fill: var(--ink);
+        stroke: var(--lime);
+        stroke-width: 4;
+        animation: pf-pop .4s ease-out 1.3s backwards;
+    }
+
+    .bb-bolt {
+        fill: var(--lime);
+        animation: pf-pop .4s ease-out 1.5s backwards;
+    }
+
+    /* ============ Form card ============ */
+    .create-card {
+        position: relative;
+        width: 100%;
+        max-width: 480px;
+        justify-self: center;
+        padding: 3rem clamp(1.5rem, 4vw, 2.5rem) clamp(1.75rem, 4vw, 2.5rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        color: var(--text);
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+    }
+
+        /* Lanyard slot */
+        .create-card::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            width: 56px;
+            height: 8px;
+            margin-left: -28px;
+            border-radius: 999px;
+            background: var(--ink);
+        }
+
+        .create-card .text-danger {
+            color: var(--danger) !important;
+        }
+
+    .field {
+        margin-bottom: 0.5rem;
+    }
+
+    .field-label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .field-control {
+        position: relative;
+    }
+
+        .field-control .ico {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3f5a4b;
+            pointer-events: none;
+        }
+
+        .field-control .ico-lead {
+            left: 16px;
+        }
+
+        .field-control .ico-chev {
+            right: 16px;
+            transition: transform .2s ease;
+        }
+
+        .field-control:focus-within .ico-chev {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+    .field-select {
+        width: 100%;
+        height: 52px;
+        padding: 0 48px 0 48px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--text);
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+        .field-select:has(option:checked[value=""]) {
+            color: #5a6d62;
+        }
+
+        .field-select:hover {
+            border-color: var(--primary);
+        }
+
+        .field-select:focus {
+            outline: 2px solid transparent;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(20, 108, 67, 0.22);
+        }
+
+        .field-select.input-validation-error {
+            border-color: var(--danger);
+        }
+
+            .field-select.input-validation-error:focus {
+                box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.2);
+            }
+
+        .field-select option {
+            color: var(--text);
+        }
+
+    .field-error {
+        display: block;
+        min-height: 1.25rem;
+        margin-top: 0.35rem;
+        font-size: 0.875rem;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .validation-summary-errors {
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+        border-left: 4px solid var(--danger);
+        border-radius: 8px;
+        background: var(--danger-bg);
+        font-size: 0.9375rem;
+    }
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 1.1rem;
+        }
+
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.25rem;
+    }
+
+    .btn-power {
+        display: inline-flex;
+        flex: 1 1 220px;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.5rem;
+        border: 0;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 4px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-power:hover .ico {
+                transform: rotate(90deg);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 56px;
+        padding: 0 1.5rem;
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        background: transparent;
+        color: var(--ink);
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, transform .15s ease;
+    }
+
+        .btn-ghost:hover {
+            border-color: var(--ink);
+            background: #e9ede4;
+        }
+
+        .btn-ghost:active {
+            transform: translateY(3px);
+        }
+
+        .btn-ghost:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-timer {
+        to {
+            transform: scaleX(0);
+        }
+    }
+
+    @@keyframes pf-draw {
+        from {
+            stroke-dashoffset: 1;
+        }
+
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @@keyframes pf-grow {
+        from {
+            opacity: 0;
+            transform: scaleY(0.2);
+        }
+
+        to {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+    }
+
+    @@keyframes pf-pop {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 900px) {
+        .stage {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .bb-art {
+            display: none;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .create-card {
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .btn-ghost {
+            flex: 1 1 100%;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .pf-alert-timer {
+            display: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert" role="alert" data-timeout="10000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <p class="pf-alert-text">@TempData["ErrorMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:10s" aria-hidden="true"></span>
+        </div>
+    }
+
+    <div class="stage">
+
+        <!-- Left Side - title + graphic -->
+        <section class="intro" aria-labelledby="create-title">
+            <h1 id="create-title" class="page-title">@ViewData["Title"]</h1>
+            <p class="page-sub">Choose a member and a plan to start a new membership.</p>
+
+            <svg class="bb-art" viewBox="0 0 600 300" fill="none" aria-hidden="true" focusable="false">
+                <path class="bb-lane" d="M40 268 H560" />
+                <path class="bb-lane" d="M40 286 H560" />
+                <path class="bb-bar" pathLength="1" d="M40 150 H560" />
+
+                <rect class="bb-plate" x="100" y="60" width="30" height="180" rx="8" style="--d:.7s" />
+                <rect class="bb-plate" x="134" y="82" width="26" height="136" rx="7" style="--d:.6s" />
+                <rect class="bb-plate" x="164" y="104" width="22" height="92" rx="6" style="--d:.5s" />
+                <rect class="bb-collar" x="190" y="134" width="10" height="32" rx="3" style="--d:.4s" />
+
+                <rect class="bb-plate" x="470" y="60" width="30" height="180" rx="8" style="--d:.7s" />
+                <rect class="bb-plate" x="440" y="82" width="26" height="136" rx="7" style="--d:.6s" />
+                <rect class="bb-plate" x="414" y="104" width="22" height="92" rx="6" style="--d:.5s" />
+                <rect class="bb-collar" x="400" y="134" width="10" height="32" rx="3" style="--d:.4s" />
+
+                <circle class="bb-hub" cx="300" cy="150" r="40" />
+                <polygon class="bb-bolt" points="308,124 288,153 300,153 292,177 314,145 302,145" />
+            </svg>
+        </section>
+
+        <!-- Right Side - form card -->
+        <div class="create-card">
+            <form asp-action="Create" aria-labelledby="create-title">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="field">
+                    <label asp-for="MemberId" class="field-label">Member</label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg>
+                        <select asp-for="MemberId" asp-items="ViewBag.Members" class="field-select" aria-describedby="memberError">
+                            <option value="">-- Select Member --</option>
+                        </select>
+                        <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+                    </div>
+                    <span asp-validation-for="MemberId" class="text-danger field-error" id="memberError"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="PlanId" class="field-label">Plan</label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3 10h18M7 15h4" /></svg>
+                        <select asp-for="PlanId" asp-items="ViewBag.Plans" class="field-select" aria-describedby="planError">
+                            <option value="">-- Select Plan --</option>
+                        </select>
+                        <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+                    </div>
+                    <span asp-validation-for="PlanId" class="text-danger field-error" id="planError"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-power">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" /></svg>
+                        Create Membership
+                    </button>
+                    <a asp-action="Index" class="btn-ghost">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_AlertBox.cshtml" />
+
+    <script>
+        (function () {
+            var alertEl = document.getElementById('Alert');
+            if (!alertEl) return;
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* Close the alert smoothly (safe to call more than once) */
+            function dismiss(el) {
+                if (!el.parentNode || el.getAttribute('data-leaving')) return;
+                el.setAttribute('data-leaving', '1');
+                el.style.maxHeight = el.offsetHeight + 'px';
+                void el.offsetHeight;
+                el.classList.add('is-leaving');
+
+                var removed = false;
+                function remove() {
+                    if (removed) return;
+                    removed = true;
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+                el.addEventListener('transitionend', function (e) {
+                    if (e.target === el && e.propertyName === 'max-height') remove();
+                });
+                setTimeout(remove, reduce ? 0 : 500);
+            }
+
+            var closeBtn = alertEl.querySelector('.pf-alert-close');
+            var timer = alertEl.querySelector('.pf-alert-timer');
+            var ms = parseInt(alertEl.getAttribute('data-timeout'), 10) || 10000;
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () { dismiss(alertEl); });
+            }
+
+            /* Auto-dismiss: the timer bar drives the delay and pauses on hover/focus */
+            if (reduce || !timer) {
+                setTimeout(function () { dismiss(alertEl); }, ms);
+            } else {
+                timer.addEventListener('animationend', function () { dismiss(alertEl); });
+            }
+        })();
+    </script>
+}
