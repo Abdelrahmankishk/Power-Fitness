@@ -2,145 +2,797 @@
 @{
     ViewData["Title"] = "Members";
 }
-<div class="container">
-    <main role="main" class="pb-3">
 
-        @if (TempData["SuccessMessage"] != null){
-            <div id="Alert" class="alert alert-success alert-dismissible fade show">
-                <i class="bi bi-check-circle-fill me-2"></i>
-                @TempData["SuccessMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1240px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
         }
-        else if (TempData["ErrorMessage"] != null)
-        {
-            <div id="Alert" class="alert alert-danger alert-dismissible fade show">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                @TempData["ErrorMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            
+
+        .pf-page h1, .pf-page h2, .pf-page h3, .pf-page p, .pf-page ul {
+            margin: 0;
+            padding: 0;
         }
 
+        .pf-page ul {
+            list-style: none;
+        }
 
-        <div class="container">
-            <header class="d-flex justify-content-end mt-5 mb-4 align-items-center">
-                <a asp-controller="Members" asp-action="Create" class="btn btn-fill fw-medium rounded-pill px-3 py-3"> + Add Member </a>
-            </header>
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
 
-            @if (Model.Any())
-            {
-                <div class="table-responsive " style="overflow: visible;">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr >
-                                <th class="text-success"><span>Photo</span></th>
-                                <th class="text-success"><span>Name</span></th>
-                                <th class="text-success"><span>Email</span></th>
-                                <th class="text-success"><span>Gender</span></th>
-                                <th class="text-success"><span>Phone</span></th>
-                                <th class="text-success"><span>Action</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var member in Model)
-                            {
-                            <tr>
-                                <td>
-                                    <span class="avatar">
-                                        @if(string.IsNullOrWhiteSpace(member.Photo))
-                                            {
-                                                <img src="~/images/Default.png" alt="Default Avatar" class="rounded-circle"
-                                                style="width: 40px; height: 40px;" />
-                                            }
-                                            else
-                                            {
-                                                <img src="@Url.Action("GetPhoto","Members",new {id = member.Id})" alt="Default Avatar" class="rounded-circle"
-                                                     style="width: 40px; height: 40px;" />
-                                            }
-                                        </span>
-                                </td>
-                                <td><span>@member.Name</span></td>
-                                <td><span>@member.Email</span></td>
-                                <td><span>@member.Gender</span></td>
-                                    <td><span>@member.Phone</span></td>
-                                <td class="action position-relative">
-                                    <div class="dropdown">
-                                        <button class="btn btn-link p-0 border-0" type="button"
-                                                id="dropdownMenuButton-@member.Id" data-bs-toggle="dropdown"
-                                                aria-expanded="false">
-                                            <img src="~/images/action dots.jpg" alt="action icon" />
-                                        </button>
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
 
-                                        <ul class="dropdown-menu dropdown-menu-start"
-                                                aria-labelledby="dropdownMenuButton-@member.Id">
-                                            <li>
-                                                <a asp-controller="Members" asp-action="MemberDetails" asp-route-id="@member.Id"
-                                                   class="dropdown-item d-flex align-items-center gap-3">
-                                                    <img src="~/images/info 1.jpg" alt="info icon"
-                                                         style="width: 20px; height: 20px;" />
-                                                    <span>View Member Data</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                    <a asp-controller="Members" asp-action="HealthRecordDetails" asp-route-id="@member.Id"
-                                                   class="dropdown-item d-flex align-items-center gap-3">
-                                                    <img src="~/images/info 1.jpg" alt="info icon"
-                                                         style="width: 20px; height: 20px;" />
-                                                    <span>View Health Record Data</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li>
-                                                <a asp-controller="Members" asp-action="EditMember" asp-route-id="@member.Id"
-                                                   class="dropdown-item d-flex align-items-center gap-3">
-                                                    <img src="~/images/edit.jpg" alt="edit icon"
-                                                         style="width: 20px; height: 20px;" />
-                                                    <span>Edit Member Data</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li>
-                                                <a asp-controller="Members" asp-action="Delete" asp-route-id="@member.Id"
-                                                   class="dropdown-item d-flex align-items-center gap-3 text-danger">
-                                                    <img src="~/images/x-circle 1.jpg" alt="delete icon"
-                                                         style="width: 20px; height: 20px;" />
-                                                    <span>Delete</span>
-                                                </a>
-                                            </li>
-                                        </ul>
+    .ico-fill {
+        fill: currentColor;
+        stroke: none;
+    }
 
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
 
-                                    </div>
-                                </td>
-                            </tr>
-                                
-                            }
-                        
-                        </tbody>
-                    </table>
-                </div>
+    .pf-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.75rem;
+        border: 0;
+        border-radius: var(--radius);
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .pf-btn:active {
+            transform: translateY(3px);
+        }
+
+        .pf-btn:focus-visible {
+            outline: 3px solid var(--lime);
+            outline-offset: 3px;
+        }
+
+    .pf-btn--lime {
+        background: var(--lime);
+        color: var(--ink);
+        box-shadow: 0 4px 0 #7fa11f;
+    }
+
+        .pf-btn--lime:hover {
+            background: #d6f77a;
+        }
+
+        .pf-btn--lime:active {
+            box-shadow: 0 1px 0 #7fa11f;
+        }
+
+        .pf-btn--lime .ico {
+            transition: transform .2s ease;
+        }
+
+        .pf-btn--lime:hover .ico {
+            transform: rotate(90deg);
+        }
+
+    /* ============ Alerts ============ */
+    .pf-alert {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid currentColor;
+        border-radius: 14px;
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .pf-alert--success {
+        background: #e7f3ec;
+        color: var(--primary);
+    }
+
+    .pf-alert--error {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .pf-alert-text {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .pf-alert-close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.75rem -0.5rem 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+        .pf-alert-close:hover {
+            background: rgba(6, 33, 23, 0.1);
+        }
+
+        .pf-alert-close:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 0;
+        }
+
+    .pf-alert-timer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.4;
+        transform-origin: left;
+        animation: pf-timer var(--t, 6s) linear forwards;
+    }
+
+    .pf-alert:hover .pf-alert-timer,
+    .pf-alert:focus-within .pf-alert-timer {
+        animation-play-state: paused;
+    }
+
+    .pf-alert.is-leaving {
+        max-height: 0 !important;
+        margin-block: -0.75rem;
+        padding-block: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    /* ============ Header ============ */
+    .page-head {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 3rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 400px at 100% 0%, rgba(20, 108, 67, 0.65), transparent 60%), radial-gradient(500px 300px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+        .page-head::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    .page-title {
+        position: relative;
+        padding-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: clamp(2.75rem, 6vw, 4.25rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 88px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--lime);
+        }
+
+    /* ============ Member badges ============ */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+        gap: 2.25rem 1.75rem;
+        margin-top: 0.75rem;
+    }
+
+    .member-card {
+        position: relative;
+        padding: 2.75rem 1.5rem 1.5rem;
+        border-radius: 24px 24px 24px 6px;
+        background: var(--paper);
+        box-shadow: 8px 8px 0 var(--primary);
+        text-align: center;
+        transition: transform .25s cubic-bezier(.2, .7, .2, 1), box-shadow .25s ease;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 60ms + .1s) backwards;
+    }
+
+        /* Lanyard slot */
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            width: 52px;
+            height: 8px;
+            margin-left: -26px;
+            border-radius: 999px;
+            background: var(--ink);
+        }
+
+        .member-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 11px 11px 0 var(--primary);
+        }
+
+        .member-card.is-open,
+        .member-card:has(.member-menu[open]) {
+            z-index: 20;
+        }
+
+    .photo {
+        display: block;
+        width: 96px;
+        height: 96px;
+        margin: 0 auto 1rem;
+        border: 4px solid var(--lime);
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 0 0 4px var(--primary);
+        object-fit: cover;
+    }
+
+    .member-name {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+        color: var(--ink);
+    }
+
+    .gender {
+        display: inline-block;
+        margin-top: 0.5rem;
+        padding: 0.1rem 0.85rem;
+        border-radius: 999px;
+        background: var(--lime);
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    .contact {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        margin-top: 1.1rem;
+        padding-top: 1.1rem;
+        border-top: 2px dashed #b9c6bd;
+        text-align: left;
+    }
+
+        .contact li {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            min-width: 0;
+        }
+
+    .contact-ico {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #e1efe7;
+        color: var(--primary);
+    }
+
+        .contact-ico .ico {
+            width: 1.05rem;
+            height: 1.05rem;
+        }
+
+    .contact-text {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--text);
+    }
+
+    /* ============ Action menu (native <details>) ============ */
+    .member-menu {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.6rem;
+    }
+
+        .member-menu > summary {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: var(--ink);
+            list-style: none;
+            cursor: pointer;
+            transition: background-color .2s ease, color .2s ease;
+        }
+
+            .member-menu > summary::-webkit-details-marker {
+                display: none;
             }
-            else
-            {
-            <div class="text-center py-5">
-                <i class="bi bi-person-workspace display-1 text-muted"></i>
-                <h4 class="mt-3 text-muted">No Members Available</h4>
-                <p class="text-muted">Add your first Member to get started</p>
-            </div>
-                
+
+            .member-menu > summary:hover {
+                background: rgba(20, 108, 67, 0.14);
             }
-           
+
+            .member-menu > summary:focus-visible {
+                outline: 3px solid var(--primary);
+                outline-offset: 2px;
+            }
+
+        .member-menu[open] > summary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+    .menu-list {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 30;
+        min-width: 250px;
+        padding: 0.5rem;
+        border: 1.5px solid #d9ded4;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 6px 6px 0 var(--primary);
+        text-align: left;
+        animation: pf-menu .2s ease-out;
+    }
+
+        .menu-list a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 44px;
+            padding: 0 0.85rem;
+            border-radius: 10px;
+            font-weight: 500;
+            color: var(--ink);
+            transition: background-color .15s ease, color .15s ease;
+        }
+
+            .menu-list a:hover {
+                background: #e8f3ec;
+                color: var(--primary);
+            }
+
+            .menu-list a:focus-visible {
+                outline: 3px solid var(--primary);
+                outline-offset: -3px;
+            }
+
+            .menu-list a.menu-danger {
+                color: var(--danger);
+            }
+
+                .menu-list a.menu-danger:hover {
+                    background: var(--danger-bg);
+                    color: var(--danger);
+                }
+
+                .menu-list a.menu-danger:focus-visible {
+                    outline-color: var(--danger);
+                }
+
+    .menu-sep {
+        height: 1.5px;
+        margin: 0.35rem 0.5rem;
+        background: #e2e6dc;
+    }
+
+    /* ============ Empty state ============ */
+    .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 3rem 1.5rem;
+        border: 2px dashed #b9c6bd;
+        border-radius: 28px;
+        background: var(--paper);
+        text-align: center;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .empty-art {
+        width: 120px;
+        height: 120px;
+    }
+
+    .empty-ring {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .empty-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .empty-person {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .empty-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .empty-sub {
+        color: var(--text-muted);
+    }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-timer {
+        to {
+            transform: scaleX(0);
+        }
+    }
+
+    @@keyframes pf-menu {
+        from {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 575.98px) {
+        .pf-btn {
+            width: 100%;
+        }
+
+        .member-card {
+            box-shadow: 6px 6px 0 var(--primary);
+        }
+
+        .menu-list {
+            min-width: 230px;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .member-card:hover {
+            transform: none;
+        }
+
+        .pf-alert-timer {
+            display: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert pf-alert--success" role="status" data-timeout="6000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+            <p class="pf-alert-text">@TempData["SuccessMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:6s" aria-hidden="true"></span>
         </div>
-    </main>
+    }
+    else if (TempData["ErrorMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert pf-alert--error" role="alert" data-timeout="10000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <p class="pf-alert-text">@TempData["ErrorMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:10s" aria-hidden="true"></span>
+        </div>
+    }
+
+    <header class="page-head">
+        <h1 class="page-title">@ViewData["Title"]</h1>
+        <a asp-controller="Members" asp-action="Create" class="pf-btn pf-btn--lime">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" /></svg>
+            Add Member
+        </a>
+    </header>
+
+    @if (Model.Any())
+    {
+        var memberIndex = 0;
+
+        <div class="grid">
+            @foreach (var member in Model)
+            {
+                <article class="member-card" style="--i:@(Math.Min(memberIndex++, 12))">
+
+                    <details class="member-menu">
+                        <summary aria-label="Actions for @member.Name">
+                            <svg class="ico ico-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="12" cy="19" r="1.8" /></svg>
+                        </summary>
+
+                        <ul class="menu-list">
+                            <li>
+                                <a asp-controller="Members" asp-action="MemberDetails" asp-route-id="@member.Id">
+                                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 7.8v.1" /></svg>
+                                    <span>View Member Data</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Members" asp-action="HealthRecordDetails" asp-route-id="@member.Id">
+                                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" /></svg>
+                                    <span>View Health Record Data</span>
+                                </a>
+                            </li>
+                            <li class="menu-sep" aria-hidden="true"></li>
+                            <li>
+                                <a asp-controller="Members" asp-action="EditMember" asp-route-id="@member.Id">
+                                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
+                                    <span>Edit Member Data</span>
+                                </a>
+                            </li>
+                            <li class="menu-sep" aria-hidden="true"></li>
+                            <li>
+                                <a asp-controller="Members" asp-action="Delete" asp-route-id="@member.Id" class="menu-danger">
+                                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M9 9l6 6M15 9l-6 6" /></svg>
+                                    <span>Delete</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </details>
+
+                    @if (string.IsNullOrWhiteSpace(member.Photo))
+                    {
+                        <img src="~/images/Default.png" alt="Default Avatar" class="photo" />
+                    }
+                    else
+                    {
+                        <img src="@Url.Action("GetPhoto", "Members", new { id = member.Id })" alt="@member.Name" class="photo" />
+                    }
+
+                    <h3 class="member-name">@member.Name</h3>
+                    <span class="gender">@member.Gender</span>
+
+                    <ul class="contact">
+                        <li>
+                            <span class="contact-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3.5 7l8.5 6 8.5-6" /></svg></span>
+                            <span class="contact-text" title="@member.Email"><span class="sr-only">Email: </span>@member.Email</span>
+                        </li>
+                        <li>
+                            <span class="contact-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" /></svg></span>
+                            <span class="contact-text"><span class="sr-only">Phone: </span>@member.Phone</span>
+                        </li>
+                    </ul>
+                </article>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty">
+            <svg class="empty-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="empty-ring" cx="60" cy="60" r="56" />
+                <circle class="empty-plate" cx="60" cy="60" r="44" />
+                <g class="empty-person">
+                    <circle cx="60" cy="50" r="10" />
+                    <path d="M40 82c2-12 10-18 20-18s18 6 20 18" />
+                </g>
+            </svg>
+            <h2 class="empty-title">No Members Available</h2>
+            <p class="empty-sub">Add your first Member to get started</p>
+        </div>
+    }
+
 </div>
 
+@section Scripts {
+    <partial name="_AlertBox" />
 
-@section Scripts{
-    <partial name="_AlertBox"/>
+    <script>
+        (function () {
+            var root = document.querySelector('.pf-page');
+            if (!root) return;
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* 1. Alert: close button + auto-dismiss (the timer bar drives the delay and pauses on hover/focus) */
+            var alertEl = document.getElementById('Alert');
+
+            function dismiss(el) {
+                if (!el.parentNode || el.getAttribute('data-leaving')) return;
+                el.setAttribute('data-leaving', '1');
+                el.style.maxHeight = el.offsetHeight + 'px';
+                void el.offsetHeight;
+                el.classList.add('is-leaving');
+
+                var removed = false;
+                function remove() {
+                    if (removed) return;
+                    removed = true;
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+                el.addEventListener('transitionend', function (e) {
+                    if (e.target === el && e.propertyName === 'max-height') remove();
+                });
+                setTimeout(remove, reduce ? 0 : 500);
+            }
+
+            if (alertEl) {
+                var closeBtn = alertEl.querySelector('.pf-alert-close');
+                var timer = alertEl.querySelector('.pf-alert-timer');
+                var ms = parseInt(alertEl.getAttribute('data-timeout'), 10) || 6000;
+
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () { dismiss(alertEl); });
+                }
+
+                if (reduce || !timer) {
+                    setTimeout(function () { dismiss(alertEl); }, ms);
+                } else {
+                    timer.addEventListener('animationend', function () { dismiss(alertEl); });
+                }
+            }
+
+            /* 2. Action menus: only one open at a time; close on outside click or Escape */
+            var menus = root.querySelectorAll('.member-menu');
+
+            menus.forEach(function (menu) {
+                menu.addEventListener('toggle', function () {
+                    var card = menu.closest('.member-card');
+                    if (card) card.classList.toggle('is-open', menu.open);
+
+                    if (menu.open) {
+                        menus.forEach(function (other) {
+                            if (other !== menu && other.open) other.open = false;
+                        });
+                    }
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                menus.forEach(function (menu) {
+                    if (menu.open && !menu.contains(e.target)) menu.open = false;
+                });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                menus.forEach(function (menu) {
+                    if (!menu.open) return;
+                    menu.open = false;
+                    var trigger = menu.querySelector('summary');
+                    if (trigger) trigger.focus();
+                });
+            });
+        })();
+    </script>
 }
