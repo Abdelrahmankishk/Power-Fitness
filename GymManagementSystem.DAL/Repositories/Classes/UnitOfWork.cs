@@ -4,7 +4,7 @@ using GymManagementSystem.DbContexts;
 
 namespace GymManagementSystem.DAL.Repositories.Classes;
 
-public class UnitOfWork(GymDbContext _context,ISessionRepository _sessionRepository,IMembershipRepository _membershipRepository) : IUnitOfWork
+public class UnitOfWork(GymDbContext _context,ISessionRepository _sessionRepository,IMembershipRepository _membershipRepository,IBookingRepository _bookingRepository) : IUnitOfWork
 {
     private readonly GymDbContext context = _context;
     private readonly Dictionary<string, object> repositories = [];
@@ -12,6 +12,8 @@ public class UnitOfWork(GymDbContext _context,ISessionRepository _sessionReposit
     public ISessionRepository SessionRepository { get; } = _sessionRepository;
 
     public IMembershipRepository MembershipRepository { get; }= _membershipRepository;
+
+    public IBookingRepository BookingRepository { get; } = _bookingRepository;
 
     public IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity, new()
     {
