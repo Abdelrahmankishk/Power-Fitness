@@ -46,6 +46,7 @@ namespace GymManagementSystem
             })
                 .AddEntityFrameworkStores<GymDbContext>();
             builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
+            builder.Services.AddScoped<IMembershipService, MembershipService>();
 
             var app = builder.Build();
 
