@@ -73,7 +73,7 @@
                             <a class="nav-link @(IsActive("Membership") ? "active" : "") nav-link  px-2 py-2 mx-2 fw-bolder fs-5" aria-current="page" asp-controller="Membership" asp-action="Index" >Memberships</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link  px-2 py-2 mx-2 fw-bolder fs-5 text-nowrap" aria-current="page" href="#">Sessions Schedule</a>
+                            <a class="nav-link @(IsActive("Booking") ? "active" : "") px-2 py-2 mx-2 fw-bolder fs-5 text-nowrap" aria-current="page" asp-controller="Booking" asp-action="Index">Sessions Schedule</a>
                         </li>
                         <li class="nav-item">
                             <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">

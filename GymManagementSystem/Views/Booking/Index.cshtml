@@ -1,0 +1,642 @@
+﻿@model IEnumerable<SessionViewModel>
+
+@{
+    ViewData["Title"] = "Bookings";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1240px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 3rem;
+        display: flex;
+        flex-direction: column;
+        gap: clamp(3rem, 7vw, 5rem);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h2, .pf-page h3, .pf-page p, .pf-page ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    /* ============ Sections ============ */
+    .sec-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .sec-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.25rem, 5vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .sec-sub {
+        margin-top: 0.6rem;
+        font-size: 1.125rem;
+        color: var(--text-muted);
+    }
+
+    .sec-num {
+        font-family: var(--font-display);
+        font-size: clamp(3.5rem, 8vw, 6rem);
+        font-weight: 700;
+        line-height: 0.8;
+        color: transparent;
+        -webkit-text-stroke: 2px var(--primary);
+        user-select: none;
+    }
+
+    .sessions--ongoing {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        padding: clamp(1.5rem, 4vw, 3rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 420px at 100% 0%, rgba(20, 108, 67, 0.6), transparent 60%), var(--ink);
+    }
+
+        .sessions--ongoing::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+        .sessions--ongoing .sec-title {
+            color: #fff;
+        }
+
+        .sessions--ongoing .sec-sub {
+            color: var(--on-dark-muted);
+        }
+
+        .sessions--ongoing .sec-num {
+            -webkit-text-stroke-color: var(--lime);
+        }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+        gap: 2rem;
+    }
+
+    /* ============ Session ticket ============ */
+    .ticket-wrap {
+        height: 100%;
+        filter: drop-shadow(6px 6px 0 var(--primary));
+        transition: transform .25s cubic-bezier(.2, .7, .2, 1), filter .25s ease;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 70ms + .1s) backwards;
+    }
+
+        .ticket-wrap:hover,
+        .ticket-wrap:focus-within {
+            transform: translate(-3px, -3px);
+            filter: drop-shadow(9px 9px 0 var(--primary));
+        }
+
+    .ticket {
+        --y: calc(100% - 76px);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+        border-radius: 20px;
+        background: var(--paper);
+        color: var(--text);
+        /* ticket notches either side of the dashed divider */
+        -webkit-mask: radial-gradient(11px at 0 var(--y), #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(11px at 100% var(--y), #0000 98%, #000) right / 51% 100% no-repeat;
+        mask: radial-gradient(11px at 0 var(--y), #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(11px at 100% var(--y), #0000 98%, #000) right / 51% 100% no-repeat;
+    }
+
+    .ticket-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .sessions--upcoming .ticket-head {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .sessions--ongoing .ticket-head {
+        background: var(--lime);
+        color: var(--ink);
+    }
+
+    .ticket-title {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        flex: none;
+        padding: 0.2rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .badge--upcoming {
+        background: #fff;
+        color: var(--ink);
+    }
+
+    .badge--live {
+        background: var(--ink);
+        color: var(--lime);
+    }
+
+        .badge--live::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            margin-right: 0.45rem;
+            border-radius: 50%;
+            background: var(--lime);
+            animation: pf-pulse 1.6s ease-out infinite;
+        }
+
+    .ticket-body {
+        flex: 1;
+        padding: 1.25rem 1.25rem 1.5rem;
+    }
+
+    .ticket-desc {
+        margin-bottom: 1.1rem;
+        color: var(--text-muted);
+    }
+
+        .ticket-desc:empty {
+            display: none;
+        }
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        list-style: none;
+    }
+
+        .info li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .info strong {
+            color: var(--ink);
+        }
+
+    .info-ico {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #e1efe7;
+        color: var(--primary);
+    }
+
+        .info-ico .ico {
+            width: 1.05rem;
+            height: 1.05rem;
+        }
+
+    .ticket-foot {
+        display: flex;
+        align-items: center;
+        height: 76px;
+        padding: 0 1.25rem;
+        border-top: 2px dashed #b9c6bd;
+    }
+
+    .btn-view {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        min-height: 46px;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        box-shadow: 0 3px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-view .ico {
+            width: 1.15rem;
+            height: 1.15rem;
+            transition: transform .2s ease;
+        }
+
+        .btn-view:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-view:hover .ico {
+                transform: scale(1.2);
+            }
+
+        .btn-view:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-view:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Empty state ============ */
+    .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 3rem 1.5rem;
+        border: 2px dashed #b9c6bd;
+        border-radius: 28px;
+        background: var(--paper);
+        text-align: center;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .empty-art {
+        width: 120px;
+        height: 120px;
+    }
+
+    .empty-ring {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .empty-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .empty-cal {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .empty-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .empty-sub {
+        color: var(--text-muted);
+    }
+
+    /* ============ Empty section note ============ */
+    .empty-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 2rem 1.5rem;
+        border: 2px dashed #b9c6bd;
+        border-radius: 20px;
+        background: var(--paper);
+        color: var(--text-muted);
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-align: center;
+        text-transform: uppercase;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+        .empty-note .ico {
+            width: 1.75rem;
+            height: 1.75rem;
+            color: var(--primary);
+        }
+
+    .sessions--ongoing .empty-note {
+        border-color: rgba(197, 240, 77, 0.5);
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+    }
+
+        .sessions--ongoing .empty-note .ico {
+            color: var(--lime);
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(197, 240, 77, 0.7);
+        }
+
+        100% {
+            box-shadow: 0 0 0 8px rgba(197, 240, 77, 0);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 575.98px) {
+        .sec-num {
+            display: none;
+        }
+
+        .ticket-wrap {
+            filter: drop-shadow(4px 4px 0 var(--primary));
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .ticket-wrap:hover,
+        .ticket-wrap:focus-within {
+            transform: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    @if (Model != null && Model.Any())
+    {
+        var upcomingIndex = 0;
+        var ongoingIndex = 0;
+
+        <section class="sessions sessions--upcoming" aria-labelledby="upcoming-title">
+            <header class="sec-head">
+                <div>
+                    <h2 id="upcoming-title" class="sec-title">Member <span class="hl">Sessions</span></h2>
+                    <p class="sec-sub">Session Valid For Manage Booking</p>
+                </div>
+                <span class="sec-num" aria-hidden="true">01</span>
+            </header>
+
+            @if (Model.Any(X => X.Status == "Upcoming"))
+            {
+                <div class="grid">
+                    @foreach (var session in Model.Where(X => X.Status == "Upcoming"))
+                    {
+                        <div class="ticket-wrap" style="--i:@(Math.Min(upcomingIndex++, 8))">
+                            <article class="ticket">
+                                <header class="ticket-head">
+                                    <h3 class="ticket-title">
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+                                        @session.CategoryName
+                                    </h3>
+                                    <span class="badge badge--upcoming">@session.Status</span>
+                                </header>
+
+                                <div class="ticket-body">
+                                    <p class="ticket-desc">@session.Description</p>
+
+                                    <ul class="info">
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg></span>
+                                            <span><strong>Trainer:</strong> @session.TrainerName</span>
+                                        </li>
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span>
+                                            <span><strong>Date:</strong> @session.DateDisplay</span>
+                                        </li>
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></span>
+                                            <span><strong>Time:</strong> @session.TimeRangeDisplay</span>
+                                        </li>
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M7 3h10M7 21h10" /><path d="M8 3v3.5L12 12l-4 5.5V21M16 3v3.5L12 12l4 5.5V21" /></svg></span>
+                                            <span><strong>Duration:</strong> @session.Duration</span>
+                                        </li>
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5" /><path d="M16 4.7a3.5 3.5 0 010 6.6M18.5 14.8c1.6.7 2.7 2.2 3 4.2" /></svg></span>
+                                            <span><strong>Capacity:</strong> @session.AvailableSlots/@session.Capacity slots</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <footer class="ticket-foot">
+                                    <a asp-action="GetMembersForUpcomingSession" asp-route-id="@session.Id" class="btn-view">
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        View Members
+                                    </a>
+                                </footer>
+                            </article>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-note">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4M9.5 13.5l5 4M14.5 13.5l-5 4" /></svg>
+                    <p>No Upcoming Sessions</p>
+                </div>
+            }
+        </section>
+
+        <section class="sessions sessions--ongoing" aria-labelledby="ongoing-title">
+            <header class="sec-head">
+                <div>
+                    <h2 id="ongoing-title" class="sec-title">Member <span class="hl">Sessions</span></h2>
+                    <p class="sec-sub">Session Valid For Manage Attendance</p>
+                </div>
+                <span class="sec-num" aria-hidden="true">02</span>
+            </header>
+
+            @if (Model.Any(X => X.Status == "Ongoing"))
+            {
+                <div class="grid">
+                    @foreach (var session in Model.Where(X => X.Status == "Ongoing"))
+                    {
+                        <div class="ticket-wrap" style="--i:@(Math.Min(ongoingIndex++, 8))">
+                            <article class="ticket">
+                                <header class="ticket-head">
+                                    <h3 class="ticket-title">
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+                                        @session.CategoryName
+                                    </h3>
+                                    <span class="badge badge--live">@session.Status</span>
+                                </header>
+
+                                <div class="ticket-body">
+                                    <p class="ticket-desc">@session.Description</p>
+
+                                    <ul class="info">
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg></span>
+                                            <span><strong>Trainer:</strong> @session.TrainerName</span>
+                                        </li>
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span>
+                                            <span><strong>Date:</strong> @session.DateDisplay</span>
+                                        </li>
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></span>
+                                            <span><strong>Time:</strong> @session.TimeRangeDisplay</span>
+                                        </li>
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M7 3h10M7 21h10" /><path d="M8 3v3.5L12 12l-4 5.5V21M16 3v3.5L12 12l4 5.5V21" /></svg></span>
+                                            <span><strong>Duration:</strong> @session.Duration</span>
+                                        </li>
+                                        <li>
+                                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5" /><path d="M16 4.7a3.5 3.5 0 010 6.6M18.5 14.8c1.6.7 2.7 2.2 3 4.2" /></svg></span>
+                                            <span><strong>Capacity:</strong> @session.AvailableSlots/@session.Capacity slots</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <footer class="ticket-foot">
+                                    <a asp-action="GetMembersForOngoingSessions" asp-route-id="@session.Id" class="btn-view">
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        View Members
+                                    </a>
+                                </footer>
+                            </article>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-note">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4M9.5 13.5l5 4M14.5 13.5l-5 4" /></svg>
+                    <p>No Ongoing Sessions</p>
+                </div>
+            }
+        </section>
+    }
+    else
+    {
+        <div class="empty">
+            <svg class="empty-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="empty-ring" cx="60" cy="60" r="56" />
+                <circle class="empty-plate" cx="60" cy="60" r="44" />
+                <g class="empty-cal">
+                    <rect x="38" y="43" width="44" height="38" rx="6" />
+                    <path d="M38 55h44M48 37v10M72 37v10M53 63l14 12M67 63L53 75" />
+                </g>
+            </svg>
+            <h2 class="empty-title">No Sessions Available</h2>
+            <p class="empty-sub">Create training session first to get started</p>
+        </div>
+    }
+
+</div>

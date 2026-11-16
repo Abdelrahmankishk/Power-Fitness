@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GymManagementSystem.BLL.ViewModels.BookingViewModels;
 using GymManagementSystem.BLL.ViewModels.MembershipViewModels;
 using GymManagementSystem.BLL.ViewModels.MemberViewModels;
 using GymManagementSystem.BLL.ViewModels.PlanViewModels;
@@ -23,6 +24,7 @@ public class MappingProfile : Profile
         MapSession();
 
         MapMembership();
+        MapBooking();
     }
     private void MapMember()
     {
@@ -123,5 +125,12 @@ public class MappingProfile : Profile
         CreateMap<Member, MemberSelectViewModel>();
         CreateMap<Plan, PlanSelectViewModel>();
 
+    }
+
+    private void MapBooking()
+    {
+        CreateMap<Member, MembersSessionViewModel>()
+            .ForMember(dst => dst.MemberName, Option => Option.MapFrom(Src => Src.Name))
+            .ForMember(dst => dst.MemberId, Option => Option.MapFrom(Src => Src.Id));
     }
 }

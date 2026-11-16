@@ -2,6 +2,8 @@
 using GymManagementSystem.DAL.Repositories.Interfaces;
 using GymManagementSystem.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace GymManagementSystem.DAL.Repositories.Classes;
@@ -27,10 +29,11 @@ public class GenericRepository<TEntity>(GymDbContext _context) : IGenericReposit
         dbSet.Remove(entity);
     }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync(bool tracking = false, CancellationToken ct = default)
+    public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? condition = null, bool tracking = false, CancellationToken ct = default)
     {
         IQueryable<TEntity> query = tracking ? dbSet : dbSet.AsNoTracking();
-        return await query.ToListAsync();
+        if (condition is not null) query = query.Where(condition);
+        return await query.ToListAsync(ct);
     }
 
     public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default)=> await dbSet.FindAsync(id, ct);
