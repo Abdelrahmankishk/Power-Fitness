@@ -2,71 +2,422 @@
 @{
     ViewData["Title"] = "Trainer - Details";
 }
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-primary-color text-white text-center py-5">
-                    <i class="bi bi-person-badge display-4 mb-3"></i>
-                    <h2 class="mb-0">@Model.Name</h2>
-                    <span class="badge bg-light text-primary-color mt-2">@Model.specialtie Trainer</span>
-                </div>
-                <div class="card-body p-4">
-                    <div class="plan-details">
-                        <div class="detail-item mb-4">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="icon-box me-3">
-                                    <i class="bi bi-envelope text-primary-color fs-4"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 text-muted">Email</h6>
-                                    <p class="mb-0 fw-bold">@Model.Email</p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="detail-item mb-4">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="icon-box me-3">
-                                    <i class="bi bi-telephone text-primary-color fs-4"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 text-muted">Phone</h6>
-                                    <p class="mb-0 fw-bold">@Model.Phone</p>
-                                </div>
-                            </div>
-                        </div>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-                        <div class="detail-item mb-4">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="icon-box me-3">
-                                    <i class="bi bi-calendar-date text-primary-color fs-4"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 text-muted">Date Of Birth</h6>
-                                    <p class="mb-0 fw-bold">@Model.DateofBirth</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detail-item mb-4">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="icon-box me-3">
-                                    <i class="bi bi-geo-alt text-primary-color fs-4"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 text-muted">Address</h6>
-                                    <p class="mb-0 fw-bold">@Model.Address</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between gap-2 px-3 pb-3">
-                            <a asp-controller="Trainer" asp-action="Index" class="btn btn-fill flex-fill">Back to List</a>
-                        </div>
-                    </div>
-                </div>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1000px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page p, .pf-page ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page ul {
+            list-style: none;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ============ Layout ============ */
+    .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        gap: clamp(1.5rem, 4vw, 2.5rem);
+        align-items: stretch;
+        margin-top: 0.5rem;
+    }
+
+    /* ============ Coach badge (left) ============ */
+    .badge-card {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 3.25rem 1.75rem 2.5rem;
+        border-radius: 28px 28px 28px 6px;
+        background: radial-gradient(520px 320px at 100% 0%, rgba(20, 108, 67, 0.7), transparent 60%), radial-gradient(400px 300px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        text-align: center;
+        color: #fff;
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+        .badge-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            border-radius: inherit;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+        /* Lanyard slot */
+        .badge-card::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            width: 56px;
+            height: 8px;
+            margin-left: -28px;
+            border-radius: 999px;
+            background: rgba(197, 240, 77, 0.55);
+        }
+
+    .plate-art {
+        width: 132px;
+        height: 132px;
+        margin-bottom: 0.75rem;
+        animation: pf-pop .6s cubic-bezier(.2, .7, .2, 1) .1s backwards;
+    }
+
+    .plate-ring {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .plate-body {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .plate-icon {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .trainer-name {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+        color: #fff;
+    }
+
+    .trainer-spec {
+        display: inline-block;
+        margin-top: 0.6rem;
+        padding: 0.25rem 1rem;
+        border-radius: 999px;
+        background: var(--lime);
+        font-size: 0.9375rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    /* ============ Spec sheet (right) ============ */
+    .sheet {
+        display: flex;
+        flex-direction: column;
+        padding: clamp(1.25rem, 3vw, 2rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+    }
+
+    .spec {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.35rem;
+    }
+
+    .spec-row {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.9rem 0.75rem;
+        border-radius: 14px;
+        transition: background-color .2s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 70ms + .3s) backwards;
+    }
+
+        .spec-row:hover {
+            background: #eef5d6;
+        }
+
+    .spec-ico {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #e1efe7;
+        color: var(--primary);
+        transition: background-color .2s ease, color .2s ease;
+    }
+
+    .spec-row:hover .spec-ico {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .spec-label {
+        flex: none;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .spec-dots {
+        flex: 1;
+        min-width: 1rem;
+        align-self: flex-end;
+        margin-bottom: 0.45rem;
+        border-bottom: 2px dotted #b9c6bd;
+    }
+
+    .spec-value {
+        max-width: 62%;
+        font-size: 1.0625rem;
+        font-weight: 600;
+        text-align: right;
+        overflow-wrap: anywhere;
+        color: var(--ink);
+    }
+
+    .actions {
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 2px dashed #b9c6bd;
+    }
+
+    .btn-power {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        min-height: 56px;
+        padding: 0 1.5rem;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        box-shadow: 0 4px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+            .btn-power:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-pop {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 767.98px) {
+        .layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .badge-card,
+        .sheet {
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .spec-row {
+            flex-wrap: wrap;
+        }
+
+        .spec-label {
+            flex: 1;
+        }
+
+        .spec-dots {
+            display: none;
+        }
+
+        .spec-value {
+            flex: 0 0 100%;
+            max-width: 100%;
+            padding-left: calc(44px + 0.9rem);
+            text-align: left;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+</style>
+
+<div class="pf-page">
+    <div class="layout">
+
+        <section class="badge-card" aria-labelledby="trainer-name">
+            <svg class="plate-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="plate-ring" cx="60" cy="60" r="56" />
+                <circle class="plate-body" cx="60" cy="60" r="44" />
+                <g class="plate-icon">
+                    <circle cx="60" cy="50" r="10" />
+                    <path d="M40 82c2-12 10-18 20-18s18 6 20 18" />
+                </g>
+            </svg>
+
+            <h1 id="trainer-name" class="trainer-name">@Model.Name</h1>
+            <span class="trainer-spec">@Model.specialtie Trainer</span>
+        </section>
+
+        <section class="sheet">
+            <ul class="spec">
+                <li class="spec-row" style="--i:0">
+                    <span class="spec-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3.5 7l8.5 6 8.5-6" /></svg></span>
+                    <span class="spec-label">Email</span>
+                    <span class="spec-dots" aria-hidden="true"></span>
+                    <strong class="spec-value">@Model.Email</strong>
+                </li>
+
+                <li class="spec-row" style="--i:1">
+                    <span class="spec-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" /></svg></span>
+                    <span class="spec-label">Phone</span>
+                    <span class="spec-dots" aria-hidden="true"></span>
+                    <strong class="spec-value">@Model.Phone</strong>
+                </li>
+
+                <li class="spec-row" style="--i:2">
+                    <span class="spec-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /><circle cx="12" cy="15.5" r="1" /></svg></span>
+                    <span class="spec-label">Date Of Birth</span>
+                    <span class="spec-dots" aria-hidden="true"></span>
+                    <strong class="spec-value">@Model.DateofBirth</strong>
+                </li>
+
+                <li class="spec-row" style="--i:3">
+                    <span class="spec-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg></span>
+                    <span class="spec-label">Address</span>
+                    <span class="spec-dots" aria-hidden="true"></span>
+                    <strong class="spec-value">@Model.Address</strong>
+                </li>
+            </ul>
+
+            <div class="actions">
+                <a asp-controller="Trainer" asp-action="Index" class="btn-power">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                    Back to List
+                </a>
             </div>
-        </div>
+        </section>
+
     </div>
 </div>
-
-

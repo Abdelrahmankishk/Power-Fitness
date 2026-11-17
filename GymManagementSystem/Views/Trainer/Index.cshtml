@@ -1,105 +1,824 @@
 ﻿@model IEnumerable<TrainerViewModel>
 @{
-	ViewData["Title"] = "Trainers";
+    ViewData["Title"] = "Trainers";
 }
-<div class="container">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1240px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page h2, .pf-page p, .pf-page ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page ul {
+            list-style: none;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .ico-fill {
+        fill: currentColor;
+        stroke: none;
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    .pf-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.75rem;
+        border: 0;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: #fff !important;
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 4px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .pf-btn .ico {
+            transition: transform .2s ease;
+        }
+
+        .pf-btn:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+            .pf-btn:hover .ico {
+                transform: rotate(90deg);
+            }
+
+        .pf-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .pf-btn:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Alerts ============ */
+    .pf-alert {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid currentColor;
+        border-radius: 14px;
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .pf-alert--success {
+        background: #e7f3ec;
+        color: var(--primary);
+    }
+
+    .pf-alert--error {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .pf-alert-text {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .pf-alert-close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.75rem -0.5rem 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+        .pf-alert-close:hover {
+            background: rgba(6, 33, 23, 0.1);
+        }
+
+        .pf-alert-close:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 0;
+        }
+
+    .pf-alert-timer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.4;
+        transform-origin: left;
+        animation: pf-timer var(--t, 6s) linear forwards;
+    }
+
+    .pf-alert:hover .pf-alert-timer,
+    .pf-alert:focus-within .pf-alert-timer {
+        animation-play-state: paused;
+    }
+
+    .pf-alert.is-leaving {
+        max-height: 0 !important;
+        margin-block: -0.75rem;
+        padding-block: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    /* ============ Header ============ */
+    .page-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-top: 1rem;
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .page-sub {
+        margin-top: 0.6rem;
+        font-size: 1.125rem;
+        color: var(--text-muted);
+    }
+
+    /* ============ Coach roster ============ */
+    .roster-panel {
+        position: relative;
+        isolation: isolate;
+        padding: clamp(1rem, 3vw, 2rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 420px at 100% 0%, rgba(20, 108, 67, 0.6), transparent 60%), radial-gradient(500px 320px at 0% 100%, rgba(197, 240, 77, 0.08), transparent 60%), var(--ink);
+    }
+
+        .roster-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            border-radius: inherit;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    .roster {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+
+    .coach {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.5fr) minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1rem 1.5rem;
+        padding: 1rem 1.25rem;
+        border: 1.5px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.07);
+        transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 60ms + .1s) backwards;
+    }
+
+        /* lime accent bar that grows in on hover */
+        .coach::before {
+            content: '';
+            position: absolute;
+            left: -1.5px;
+            top: 14px;
+            bottom: 14px;
+            width: 5px;
+            border-radius: 0 4px 4px 0;
+            background: var(--lime);
+            transform: scaleY(0);
+            transition: transform .25s cubic-bezier(.2, .7, .2, 1);
+        }
+
+        .coach:hover {
+            border-color: rgba(197, 240, 77, 0.55);
+            background: rgba(255, 255, 255, 0.11);
+            transform: translateY(-2px);
+        }
+
+            .coach:hover::before {
+                transform: scaleY(1);
+            }
+
+        .coach.is-open,
+        .coach:has(.coach-menu[open]) {
+            z-index: 20;
+        }
+
+    .identity {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        min-width: 0;
+    }
+
+    .avatar {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 54px;
+        height: 54px;
+        border: 2px solid var(--lime);
+        border-radius: 50%;
+        background: var(--primary);
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #fff;
+    }
+
+        .avatar .ico {
+            width: 1.3rem;
+            height: 1.3rem;
+        }
+
+    .coach-name {
+        font-family: var(--font-display);
+        font-size: 1.55rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+        color: #fff;
+    }
+
+    .badge {
+        display: inline-block;
+        margin-top: 0.3rem;
+        border-radius: 999px;
+        background: var(--lime);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    .contact-line {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        min-width: 0;
+        color: var(--on-dark-muted);
+    }
+
+        .contact-line .ico {
+            width: 1.1rem;
+            height: 1.1rem;
+            color: var(--lime);
+        }
+
+    .contact-text {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* ============ Action menu (native <details>) ============ */
+    .coach-menu {
+        position: relative;
+    }
+
+        .coach-menu > summary {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: #fff;
+            list-style: none;
+            cursor: pointer;
+            transition: background-color .2s ease, color .2s ease;
+        }
+
+            .coach-menu > summary::-webkit-details-marker {
+                display: none;
+            }
+
+            .coach-menu > summary:hover {
+                background: rgba(255, 255, 255, 0.14);
+            }
+
+            .coach-menu > summary:focus-visible {
+                outline: 3px solid var(--lime);
+                outline-offset: 2px;
+            }
+
+        .coach-menu[open] > summary {
+            background: var(--lime);
+            color: var(--ink);
+        }
+
+    .menu-list {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 30;
+        min-width: 250px;
+        padding: 0.5rem;
+        border: 1.5px solid #d9ded4;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 6px 6px 0 var(--primary);
+        animation: pf-menu .2s ease-out;
+    }
+
+        .menu-list a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 44px;
+            padding: 0 0.85rem;
+            border-radius: 10px;
+            font-weight: 500;
+            color: var(--ink);
+            transition: background-color .15s ease, color .15s ease;
+        }
+
+            .menu-list a:hover {
+                background: #e8f3ec;
+                color: var(--primary);
+            }
+
+            .menu-list a:focus-visible {
+                outline: 3px solid var(--primary);
+                outline-offset: -3px;
+            }
+
+            .menu-list a.menu-danger {
+                color: var(--danger);
+            }
+
+                .menu-list a.menu-danger:hover {
+                    background: var(--danger-bg);
+                    color: var(--danger);
+                }
+
+                .menu-list a.menu-danger:focus-visible {
+                    outline-color: var(--danger);
+                }
+
+    .menu-sep {
+        height: 1.5px;
+        margin: 0.35rem 0.5rem;
+        background: #e2e6dc;
+    }
+
+    /* ============ Empty state ============ */
+    .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 3rem 1.5rem;
+        border: 2px dashed #b9c6bd;
+        border-radius: 28px;
+        background: var(--paper);
+        text-align: center;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .empty-art {
+        width: 120px;
+        height: 120px;
+    }
+
+    .empty-ring {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .empty-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .empty-person {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .empty-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .empty-sub {
+        color: var(--text-muted);
+    }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-timer {
+        to {
+            transform: scaleX(0);
+        }
+    }
+
+    @@keyframes pf-menu {
+        from {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 991.98px) {
+        .coach {
+            grid-template-columns: minmax(0, 1fr) auto;
+        }
+
+        .identity {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .coach-menu {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .contact-line {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .pf-btn {
+            width: 100%;
+        }
+
+        .menu-list {
+            min-width: 230px;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .coach:hover {
+            transform: none;
+        }
+
+        .pf-alert-timer {
+            display: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
     @if (TempData["SuccessMessage"] != null)
     {
-        <div id="Alert" class="alert alert-success alert-dismissible fade show">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div id="Alert" class="pf-alert pf-alert--success" role="status" data-timeout="6000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+            <p class="pf-alert-text">@TempData["SuccessMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:6s" aria-hidden="true"></span>
         </div>
 
     }
     else if (TempData["ErrorMessage"] != null)
     {
-        <div id="Alert" class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div id="Alert" class="pf-alert pf-alert--error" role="alert" data-timeout="10000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <p class="pf-alert-text">@TempData["ErrorMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:10s" aria-hidden="true"></span>
         </div>
 
     }
 
-    <header class="d-flex justify-content-between mt-5 mb-4 align-items-center">
+    <header class="page-head">
         <div>
-            <h2 class="text-primary-color mb-0">Our Trainers</h2>
-            <p class="text-muted">Professional fitness instructors</p>
+            <h1 class="page-title">Our <span class="hl">Trainers</span></h1>
+            <p class="page-sub">Professional fitness instructors</p>
         </div>
-        <a asp-controller="Trainer" asp-action="Create" class="btn btn-fill fw-medium rounded-pill px-4 py-3">
-            <i class="bi bi-plus-lg me-2"></i>Add Trainer
+        <a asp-controller="Trainer" asp-action="Create" class="pf-btn">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" /></svg>
+            Add Trainer
         </a>
     </header>
 
     @if (Model != null && Model.Any())
     {
-        <div class="table-responsive" style="overflow: visible;">
-            <table class="table table-borderless">
-                <thead>
-                    <tr>
-                        <th><span class="text-success">Name</span></th>
-                        <th><span class="text-success">Email</span></th>
-                        <th><span class="text-success">Phone</span></th>
-                        <th><span class="text-success">Specialization</span></th>
-                        <th><span class="text-success">Action</span></th>
-                    </tr>
-                </thead>
+        var trainerIndex = 0;
 
-                <tbody>
-                    @foreach (var trainer in Model)
-                    {
-                        <tr>
-                            <td><span class="fw-bold">@trainer.Name</span></td>
-                            <td><span>@trainer.Email</span></td>
-                            <td><span>@trainer.Phone</span></td>
-                            <td>
-                                <span class="badge bg-primary-color">@trainer.specialtie</span>
-                            </td>
-                            <td class="action position-relative">
-                                <div class="dropdown">
-                                    <button class="btn btn-link p-0 border-0" type="button" id="dropdownMenuButton-@trainer.Id" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="~/images/action dots.jpg" alt="action icon" />
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton-@trainer.Id">
-                                        <li>
-                                            <a asp-controller="Trainer" asp-action="Details" asp-route-Id="@trainer.Id" class="dropdown-item d-flex align-items-center gap-3">
-                                                <i class="bi bi-eye text-primary-color"></i>
-                                                <span>View Details</span>
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a asp-controller="Trainer" asp-action="Edit" asp-route-Id="@trainer.Id" class="dropdown-item d-flex align-items-center gap-3">
-                                                <i class="bi bi-pencil text-primary-color"></i>
-                                                <span>Edit Details</span>
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a asp-controller="Trainer" asp-action="Delete" asp-route-Id="@trainer.Id" class="dropdown-item d-flex align-items-center gap-3 text-danger">
-                                                <i class="bi bi-trash"></i>
-                                                <span>Delete</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        <section class="roster-panel" aria-label="Trainers">
+            <ul class="roster">
+                @foreach (var trainer in Model)
+                {
+                    <li class="coach" style="--i:@(Math.Min(trainerIndex++, 12))">
+
+                        <div class="identity">
+                            <span class="avatar" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg></span>
+                            <div>
+                                <h2 class="coach-name">@trainer.Name</h2>
+                                <span class="badge">@trainer.specialtie</span>
+                            </div>
+                        </div>
+
+                        <p class="contact-line">
+                            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3.5 7l8.5 6 8.5-6" /></svg>
+                            <span class="contact-text" title="@trainer.Email"><span class="sr-only">Email: </span>@trainer.Email</span>
+                        </p>
+
+                        <p class="contact-line">
+                            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" /></svg>
+                            <span class="contact-text"><span class="sr-only">Phone: </span>@trainer.Phone</span>
+                        </p>
+
+                        <details class="coach-menu">
+                            <summary aria-label="Actions for @trainer.Name">
+                                <svg class="ico ico-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="12" cy="19" r="1.8" /></svg>
+                            </summary>
+
+                            <ul class="menu-list">
+                                <li>
+                                    <a asp-controller="Trainer" asp-action="Details" asp-route-Id="@trainer.Id">
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        <span>View Details</span>
+                                    </a>
+                                </li>
+                                <li class="menu-sep" aria-hidden="true"></li>
+                                <li>
+                                    <a asp-controller="Trainer" asp-action="Edit" asp-route-Id="@trainer.Id">
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
+                                        <span>Edit Details</span>
+                                    </a>
+                                </li>
+                                <li class="menu-sep" aria-hidden="true"></li>
+                                <li>
+                                    <a asp-controller="Trainer" asp-action="Delete" asp-route-Id="@trainer.Id" class="menu-danger">
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12M10 11v5M14 11v5" /></svg>
+                                        <span>Delete</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+
+                    </li>
+                }
+            </ul>
+        </section>
     }
     else
     {
-        <div class="text-center py-5">
-            <i class="bi bi-person-workspace display-1 text-muted"></i>
-            <h4 class="mt-3 text-muted">No Trainers Available</h4>
-            <p class="text-muted">Add your first trainer to get started</p>
+        <div class="empty">
+            <svg class="empty-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="empty-ring" cx="60" cy="60" r="56" />
+                <circle class="empty-plate" cx="60" cy="60" r="44" />
+                <g class="empty-person">
+                    <circle cx="60" cy="50" r="10" />
+                    <path d="M40 82c2-12 10-18 20-18s18 6 20 18" />
+                </g>
+            </svg>
+            <h2 class="empty-title">No Trainers Available</h2>
+            <p class="empty-sub">Add your first trainer to get started</p>
         </div>
     }
 </div>
 @section Scripts {
     <partial name="_AlertBox.cshtml" />
+
+    <script>
+        (function () {
+            var root = document.querySelector('.pf-page');
+            if (!root) return;
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* 1. Alert: close button + auto-dismiss (the timer bar drives the delay and pauses on hover/focus) */
+            var alertEl = document.getElementById('Alert');
+
+            function dismiss(el) {
+                if (!el.parentNode || el.getAttribute('data-leaving')) return;
+                el.setAttribute('data-leaving', '1');
+                el.style.maxHeight = el.offsetHeight + 'px';
+                void el.offsetHeight;
+                el.classList.add('is-leaving');
+
+                var removed = false;
+                function remove() {
+                    if (removed) return;
+                    removed = true;
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+                el.addEventListener('transitionend', function (e) {
+                    if (e.target === el && e.propertyName === 'max-height') remove();
+                });
+                setTimeout(remove, reduce ? 0 : 500);
+            }
+
+            if (alertEl) {
+                var closeBtn = alertEl.querySelector('.pf-alert-close');
+                var timer = alertEl.querySelector('.pf-alert-timer');
+                var ms = parseInt(alertEl.getAttribute('data-timeout'), 10) || 6000;
+
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () { dismiss(alertEl); });
+                }
+
+                if (reduce || !timer) {
+                    setTimeout(function () { dismiss(alertEl); }, ms);
+                } else {
+                    timer.addEventListener('animationend', function () { dismiss(alertEl); });
+                }
+            }
+
+            /* 2. Trainer avatars: show initials instead of the placeholder icon */
+            root.querySelectorAll('.coach').forEach(function (row) {
+                var nameEl = row.querySelector('.coach-name');
+                var avatar = row.querySelector('.avatar');
+                if (!nameEl || !avatar) return;
+
+                var parts = (nameEl.textContent || '').trim().split(/\s+/).filter(Boolean);
+                if (!parts.length) return;
+
+                var initials = parts[0].charAt(0);
+                if (parts.length > 1) initials += parts[parts.length - 1].charAt(0);
+                avatar.textContent = initials.toUpperCase();
+            });
+
+            /* 3. Action menus: only one open at a time; close on outside click or Escape */
+            var menus = root.querySelectorAll('.coach-menu');
+
+            menus.forEach(function (menu) {
+                menu.addEventListener('toggle', function () {
+                    var row = menu.closest('.coach');
+                    if (row) row.classList.toggle('is-open', menu.open);
+
+                    if (menu.open) {
+                        menus.forEach(function (other) {
+                            if (other !== menu && other.open) other.open = false;
+                        });
+                    }
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                menus.forEach(function (menu) {
+                    if (menu.open && !menu.contains(e.target)) menu.open = false;
+                });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                menus.forEach(function (menu) {
+                    if (!menu.open) return;
+                    menu.open = false;
+                    var trigger = menu.querySelector('summary');
+                    if (trigger) trigger.focus();
+                });
+            });
+        })();
+    </script>
 }
