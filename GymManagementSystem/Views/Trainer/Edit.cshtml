@@ -4,97 +4,599 @@
     ViewData["Title"] = "Update Trainer Details";
 }
 
-<div class="container mt-4">
-    <header class="mb-4">
-        <h3 class="text-primary-color">Edit Trainer</h3>
-        <p class="text-muted">Update trainer information</p>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --line: #6f8578;
+        --danger: #b42318;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1060px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page h2, .pf-page p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    /* ============ Page header ============ */
+    .page-head {
+        margin-bottom: 2rem;
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .page-sub {
+        margin-top: 0.6rem;
+        font-size: 1.125rem;
+        color: var(--text-muted);
+    }
+
+    /* ============ Layout ============ */
+    .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+        gap: clamp(1.5rem, 4vw, 2.5rem);
+        align-items: start;
+    }
+
+    /* ============ Editing badge (left) ============ */
+    .badge-card {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 3.25rem 1.5rem 2.25rem;
+        border-radius: 28px 28px 28px 6px;
+        background: radial-gradient(520px 320px at 100% 0%, rgba(20, 108, 67, 0.7), transparent 60%), radial-gradient(400px 300px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        text-align: center;
+        color: #fff;
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .05s backwards;
+    }
+
+        .badge-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            border-radius: inherit;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+        /* Lanyard slot */
+        .badge-card::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            width: 56px;
+            height: 8px;
+            margin-left: -28px;
+            border-radius: 999px;
+            background: rgba(197, 240, 77, 0.55);
+        }
+
+    .plate-art {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 0.75rem;
+        animation: pf-pop .6s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+    }
+
+    .plate-ring {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .plate-body {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .plate-icon {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .badge-eyebrow {
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--lime);
+    }
+
+    .trainer-name {
+        font-family: var(--font-display);
+        font-size: clamp(2.25rem, 4.5vw, 3.25rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+        color: #fff;
+    }
+
+    /* ============ Form card (right) ============ */
+    .form-card {
+        padding: clamp(1.25rem, 3vw, 2.25rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+    }
+
+        .form-card .text-danger {
+            color: var(--danger) !important;
+        }
+
+    .section-head {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+        .section-head h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            color: var(--primary);
+        }
+
+        .section-head::after {
+            content: '';
+            flex: 1;
+            border-top: 2px dashed #b9c6bd;
+        }
+
+    .section-head--spaced {
+        margin-top: 2rem;
+    }
+
+    .fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem 1.25rem;
+    }
+
+    .field {
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 60ms + .3s) backwards;
+    }
+
+    .field-label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .field-control {
+        position: relative;
+    }
+
+        .field-control .ico {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3f5a4b;
+            pointer-events: none;
+        }
+
+        .field-control .ico-lead {
+            left: 16px;
+        }
+
+        .field-control .ico-chev {
+            right: 16px;
+            transition: transform .2s ease;
+        }
+
+        .field-control:focus-within .ico-chev {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+    .field-input,
+    .field-select {
+        width: 100%;
+        height: 52px;
+        padding: 0 16px 0 48px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--text);
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .field-select {
+        padding-right: 48px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+        .field-select:has(option:checked[value=""]) {
+            color: #5a6d62;
+        }
+
+        .field-select option {
+            color: var(--text);
+        }
+
+        .field-input:hover,
+        .field-select:hover {
+            border-color: var(--primary);
+        }
+
+        .field-input:focus,
+        .field-select:focus {
+            outline: 2px solid transparent;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(20, 108, 67, 0.22);
+        }
+
+        .field-input.input-validation-error,
+        .field-select.input-validation-error {
+            border-color: var(--danger);
+        }
+
+            .field-input.input-validation-error:focus,
+            .field-select.input-validation-error:focus {
+                box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.2);
+            }
+
+    .field-error {
+        display: block;
+        min-height: 1.25rem;
+        margin-top: 0.35rem;
+        font-size: 0.875rem;
+    }
+
+    /* ============ Buttons ============ */
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.75rem;
+        padding-top: 1.5rem;
+        border-top: 2px dashed #b9c6bd;
+    }
+
+    .btn-ghost,
+    .btn-power {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.75rem;
+        border-radius: var(--radius);
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-ghost .ico,
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+    .btn-ghost {
+        border: 2px solid var(--line);
+        background: transparent;
+        color: var(--ink);
+    }
+
+        .btn-ghost:hover {
+            border-color: var(--ink);
+            background: #e9ede4;
+        }
+
+            .btn-ghost:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .btn-ghost:active {
+            transform: translateY(3px);
+        }
+
+    .btn-power {
+        border: 0;
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 4px 0 var(--primary-press);
+    }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-power:hover .ico {
+                transform: scale(1.2);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-ghost:focus-visible,
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-pop {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 899.98px) {
+        .layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .fields {
+            grid-template-columns: 1fr;
+        }
+
+        .badge-card,
+        .form-card {
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .btn-ghost,
+        .btn-power {
+            flex: 1 1 100%;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    <header class="page-head">
+        <h1 class="page-title">Edit <span class="hl">Trainer</span></h1>
+        <p class="page-sub">Update trainer information</p>
     </header>
 
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <div class="mb-4 pb-3 border-bottom">
-                        <small class="text-muted d-block mb-1">Editing Profile For</small>
-                        <h4 class="mb-0 text-success-emphasis">@Model.Name</h4>
-                    </div>
-                    <form asp-action="Edit" method="post">
-                        <input hidden asp-for="Name" />
-                        <!-- Personal Information -->
-                        <div class="section-header mb-3">
-                            <h5 class="text-success fw-bold">Personal Information</h5>
-                            <hr class="mt-2">
-                        </div>
-                        <div class="row g-3 mb-4">
+    <div class="layout">
 
+        <section class="badge-card">
+            <svg class="plate-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="plate-ring" cx="60" cy="60" r="56" />
+                <circle class="plate-body" cx="60" cy="60" r="44" />
+                <g class="plate-icon">
+                    <path d="M42 80h8l26-26-8-8-26 26z" />
+                    <path d="M62 52l8 8" />
+                </g>
+            </svg>
 
-                            <div class="col-md-6">
-                                <label asp-for="Email" class="form-label fw-semibold">
-                                    Email Address <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="Email" type="email" class="form-control" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
+            <p class="badge-eyebrow">Editing Profile For</p>
+            <h2 class="trainer-name">@Model.Name</h2>
+        </section>
 
-                            <div class="col-md-6">
-                                <label asp-for="Phone" class="form-label fw-semibold">
-                                    Phone Number <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="Phone" type="tel" class="form-control" />
-                                <span asp-validation-for="Phone" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="BuildingNumber" class="form-label fw-semibold">
-                                    Building Number <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="BuildingNumber" class="form-control" />
-                                <span asp-validation-for="BuildingNumber" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="City" class="form-label fw-semibold">
-                                    City <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="City" class="form-control" />
-                                <span asp-validation-for="City" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6">
+        <section class="form-card">
+            <form asp-action="Edit" method="post">
+                <input hidden asp-for="Name" />
 
-                                <label asp-for="Street" class="form-label fw-semibold">
-                                    Street <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="Street" class="form-control" />
-                                <span asp-validation-for="Street" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <!-- Professional Information -->
-                        <div class="section-header mb-3">
-                            <h5 class="text-success fw-bold">Professional Information</h5>
-                            <hr class="mt-2">
-                        </div>
-                        <div class="row g-3">
-
-                            <div class="col-12 col-md-6">
-                                <label asp-for="specialtie" class="form-label"></label>
-                                <select asp-for="specialtie" asp-items="Html.GetEnumSelectList<TrainerSpecialties>()" class="form-select">
-                                    <option value="">-- Select Specialist --</option>
-                                </select>
-                                <span asp-validation-for="specialtie" class="text-danger"></span>
-                            </div>
-                        </div>
-
-
-                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
-                            <a asp-action="Index" class="btn btn-outline">
-                                <i class="bi bi-arrow-left me-1"></i>Cancel
-                            </a>
-                            <button type="submit" class="btn btn-fill">
-                                <i class="bi bi-check-lg me-1"></i>Update Trainer
-                            </button>
-                        </div>
-                    </form>
+                <!-- Personal Information -->
+                <div class="section-head">
+                    <h2>Personal Information</h2>
                 </div>
-            </div>
-        </div>
+
+                <div class="fields">
+                    <div class="field" style="--i:0">
+                        <label asp-for="Email" class="field-label">
+                            Email Address <span class="text-danger">*</span>
+                        </label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3.5 7l8.5 6 8.5-6" /></svg>
+                            <input asp-for="Email" type="email" class="field-input" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger field-error"></span>
+                    </div>
+
+                    <div class="field" style="--i:1">
+                        <label asp-for="Phone" class="field-label">
+                            Phone Number <span class="text-danger">*</span>
+                        </label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" /></svg>
+                            <input asp-for="Phone" type="tel" class="field-input" />
+                        </div>
+                        <span asp-validation-for="Phone" class="text-danger field-error"></span>
+                    </div>
+
+                    <div class="field" style="--i:2">
+                        <label asp-for="BuildingNumber" class="field-label">
+                            Building Number <span class="text-danger">*</span>
+                        </label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 21v-4h4v4" /></svg>
+                            <input asp-for="BuildingNumber" class="field-input" />
+                        </div>
+                        <span asp-validation-for="BuildingNumber" class="text-danger field-error"></span>
+                    </div>
+
+                    <div class="field" style="--i:3">
+                        <label asp-for="City" class="field-label">
+                            City <span class="text-danger">*</span>
+                        </label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                            <input asp-for="City" class="field-input" />
+                        </div>
+                        <span asp-validation-for="City" class="text-danger field-error"></span>
+                    </div>
+
+                    <div class="field" style="--i:4">
+                        <label asp-for="Street" class="field-label">
+                            Street <span class="text-danger">*</span>
+                        </label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3v18M17 3v18M12 5v3M12 11v3M12 17v3" /></svg>
+                            <input asp-for="Street" class="field-input" />
+                        </div>
+                        <span asp-validation-for="Street" class="text-danger field-error"></span>
+                    </div>
+                </div>
+
+                <!-- Professional Information -->
+                <div class="section-head section-head--spaced">
+                    <h2>Professional Information</h2>
+                </div>
+
+                <div class="fields">
+                    <div class="field" style="--i:5">
+                        <label asp-for="specialtie" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="9" r="5" /><path d="M8.5 13.5L7 21l5-3 5 3-1.5-7.5" /></svg>
+                            <select asp-for="specialtie" asp-items="Html.GetEnumSelectList<TrainerSpecialties>()" class="field-select">
+                                <option value="">-- Select Specialist --</option>
+                            </select>
+                            <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+                        </div>
+                        <span asp-validation-for="specialtie" class="text-danger field-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a asp-action="Index" class="btn-ghost">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn-power">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                        Update Trainer
+                    </button>
+                </div>
+            </form>
+        </section>
+
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
