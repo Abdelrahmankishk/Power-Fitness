@@ -2,85 +2,411 @@
 @{
     ViewData["Title"] = "Member Health Record";
 }
-<div class="container">
-    <main role="main" class="pb-3">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card shadow">
-                        <div class="card-header bg-primary-color text-white text-center py-4">
-                            <h3 class="mb-1">Health Record</h3>
-                        </div>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 980px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
 
-                        <div class="card-body p-4">
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light p-4 h-100">
-                                        <div class="d-flex align-items-center justify-content-center mb-3">
-                                            <div class="bg-primary-color rounded-circle p-2 me-3"
-                                                 style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; align-content:center">
-                                                <span class="text-white fw-bold">H</span>
-                                            </div>
-                                            <h6 class="text-muted mb-0">Height</h6>
-                                        </div>
-                                        <h4 class="text-primary-color text-center mb-0">@Model.Height <small>cm</small></h4>
-                                    </div>
-                                </div>
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
 
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light p-4 h-100">
-                                        <div class="d-flex align-items-center justify-content-center  mb-3">
-                                            <div class="bg-primary-color rounded-circle p-2 me-3"
-                                                 style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                <span class="text-white fw-bold">W</span>
-                                            </div>
-                                            <h6 class="text-muted mb-0">Weight</h6>
-                                        </div>
-                                        <h4 class="text-primary-color text-center mb-0">@Model.Weight <small>kg</small></h4>
-                                    </div>
-                                </div>
+        .pf-page h1, .pf-page p, .pf-page ul {
+            margin: 0;
+            padding: 0;
+        }
 
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light p-4 h-100">
-                                        <div class="d-flex align-items-center justify-content-center mb-3">
-                                            <div class="bg-danger rounded-circle p-2 me-3"
-                                                 style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                <span class="text-white fw-bold">B</span>
-                                            </div>
-                                            <h6 class="text-muted mb-0">Blood Type</h6>
-                                        </div>
-                                        <h4 class="text-danger text-center mb-0"> @Model.BloodType </h4>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-light p-4 h-100">
-                                        <div class="d-flex align-items-center justify-content-center mb-3">
-                                            <div class="bg-warning rounded-circle p-2 me-3"
-                                                 style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                <span class="text-white fw-bold">N</span>
-                                            </div>
-                                            <h6 class="text-muted text-center mb-0">Note</h6>
-                                        </div>
-                                        <h4 class="text-warning text-center mb-0">@(@Model.Note ?? "No Note") </h4>
-                                    </div>
-                                </div>
-                            </div>
+        .pf-page ul {
+            list-style: none;
+        }
 
-                            <div class="card-footer bg-white border-0 p-4">
-                                <div class="d-flex justify-content-between gap-2">
-                                    <a asp-controller="Members" asp-action="Index" class="btn btn-fill flex-fill">
-                                        Back to
-                                        List
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ============ Hero with pulse line ============ */
+    .record-wrap {
+        position: relative;
+    }
+
+    .hero {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem) clamp(5rem, 9vw, 6.5rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 420px at 100% 0%, rgba(20, 108, 67, 0.65), transparent 60%), radial-gradient(500px 320px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        color: #fff;
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    .hero-title {
+        position: relative;
+        display: inline-block;
+        padding-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: clamp(2.75rem, 7vw, 4.75rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+        .hero-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 88px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--lime);
+        }
+
+    .pulse {
+        display: block;
+        width: 100%;
+        height: 90px;
+        margin-top: 1.25rem;
+    }
+
+    .pulse-base {
+        fill: none;
+        stroke: rgba(197, 240, 77, 0.2);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .pulse-beat {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 0.22 0.78;
+        animation: pf-beat 3.2s linear infinite;
+    }
+
+    /* ============ Vitals card ============ */
+    .vitals {
+        position: relative;
+        z-index: 2;
+        margin: -3.5rem clamp(0.75rem, 5vw, 3.5rem) 0;
+        padding: clamp(1.25rem, 3vw, 2rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .2s backwards;
+    }
+
+    .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .metric {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        min-width: 0;
+        padding: 1.25rem 1.4rem;
+        border: 1.5px solid #e2e6dc;
+        border-radius: 18px;
+        background: #fff;
+        transition: border-color .2s ease, transform .2s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 70ms + .3s) backwards;
+    }
+
+        .metric:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+    .metric--wide {
+        grid-column: 1 / -1;
+    }
+
+    .metric-head {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .metric-ico {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #e1efe7;
+        color: var(--primary);
+    }
+
+    .metric--blood .metric-ico {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .metric--note .metric-ico {
+        background: var(--lime);
+        color: var(--ink);
+    }
+
+    .metric-label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .metric-value {
+        display: block;
+        font-family: var(--font-display);
+        font-size: clamp(2.75rem, 5vw, 3.75rem);
+        font-weight: 700;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+        color: var(--primary);
+    }
+
+        .metric-value small {
+            margin-left: 0.25rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+
+    .metric--blood .metric-value {
+        color: var(--danger);
+    }
+
+    .metric--note .metric-value {
+        font-family: var(--font-body);
+        font-size: 1.125rem;
+        font-weight: 500;
+        line-height: 1.55;
+        color: var(--ink);
+    }
+
+    .actions {
+        margin-top: 1.5rem;
+    }
+
+    .btn-power {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        min-height: 56px;
+        padding: 0 1.5rem;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        box-shadow: 0 4px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+            .btn-power:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-beat {
+        from {
+            stroke-dashoffset: 0;
+        }
+
+        to {
+            stroke-dashoffset: -1;
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 767.98px) {
+        .metrics {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .metric--blood {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .metrics {
+            grid-template-columns: 1fr;
+        }
+
+        .vitals {
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .pulse {
+            height: 70px;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .pulse-beat {
+            stroke-dasharray: none;
+        }
+
+        .metric:hover {
+            transform: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+    <div class="record-wrap">
+
+        <section class="hero" aria-labelledby="record-title">
+            <h1 id="record-title" class="hero-title">Health Record</h1>
+
+            <svg class="pulse" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <path class="pulse-base" d="M0 60 H150 l15 0 l12 -40 l18 80 l14 -60 l10 20 H330 l15 0 l12 -40 l18 80 l14 -60 l10 20 H600" />
+                <path class="pulse-beat" pathLength="1" d="M0 60 H150 l15 0 l12 -40 l18 80 l14 -60 l10 20 H330 l15 0 l12 -40 l18 80 l14 -60 l10 20 H600" />
+            </svg>
+        </section>
+
+        <section class="vitals">
+            <ul class="metrics">
+                <li class="metric" style="--i:0">
+                    <div class="metric-head">
+                        <span class="metric-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4" /></svg></span>
+                        <span class="metric-label">Height</span>
                     </div>
-                </div>
-            </div>
-        </div>
+                    <strong class="metric-value">@Model.Height <small>cm</small></strong>
+                </li>
 
-    </main>
+                <li class="metric" style="--i:1">
+                    <div class="metric-head">
+                        <span class="metric-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="4" width="18" height="17" rx="4" /><path d="M8 10a4 4 0 018 0M12 10l2-2" /></svg></span>
+                        <span class="metric-label">Weight</span>
+                    </div>
+                    <strong class="metric-value">@Model.Weight <small>kg</small></strong>
+                </li>
+
+                <li class="metric metric--blood" style="--i:2">
+                    <div class="metric-head">
+                        <span class="metric-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M12 3s6 6.5 6 11a6 6 0 01-12 0c0-4.5 6-11 6-11z" /></svg></span>
+                        <span class="metric-label">Blood Type</span>
+                    </div>
+                    <strong class="metric-value">@Model.BloodType</strong>
+                </li>
+
+                <li class="metric metric--wide metric--note" style="--i:3">
+                    <div class="metric-head">
+                        <span class="metric-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 4h14v12l-4 4H5z" /><path d="M15 20v-4h4M8 9h8M8 13h5" /></svg></span>
+                        <span class="metric-label">Note</span>
+                    </div>
+                    <strong class="metric-value">@(Model.Note ?? "No Note")</strong>
+                </li>
+            </ul>
+
+            <div class="actions">
+                <a asp-controller="Members" asp-action="Index" class="btn-power">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                    Back to List
+                </a>
+            </div>
+        </section>
+
+    </div>
 </div>
