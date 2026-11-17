@@ -1,178 +1,890 @@
 ﻿@using GymManagementSystem.DAL.Models.Enums
-@model CreateMemberViewModel 
+@model CreateMemberViewModel
 @{
     ViewData["Title"] = "Add Member";
 }
-<div class="container">
-    <main role="main" class="pb-3">
 
-        <header class="mb-4">
-            <h3 class="text-primary-color">Add Member</h3>
-        </header>
-        <form asp-controller="Members" asp-action="CreateMember" method="post" enctype="multipart/form-data">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-            <!-- Step navigation -->
-            <ul class="nav nav-tabs mb-4" id="addMemberTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active text-success " id="member-tab" data-bs-toggle="tab" data-bs-target="#member-info"
-                            type="button" role="tab">
-                        Member Info
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link text-success" id="health-tab" data-bs-toggle="tab" data-bs-target="#health-info"
-                            type="button" role="tab">
-                        Health Data
-                    </button>
-                </li>
-            </ul>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --line: #6f8578;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1000px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
 
-            <!-- Tab content -->
-            <div class="tab-content">
-                <!-- Member Info -->
-                <div class="tab-pane fade show active" id="member-info" role="tabpanel" aria-labelledby="member-tab">
-                    <div class="section-header mb-3">
-                        <h5 class="text-success fw-bold">Personal Information</h5>
-                        <hr class="mt-2">
-                    </div>
-                    <div class="row g-3">
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
 
-                        <div class="form-group">
-                            <!-- Photo Preview -->
-                            <div class="mt-2">
-                                <img id="photoPreview" src="#" alt="Photo Preview" style="max-width: 200px; display: none;"
-                                     class="img-thumbnail" />
-                            </div>
-                            <label asp-for="PhotoFile" class="control-label">Profile Picture <span class="text-danger">*</span></label>
-                            <input asp-for="PhotoFile" type="file" class="form-control" accept="image/*" id="photoInput" required />
-                            <span asp-validation-for="PhotoFile" class="text-danger"></span>
-                            <small class="form-text text-muted">Max size: 5 MB. Allowed types: JPG, PNG, GIF (Required)</small>
-                        </div>
+        .pf-page h1, .pf-page h2, .pf-page p {
+            margin: 0;
+            padding: 0;
+        }
 
-                        <div class="col-12 col-md-6">
-                            <label asp-for="Name" class="form-label"></label>
-                            <input asp-for="Name" class="form-control" />
-                            <span asp-validation-for="Name" class="text-danger"></span>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label asp-for="Phone" class="form-label"></label>
-                            <input asp-for="Phone" class="form-control" />
-                            <span asp-validation-for="Phone" class="text-danger"></span>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label asp-for="DateOfBirth" class="form-label"></label>
-                            <input asp-for="DateOfBirth" class="form-control" />
-                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label asp-for="Gender" class="form-label"></label>
-                            <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()">
-                                <option value="">-- Select Gender --</option>
-                            </select>
-                            <span asp-validation-for="Gender" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="section-header mb-3 mt-4">
-                        <h5 class="text-success fw-bold">Address Information</h5>
-                        <hr class="mt-2">
-                    </div>
-                    <div class="row g-3">
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
 
-                        <div class="col-12 col-md-6">
-                            <label asp-for="BuildingNumber" class="form-label"></label>
-                            <input asp-for="BuildingNumber" class="form-control" />
-                            <span asp-validation-for="BuildingNumber" class="text-danger"></span>
-                        </div>
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
 
-                        <div class="col-12 col-md-6">
-                            <label asp-for="Street" class="form-label"></label>
-                            <input asp-for="Street" class="form-control" />
-                            <span asp-validation-for="Street" class="text-danger"></span>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label asp-for="City" class="form-label"></label>
-                            <input asp-for="City" class="form-control" />
-                            <span asp-validation-for="City" class="text-danger"></span>
-                        </div>
-                    </div>
-                </div>
+    /* ============ Hero ============ */
+    .hero {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: clamp(2rem, 5vw, 3.25rem) clamp(1.5rem, 5vw, 3.5rem) clamp(4.5rem, 8vw, 6rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 420px at 100% 0%, rgba(20, 108, 67, 0.65), transparent 60%), radial-gradient(500px 320px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
 
-                <!-- Health Data -->
-                <div class="tab-pane fade" id="health-info" role="tabpanel" aria-labelledby="health-tab">
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <label asp-for="HealthRecordViewModel.Height" class="form-label"></label>
-							<input asp-for="HealthRecordViewModel.Height"  class="form-control" />
-                            <span asp-validation-for="HealthRecordViewModel.Height" class="text-danger"></span>
-                        </div>
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
 
-                        <div class="col-12 col-md-6">
-                            <label asp-for="HealthRecordViewModel.Weight" class="form-label"></label>
-                            <input asp-for="HealthRecordViewModel.Weight" class="form-control" />
-                            <span asp-validation-for="HealthRecordViewModel.Weight" class="text-danger"></span>
-                        </div>
+    .hero-title {
+        position: relative;
+        padding-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: clamp(2.75rem, 7vw, 4.75rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: #fff;
+    }
 
-                        <div class="col-12 col-md-6">
-                            <label asp-for="HealthRecordViewModel.BloodType" class="form-label"></label>
-                            <select asp-for="HealthRecordViewModel.BloodType" class="form-select">
-                                <option value="">Select</option>
-                                <option>A+</option>
-                                <option>A-</option>
-                                <option>B+</option>
-                                <option>B-</option>
-                                <option>O+</option>
-                                <option>O-</option>
-                                <option>AB+</option>
-                                <option>AB-</option>
-                            </select>
-                            <span asp-validation-for="HealthRecordViewModel.BloodType" class="text-danger"></span>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label asp-for="HealthRecordViewModel.Note" class="form-label"></label>
-                            <input asp-for="HealthRecordViewModel.Note" class="form-control" />
-                            <span asp-validation-for="HealthRecordViewModel.Note" class="text-danger"></span>
-                        </div>
-                    </div>
+        .hero-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 88px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--lime);
+        }
+
+    .hero-art {
+        flex: none;
+        width: 120px;
+        height: 120px;
+    }
+
+    .art-ring {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .art-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .art-user {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ============ Form card ============ */
+    .form-card {
+        position: relative;
+        z-index: 2;
+        margin: -3rem clamp(0.5rem, 3vw, 2rem) 0;
+        padding: clamp(1.25rem, 3vw, 2.25rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .2s backwards;
+    }
+
+        .form-card .text-danger {
+            color: var(--danger) !important;
+        }
+
+    /* ---- Steps (tabs). Hidden until the script is ready, so without JS both sections simply show ---- */
+    .steps {
+        display: none;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .tabs-ready .steps {
+        display: grid;
+    }
+
+    .step {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-height: 64px;
+        padding: 0.6rem 1rem;
+        border: 1.5px solid #d9ded4;
+        border-radius: 16px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color .2s ease, background-color .2s ease, color .2s ease, box-shadow .2s ease;
+    }
+
+        .step:hover {
+            border-color: var(--primary);
+        }
+
+        .step:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 3px;
+        }
+
+        .step.is-active {
+            border-color: var(--ink);
+            background: var(--ink);
+            color: #fff;
+            box-shadow: 4px 4px 0 var(--primary);
+        }
+
+    .step-num {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e1efe7;
+        color: var(--primary);
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .step.is-active .step-num {
+        background: var(--lime);
+        color: var(--ink);
+    }
+
+    .step-label {
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .tabs-ready .pane:not(.is-active) {
+        display: none;
+    }
+
+    .tabs-ready .pane.is-active {
+        animation: pf-rise .35s cubic-bezier(.2, .7, .2, 1);
+    }
+
+    .pane + .pane {
+        margin-top: 2rem;
+    }
+
+    .tabs-ready .pane + .pane {
+        margin-top: 0;
+    }
+
+    /* ---- Section headings ---- */
+    .section-head {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+        .section-head h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            color: var(--primary);
+        }
+
+        .section-head::after {
+            content: '';
+            flex: 1;
+            border-top: 2px dashed #b9c6bd;
+        }
+
+    .section-head--spaced {
+        margin-top: 2rem;
+    }
+
+    /* ---- Photo upload ---- */
+    .upload {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .dropzone {
+        position: relative;
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 132px;
+        height: 132px;
+        border: 3px dashed var(--primary);
+        border-radius: 50%;
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+    }
+
+        .dropzone:hover {
+            background: #f3f9d9;
+            transform: scale(1.03);
+        }
+
+        .dropzone .ico {
+            width: 2.4rem;
+            height: 2.4rem;
+        }
+
+        .dropzone img {
+            position: absolute;
+            inset: 0;
+            display: none;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .dropzone.has-photo {
+            border: 4px solid var(--lime);
+            box-shadow: 0 0 0 4px var(--primary);
+        }
+
+            .dropzone.has-photo img {
+                display: block;
+            }
+
+            .dropzone.has-photo .ico {
+                display: none;
+            }
+
+    .upload:focus-within .dropzone {
+        outline: 3px solid var(--primary);
+        outline-offset: 5px;
+    }
+
+    .photo-input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    .upload-info {
+        flex: 1 1 260px;
+        min-width: 0;
+    }
+
+    .hint {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+    }
+
+    /* ---- Fields ---- */
+    .fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem 1.25rem;
+    }
+
+    .field--wide {
+        grid-column: 1 / -1;
+    }
+
+    .field-label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .field-control {
+        position: relative;
+    }
+
+        .field-control .ico {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3f5a4b;
+            pointer-events: none;
+        }
+
+        .field-control .ico-lead {
+            left: 16px;
+        }
+
+        .field-control .ico-chev {
+            right: 16px;
+            transition: transform .2s ease;
+        }
+
+        .field-control:focus-within .ico-chev {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+    .field-input,
+    .field-select {
+        width: 100%;
+        height: 52px;
+        padding: 0 16px 0 48px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--text);
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .field-select {
+        padding-right: 48px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+        .field-select:has(option:checked[value=""]) {
+            color: #5a6d62;
+        }
+
+        .field-select option {
+            color: var(--text);
+        }
+
+        .field-input:hover,
+        .field-select:hover {
+            border-color: var(--primary);
+        }
+
+        .field-input:focus,
+        .field-select:focus {
+            outline: 2px solid transparent;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(20, 108, 67, 0.22);
+        }
+
+        .field-input.input-validation-error,
+        .field-select.input-validation-error {
+            border-color: var(--danger);
+        }
+
+            .field-input.input-validation-error:focus,
+            .field-select.input-validation-error:focus {
+                box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.2);
+            }
+
+    .field-error {
+        display: block;
+        min-height: 1.25rem;
+        margin-top: 0.35rem;
+        font-size: 0.875rem;
+    }
+
+    /* ---- Footer buttons ---- */
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.75rem;
+        padding-top: 1.5rem;
+        border-top: 2px dashed #b9c6bd;
+    }
+
+    .btn-ghost,
+    .btn-power {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.75rem;
+        border-radius: var(--radius);
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-ghost .ico,
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+    .btn-ghost {
+        border: 2px solid var(--line);
+        background: transparent;
+        color: var(--ink);
+    }
+
+        .btn-ghost:hover {
+            border-color: var(--ink);
+            background: #e9ede4;
+        }
+
+            .btn-ghost:hover .ico {
+                transform: translateX(-4px);
+            }
+
+    .btn-power {
+        min-width: 180px;
+        border: 0;
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 4px 0 var(--primary-press);
+    }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-power:hover .ico {
+                transform: rotate(90deg);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+    .btn-ghost:active {
+        transform: translateY(3px);
+    }
+
+    .btn-ghost:focus-visible,
+    .btn-power:focus-visible {
+        outline: 3px solid var(--ink);
+        outline-offset: 3px;
+    }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 767.98px) {
+        .fields {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-art {
+            display: none;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .form-card {
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .step {
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.35rem;
+            text-align: center;
+        }
+
+        .step-label {
+            font-size: 1.1rem;
+        }
+
+        .btn-ghost,
+        .btn-power {
+            flex: 1 1 100%;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .dropzone:hover {
+            transform: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    <header class="hero">
+        <h1 class="hero-title">@ViewData["Title"]</h1>
+
+        <svg class="hero-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+            <circle class="art-ring" cx="60" cy="60" r="56" />
+            <circle class="art-plate" cx="60" cy="60" r="44" />
+            <g class="art-user">
+                <circle cx="54" cy="50" r="10" />
+                <path d="M34 84c2-12 10-18 20-18s14 4 18 12" />
+                <path d="M82 46v14M75 53h14" />
+            </g>
+        </svg>
+    </header>
+
+    <form asp-controller="Members" asp-action="CreateMember" method="post" enctype="multipart/form-data" class="form-card" id="addMemberForm">
+
+        <!-- Step navigation -->
+        <div class="steps" id="addMemberTabs" role="tablist" aria-label="Add member steps">
+            <button class="step is-active" id="member-tab" type="button" role="tab" aria-selected="true" aria-controls="member-info">
+                <span class="step-num" aria-hidden="true">01</span>
+                <span class="step-label">Member Info</span>
+            </button>
+            <button class="step" id="health-tab" type="button" role="tab" aria-selected="false" aria-controls="health-info" tabindex="-1">
+                <span class="step-num" aria-hidden="true">02</span>
+                <span class="step-label">Health Data</span>
+            </button>
+        </div>
+
+        <!-- Member Info -->
+        <div class="pane is-active" id="member-info" role="tabpanel" aria-labelledby="member-tab">
+            <div class="section-head">
+                <h2>Personal Information</h2>
+            </div>
+
+            <div class="upload">
+                <label for="photoInput" class="dropzone" id="photoDropzone" aria-hidden="true">
+                    <svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg>
+                    <img id="photoPreview" alt="Photo Preview" />
+                </label>
+
+                <div class="upload-info">
+                    <label asp-for="PhotoFile" for="photoInput" class="field-label">Profile Picture <span class="text-danger">*</span></label>
+                    <input asp-for="PhotoFile" type="file" class="photo-input" accept="image/*" id="photoInput" required />
+                    <span asp-validation-for="PhotoFile" class="text-danger field-error"></span>
+                    <small class="hint">Max size: 5 MB. Allowed types: JPG, PNG, GIF (Required)</small>
                 </div>
             </div>
 
-            <footer class="d-flex justify-content-end gap-3 mt-4">
-                <a asp-controller="Members" asp-action="Index" class="btn btn-outline-success px-4">
-                    <i class="bi bi-arrow-left me-2"></i> Back to List
-                </a>
+            <div class="fields">
+                <div class="field">
+                    <label asp-for="Name" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg>
+                        <input asp-for="Name" class="field-input" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger field-error"></span>
+                </div>
 
-                <button type="submit"  class="btn btn-success px-4">
-                    <i class="bi bi-plus-circle me-2"></i> Add
-                </button>
-            </footer>
+                <div class="field">
+                    <label asp-for="Email" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3.5 7l8.5 6 8.5-6" /></svg>
+                        <input asp-for="Email" class="field-input" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger field-error"></span>
+                </div>
 
-        </form>
+                <div class="field">
+                    <label asp-for="Phone" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" /></svg>
+                        <input asp-for="Phone" class="field-input" />
+                    </div>
+                    <span asp-validation-for="Phone" class="text-danger field-error"></span>
+                </div>
 
-    </main>
+                <div class="field">
+                    <label asp-for="DateOfBirth" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+                        <input asp-for="DateOfBirth" class="field-input" />
+                    </div>
+                    <span asp-validation-for="DateOfBirth" class="text-danger field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Gender" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="10" r="3" /><path d="M6.5 18c1.2-2.3 3.1-3.5 5.5-3.5s4.3 1.2 5.5 3.5" /></svg>
+                        <select asp-for="Gender" class="field-select" asp-items="Html.GetEnumSelectList<Gender>()">
+                            <option value="">-- Select Gender --</option>
+                        </select>
+                        <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+                    </div>
+                    <span asp-validation-for="Gender" class="text-danger field-error"></span>
+                </div>
+            </div>
+
+            <div class="section-head section-head--spaced">
+                <h2>Address Information</h2>
+            </div>
+
+            <div class="fields">
+                <div class="field">
+                    <label asp-for="BuildingNumber" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 21v-4h4v4" /></svg>
+                        <input asp-for="BuildingNumber" class="field-input" />
+                    </div>
+                    <span asp-validation-for="BuildingNumber" class="text-danger field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Street" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3v18M17 3v18M12 5v3M12 11v3M12 17v3" /></svg>
+                        <input asp-for="Street" class="field-input" />
+                    </div>
+                    <span asp-validation-for="Street" class="text-danger field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="City" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                        <input asp-for="City" class="field-input" />
+                    </div>
+                    <span asp-validation-for="City" class="text-danger field-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Data -->
+        <div class="pane" id="health-info" role="tabpanel" aria-labelledby="health-tab">
+            <div class="fields">
+                <div class="field">
+                    <label asp-for="HealthRecordViewModel.Height" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4" /></svg>
+                        <input asp-for="HealthRecordViewModel.Height" class="field-input" />
+                    </div>
+                    <span asp-validation-for="HealthRecordViewModel.Height" class="text-danger field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="HealthRecordViewModel.Weight" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="17" rx="4" /><path d="M8 10a4 4 0 018 0M12 10l2-2" /></svg>
+                        <input asp-for="HealthRecordViewModel.Weight" class="field-input" />
+                    </div>
+                    <span asp-validation-for="HealthRecordViewModel.Weight" class="text-danger field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="HealthRecordViewModel.BloodType" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3s6 6.5 6 11a6 6 0 01-12 0c0-4.5 6-11 6-11z" /></svg>
+                        <select asp-for="HealthRecordViewModel.BloodType" class="field-select">
+                            <option value="">Select</option>
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                        </select>
+                        <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+                    </div>
+                    <span asp-validation-for="HealthRecordViewModel.BloodType" class="text-danger field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="HealthRecordViewModel.Note" class="field-label"></label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h14v12l-4 4H5z" /><path d="M15 20v-4h4M8 9h8M8 13h5" /></svg>
+                        <input asp-for="HealthRecordViewModel.Note" class="field-input" />
+                    </div>
+                    <span asp-validation-for="HealthRecordViewModel.Note" class="text-danger field-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <footer class="form-actions">
+            <a asp-controller="Members" asp-action="Index" class="btn-ghost">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                Back to List
+            </a>
+
+            <button type="submit" class="btn-power">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></svg>
+                Add
+            </button>
+        </footer>
+
+    </form>
+
 </div>
 
-@section Scripts{
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    
-}
 
-<script>
-    // Preview photo before upload
-    document.getElementById('photoInput').addEventListener('change', function (e) {
-        var file = e.target.files[0];
-        if (file) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                var preview = document.getElementById('photoPreview');
-                preview.src = e.target.result;
-                preview.style.display = 'block';
+    <script>
+        (function () {
+            var form = document.getElementById('addMemberForm');
+            if (!form) return;
+
+            /* 1. Preview photo before upload */
+            var photoInput = document.getElementById('photoInput');
+            var preview = document.getElementById('photoPreview');
+            var dropzone = document.getElementById('photoDropzone');
+
+            if (photoInput && preview && dropzone) {
+                photoInput.addEventListener('change', function (e) {
+                    var file = e.target.files[0];
+                    if (!file) {
+                        dropzone.classList.remove('has-photo');
+                        return;
+                    }
+                    var reader = new FileReader();
+                    reader.onload = function (ev) {
+                        preview.src = ev.target.result;
+                        dropzone.classList.add('has-photo');
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
+
+            /* 2. Steps: Member Info / Health Data (no Bootstrap JS needed) */
+            var tabs = Array.prototype.slice.call(form.querySelectorAll('[role="tab"]'));
+            var panes = tabs.map(function (tab) {
+                return document.getElementById(tab.getAttribute('aria-controls'));
+            });
+
+            function activate(index, moveFocus) {
+                tabs.forEach(function (tab, k) {
+                    var on = k === index;
+                    tab.classList.toggle('is-active', on);
+                    tab.setAttribute('aria-selected', on ? 'true' : 'false');
+                    tab.tabIndex = on ? 0 : -1;
+                    panes[k].classList.toggle('is-active', on);
+                });
+                if (moveFocus) tabs[index].focus();
+            }
+
+            function showPaneOf(el) {
+                var pane = el && el.closest ? el.closest('[role="tabpanel"]') : null;
+                var index = panes.indexOf(pane);
+                if (index > -1) activate(index, false);
+            }
+
+            tabs.forEach(function (tab, index) {
+                tab.addEventListener('click', function () { activate(index, false); });
+
+                tab.addEventListener('keydown', function (e) {
+                    var last = tabs.length - 1;
+                    var next = null;
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = index === last ? 0 : index + 1;
+                    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = index === 0 ? last : index - 1;
+                    else if (e.key === 'Home') next = 0;
+                    else if (e.key === 'End') next = last;
+                    if (next === null) return;
+                    e.preventDefault();
+                    activate(next, true);
+                });
+            });
+
+            form.classList.add('tabs-ready');
+
+            /* If the server sent the form back with errors, open the step that has the first one */
+            showPaneOf(form.querySelector('.input-validation-error, .field-validation-error'));
+
+            /* 3. Client-side validation must also check the step that is not on screen,
+                  then jump to the first step with a problem */
+            if (window.jQuery) {
+                if (jQuery.validator && jQuery.validator.setDefaults) {
+                    jQuery.validator.setDefaults({ ignore: [] });
+                }
+                jQuery(form).on('invalid-form', function (e, validator) {
+                    var first = validator && validator.errorList && validator.errorList[0];
+                    if (first) showPaneOf(first.element);
+                });
+            }
+        })();
+    </script>
+}
