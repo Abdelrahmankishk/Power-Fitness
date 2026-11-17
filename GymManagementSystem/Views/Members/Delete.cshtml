@@ -1,20 +1,369 @@
-﻿<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card p-5 shadow text-center">
-                <p class="fs-3 text-primary-color mb-4">Are you sure you want to delete this member?</p>
+﻿<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-                <div class="alert alert-warning text-start" role="alert">
-                    <strong>Warning!</strong> This action cannot be undone. All member data will be permanently deleted.
-                </div>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --danger: #b42318;
+        --danger-dark: #9c1f15;
+        --danger-press: #7f1810;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 760px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
 
-                <form asp-action="DeleteConfirmed" method="post" asp-route-id ="@Context.Request.RouteValues["id"]" class="mt-4">
-                    <div class="buttons d-flex justify-content-between gap-3">
-                        <a asp-controller="Members" asp-action="Index" class="btn-outline flex-fill">NO</a>
-                        <button type="submit" class="btn-fill flex-fill">Yes</button>
-                    </div>
-                </form>
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ============ Stage ============ */
+    .stage {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        padding: clamp(1.5rem, 6vw, 4rem) clamp(1rem, 5vw, 3.5rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 420px at 100% 0%, rgba(20, 108, 67, 0.6), transparent 60%), radial-gradient(500px 320px at 0% 100%, rgba(180, 35, 24, 0.22), transparent 60%), var(--ink);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+        .stage::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    /* ============ Confirmation card ============ */
+    .confirm-card {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 560px;
+        padding: calc(14px + 2rem) clamp(1.5rem, 5vw, 2.75rem) clamp(1.75rem, 4vw, 2.5rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        color: var(--text);
+        text-align: center;
+        box-shadow: 12px 12px 0 var(--danger);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+    }
+
+        /* Restricted-area tape */
+        .confirm-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 14px;
+            background: repeating-linear-gradient(-45deg, var(--ink) 0 12px, var(--lime) 12px 24px);
+        }
+
+    .warn-art {
+        display: block;
+        width: 112px;
+        height: 112px;
+        margin: 0 auto 1.25rem;
+        animation: pf-pop .5s cubic-bezier(.2, .7, .2, 1) .3s backwards;
+    }
+
+    .warn-ring {
+        fill: none;
+        stroke: var(--danger);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .warn-plate {
+        fill: var(--danger);
+        stroke: var(--danger-bg);
+        stroke-width: 4;
+    }
+
+    .warn-bin {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .warn-lid {
+        transform-box: fill-box;
+        transform-origin: right bottom;
+        animation: pf-lid .7s ease-in-out .9s backwards;
+    }
+
+    .confirm-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 5vw, 2.75rem);
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    .hl-danger {
+        padding: 0 0.2em;
+        border-radius: 6px;
+        background: var(--danger);
+        color: #fff;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    .warning {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        margin-top: 1.5rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid var(--danger);
+        border-radius: 14px;
+        background: var(--danger-bg);
+        text-align: left;
+        color: var(--text);
+    }
+
+        .warning .ico {
+            margin-top: 0.15rem;
+            color: var(--danger);
+        }
+
+        .warning strong {
+            color: var(--danger);
+        }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.75rem;
+    }
+
+    .btn-safe,
+    .btn-danger {
+        display: inline-flex;
+        flex: 1 1 180px;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.5rem;
+        border: 0;
+        border-radius: var(--radius);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-safe .ico,
+        .btn-danger .ico {
+            transition: transform .2s ease;
+        }
+
+    .btn-safe {
+        background: var(--primary);
+        box-shadow: 0 4px 0 var(--primary-press);
+    }
+
+        .btn-safe:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+            .btn-safe:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .btn-safe:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+    .btn-danger {
+        background: var(--danger);
+        box-shadow: 0 4px 0 var(--danger-press);
+    }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+        }
+
+            .btn-danger:hover .ico {
+                transform: rotate(-12deg) scale(1.1);
+            }
+
+        .btn-danger:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--danger-press);
+        }
+
+        .btn-safe:focus-visible,
+        .btn-danger:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-pop {
+        from {
+            opacity: 0;
+            transform: scale(0.85);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes pf-lid {
+        0% {
+            transform: rotate(0);
+        }
+
+        35% {
+            transform: rotate(-16deg);
+        }
+
+        70% {
+            transform: rotate(5deg);
+        }
+
+        100% {
+            transform: rotate(0);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 480px) {
+        .confirm-card {
+            box-shadow: 8px 8px 0 var(--danger);
+        }
+
+        .btn-safe,
+        .btn-danger {
+            flex: 1 1 100%;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+</style>
+
+<div class="pf-page">
+    <div class="stage">
+        <div class="confirm-card">
+
+            <svg class="warn-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="warn-ring" cx="60" cy="60" r="56" />
+                <circle class="warn-plate" cx="60" cy="60" r="44" />
+                <g class="warn-bin">
+                    <path d="M46 52l3 24a3 3 0 003 2.6h16a3 3 0 003-2.6l3-24" />
+                    <path d="M57 60v10M63 60v10" />
+                    <g class="warn-lid">
+                        <path d="M42 46h36M54 46v-4a2 2 0 012-2h8a2 2 0 012 2v4" />
+                    </g>
+                </g>
+            </svg>
+
+            <h1 class="confirm-title">Are you sure you want to <span class="hl-danger">delete</span> this member?</h1>
+
+            <div class="warning" role="alert">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+                <p><strong>Warning!</strong> This action cannot be undone. All member data will be permanently deleted.</p>
             </div>
+
+            <form asp-action="DeleteConfirmed" method="post" asp-route-id="@Context.Request.RouteValues["id"]">
+                <div class="actions">
+                    <a asp-controller="Members" asp-action="Index" class="btn-safe">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                        NO
+                    </a>
+                    <button type="submit" class="btn-danger">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12M10 11v5M14 11v5" /></svg>
+                        Yes
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
 </div>

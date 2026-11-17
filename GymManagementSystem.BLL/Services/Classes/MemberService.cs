@@ -50,6 +50,9 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachment
         if(memeber == null) 
             return Result.NotFound("Member Not Found");
 
+        var Memberships = await unitOfWork.MembershipRepository.GetAllMembershipsWithMemberAndPlanAsync(m => m.MemberId == id && m.EndDate > DateTime.Now);
+        if (Memberships.Count > 0)
+            return Result.Fail("Can Not Delete Members with an Active Membership");
         var hasFuture = await unitOfWork.GetRepository<Booking>().AnyAsync(b=>b.MemberId == id && b.Session.StartDate > DateTime.Now);
         if(hasFuture) 
             return Result.Validation("Member has Upcoming booked Sessions");
