@@ -2,83 +2,412 @@
 @{
     ViewData["Title"] = "Member - Details";
 }
-<div class="container">
-    <main role="main" class="pb-3">
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card card-details border-0 p-2 shadow">
-                        <div class="text-center mt-3">
-                            @if (string.IsNullOrWhiteSpace(Model.Photo))
-                            {
-                            <img src="~/images/Default.png" alt="MemberName" class="rounded-circle"
-                                style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; margin-top: -60px;" />
-                            }
-                            else
-                            {
-                                <img src="@Url.Action("GetPhoto", "Members", new { id = Model.Id })" alt="MemberName" class="rounded-circle"
-                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; margin-top: -60px;" />
-                            }
-                        </div>
-                        <div class="card-body text-center">
-                            <h2 class="mb-3 text-primary-color">@Model.Name</h2>
-                            <h4 class="mb-2 pb-4 border-bottom d-block">@(Model.PlanName ?? "No Plan") </h4>
-                            <div class="mt-4 text-start">
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <div class="p-3 bg-light rounded">
-                                            <small class="text-muted d-block mb-1">Email</small>
-                                            <strong class="text-success-emphasis">@Model.Email</strong>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="p-3 bg-light rounded">
-                                            <small class="text-muted d-block mb-1">Phone</small>
-                                            <strong class="text-success-emphasis">@Model.Phone</strong>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="p-3 bg-light rounded">
-                                            <small class="text-muted d-block mb-1">Gender</small>
-                                            <strong class="text-success-emphasis">@Model.Gender</strong>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="p-3 bg-light rounded">
-                                            <small class="text-muted d-block mb-1">Date of Birth</small>
-                                            <strong class="text-success-emphasis">@Model.DateOfBirth</strong>
-                                        </div>
-                                    </div>
 
-                                    <div class="col-6">
-                                        <div class="p-3 bg-light rounded">
-                                            <small class="text-muted d-block mb-1">Membership Start Date</small>
-                                            <strong class="text-success-emphasis">@(@Model.MembershipStartDate ?? "No Active Membership")</strong>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="p-3 bg-light rounded">
-                                            <small class="text-muted d-block mb-1">Membership End Date</small>
-                                            <strong class="text-success-emphasis">@(@Model.MembershipEndDate ?? "No Active Membership")</strong>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="p-3 bg-light rounded">
-                                            <small class="text-muted d-block mb-1">Address</small>
-                                            <strong class="text-success-emphasis">@Model.Address</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-                        <div class="d-flex justify-content-between gap-2 px-3 pb-3">
-                            <a asp-controller="Members" asp-action="Index" class="btn btn-fill flex-fill">Back to List</a>
-                        </div>
-                    </div>
-                </div>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 980px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page p, .pf-page ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page ul {
+            list-style: none;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ============ Profile hero ============ */
+    .profile-wrap {
+        position: relative;
+    }
+
+    .profile {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: clamp(2rem, 5vw, 3.5rem) 1.5rem clamp(5.5rem, 10vw, 7rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 420px at 100% 0%, rgba(20, 108, 67, 0.65), transparent 60%), radial-gradient(500px 320px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        text-align: center;
+        color: #fff;
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+        .profile::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    .photo-wrap {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 176px;
+        height: 176px;
+        margin-bottom: 0.75rem;
+        animation: pf-pop .6s cubic-bezier(.2, .7, .2, 1) .1s backwards;
+    }
+
+        /* slowly turning dashed ring */
+        .photo-wrap::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 3px dashed rgba(197, 240, 77, 0.6);
+            border-radius: 50%;
+            animation: pf-spin 24s linear infinite;
+        }
+
+    .photo {
+        width: 140px;
+        height: 140px;
+        border: 4px solid var(--lime);
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 0 0 5px var(--primary);
+        object-fit: cover;
+    }
+
+    .profile-name {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+        color: #fff;
+    }
+
+    .profile-plan {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding: 0.25rem 1rem !important;
+        border-radius: 999px;
+        background: var(--lime);
+        font-size: 0.9375rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+        .profile-plan .ico {
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+
+    /* ============ Details card ============ */
+    .details {
+        position: relative;
+        z-index: 2;
+        margin: -3.5rem clamp(0.75rem, 5vw, 3.5rem) 0;
+        padding: clamp(1.25rem, 3vw, 2rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .2s backwards;
+    }
+
+    .fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .tile {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        min-width: 0;
+        padding: 1rem 1.1rem;
+        border: 1.5px solid #e2e6dc;
+        border-radius: 16px;
+        background: #fff;
+        transition: border-color .2s ease, transform .2s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 60ms + .3s) backwards;
+    }
+
+        .tile:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+    .tile--wide {
+        grid-column: 1 / -1;
+    }
+
+    .tile-ico {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #e1efe7;
+        color: var(--primary);
+    }
+
+    .tile-body {
+        min-width: 0;
+    }
+
+    .tile-label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .tile-value {
+        display: block;
+        margin-top: 0.15rem;
+        font-size: 1.0625rem;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+        color: var(--ink);
+    }
+
+    .actions {
+        margin-top: 1.5rem;
+    }
+
+    .btn-power {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        min-height: 56px;
+        padding: 0 1.5rem;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        box-shadow: 0 4px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+            .btn-power:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes pf-pop {
+        from { opacity: 0; transform: scale(0.9); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+
+    @@keyframes pf-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 575.98px) {
+        .fields {
+            grid-template-columns: 1fr;
+        }
+
+        .details {
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .photo-wrap {
+            width: 156px;
+            height: 156px;
+        }
+
+        .photo {
+            width: 124px;
+            height: 124px;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .tile:hover {
+            transform: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+    <div class="profile-wrap">
+
+        <section class="profile" aria-labelledby="member-name">
+            <div class="photo-wrap">
+                @if (string.IsNullOrWhiteSpace(Model.Photo))
+                {
+                    <img src="~/images/Default.png" alt="@Model.Name" class="photo" />
+                }
+                else
+                {
+                    <img src="@Url.Action("GetPhoto", "Members", new { id = Model.Id })" alt="@Model.Name" class="photo" />
+                }
             </div>
-        </div>
 
-    </main>
+            <h1 id="member-name" class="profile-name">@Model.Name</h1>
+
+            <p class="profile-plan">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3 10h18M7 15h4" /></svg>
+                @(Model.PlanName ?? "No Plan")
+            </p>
+        </section>
+
+        <section class="details">
+            <ul class="fields">
+                <li class="tile tile--wide" style="--i:0">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3.5 7l8.5 6 8.5-6" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Email</span>
+                        <strong class="tile-value">@Model.Email</strong>
+                    </div>
+                </li>
+
+                <li class="tile tile--wide" style="--i:1">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Phone</span>
+                        <strong class="tile-value">@Model.Phone</strong>
+                    </div>
+                </li>
+
+                <li class="tile" style="--i:2">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Gender</span>
+                        <strong class="tile-value">@Model.Gender</strong>
+                    </div>
+                </li>
+
+                <li class="tile" style="--i:3">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /><circle cx="12" cy="15.5" r="1" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Date of Birth</span>
+                        <strong class="tile-value">@Model.DateOfBirth</strong>
+                    </div>
+                </li>
+
+                <li class="tile" style="--i:4">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M10 8.5l5 3.5-5 3.5z" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Membership Start Date</span>
+                        <strong class="tile-value">@(Model.MembershipStartDate ?? "No Active Membership")</strong>
+                    </div>
+                </li>
+
+                <li class="tile" style="--i:5">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 21V4M5 4h11l-2 4 2 4H5" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Membership End Date</span>
+                        <strong class="tile-value">@(Model.MembershipEndDate ?? "No Active Membership")</strong>
+                    </div>
+                </li>
+
+                <li class="tile tile--wide" style="--i:6">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Address</span>
+                        <strong class="tile-value">@Model.Address</strong>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="actions">
+                <a asp-controller="Members" asp-action="Index" class="btn-power">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                    Back to List
+                </a>
+            </div>
+        </section>
+
+    </div>
 </div>
