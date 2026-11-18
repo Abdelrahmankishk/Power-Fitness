@@ -1,119 +1,662 @@
 ﻿@using GymManagementSystem.DAL.Models.Enums
-@model CreateTrainerViewModel 
+@model CreateTrainerViewModel
 @{
     ViewData["Title"] = "Add Trainer";
 }
 
-<div class="container mt-4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --line: #6f8578;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 960px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page h2, .pf-page p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    /* ============ Alerts ============ */
+    .pf-alert {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid currentColor;
+        border-radius: 14px;
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .pf-alert--success {
+        background: #e7f3ec;
+        color: var(--primary);
+    }
+
+    .pf-alert--error {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .pf-alert-text {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .pf-alert-close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.75rem -0.5rem 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+        .pf-alert-close:hover {
+            background: rgba(6, 33, 23, 0.1);
+        }
+
+        .pf-alert-close:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 0;
+        }
+
+    .pf-alert-timer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.4;
+        transform-origin: left;
+        animation: pf-timer var(--t, 6s) linear forwards;
+    }
+
+    .pf-alert:hover .pf-alert-timer,
+    .pf-alert:focus-within .pf-alert-timer {
+        animation-play-state: paused;
+    }
+
+    .pf-alert.is-leaving {
+        max-height: 0 !important;
+        margin-block: -0.75rem;
+        padding-block: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    /* ============ Header ============ */
+    .page-head {
+        margin: 0.5rem 0 1rem;
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    /* ============ Journey (three stations) ============ */
+    .journey {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .station {
+        position: relative;
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr);
+        gap: 1.25rem;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 90ms + .1s) backwards;
+    }
+
+        /* dashed track between the numbered nodes */
+        .station:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 26px;
+            top: 64px;
+            bottom: -2rem;
+            border-left: 3px dashed #b9c6bd;
+        }
+
+    .node {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        width: 56px;
+        height: 56px;
+        margin-top: 0.4rem;
+        border: 3px solid var(--lime);
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--lime);
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+    }
+
+        .node .ico {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+    .station-card {
+        min-width: 0;
+        padding: clamp(1.25rem, 3vw, 2rem);
+        border-radius: 24px 24px 24px 6px;
+        background: var(--paper);
+        box-shadow: 8px 8px 0 var(--primary);
+    }
+
+        .station-card .text-danger {
+            color: var(--danger) !important;
+        }
+
+    .station-title {
+        margin-bottom: 1.1rem;
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem 1.25rem;
+    }
+
+    .field-label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .field-control {
+        position: relative;
+    }
+
+        .field-control .ico {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3f5a4b;
+            pointer-events: none;
+        }
+
+        .field-control .ico-lead {
+            left: 16px;
+        }
+
+        .field-control .ico-chev {
+            right: 16px;
+            transition: transform .2s ease;
+        }
+
+        .field-control:focus-within .ico-chev {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+    .field-input,
+    .field-select {
+        width: 100%;
+        height: 52px;
+        padding: 0 16px 0 48px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--text);
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .field-select {
+        padding-right: 48px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+        .field-select:has(option:checked[value=""]) {
+            color: #5a6d62;
+        }
+
+        .field-select option {
+            color: var(--text);
+        }
+
+    .field-input:hover,
+    .field-select:hover {
+        border-color: var(--primary);
+    }
+
+    .field-input:focus,
+    .field-select:focus {
+        outline: 2px solid transparent;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(20, 108, 67, 0.22);
+    }
+
+    .field-input.input-validation-error,
+    .field-select.input-validation-error {
+        border-color: var(--danger);
+    }
+
+        .field-input.input-validation-error:focus,
+        .field-select.input-validation-error:focus {
+            box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.2);
+        }
+
+    .field-error {
+        display: block;
+        min-height: 1.25rem;
+        margin-top: 0.35rem;
+        font-size: 0.875rem;
+    }
+
+    /* ============ Finish ============ */
+    .finish {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 64px;
+    }
+
+    .btn-power {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-width: 200px;
+        min-height: 56px;
+        padding: 0 2rem;
+        border: 0;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 4px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-power:hover .ico {
+                transform: rotate(90deg);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes pf-timer {
+        to { transform: scaleX(0); }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 767.98px) {
+        .fields {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .station {
+            grid-template-columns: 40px minmax(0, 1fr);
+            gap: 0.85rem;
+        }
+
+        .station:not(:last-child)::before {
+            left: 18px;
+            top: 48px;
+        }
+
+        .node {
+            width: 40px;
+            height: 40px;
+            border-width: 2px;
+            font-size: 1.1rem;
+        }
+
+            .node .ico {
+                width: 1.1rem;
+                height: 1.1rem;
+            }
+
+        .station-card {
+            box-shadow: 6px 6px 0 var(--primary);
+        }
+
+        .btn-power {
+            width: 100%;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .pf-alert-timer {
+            display: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
     @if (TempData["SuccessMessage"] != null)
     {
-        <div id="Alert" class="alert alert-success alert-dismissible fade show">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div id="Alert" class="pf-alert pf-alert--success" role="status" data-timeout="6000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+            <p class="pf-alert-text">@TempData["SuccessMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:6s" aria-hidden="true"></span>
         </div>
 
     }
     else if (TempData["ErrorMessage"] != null)
     {
-        <div id="Alert" class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div id="Alert" class="pf-alert pf-alert--error" role="alert" data-timeout="10000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <p class="pf-alert-text">@TempData["ErrorMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:10s" aria-hidden="true"></span>
         </div>
 
     }
-    <header class="mb-4">
-        <h3 class="text-primary-color">Add New Trainer</h3>
+
+    <header class="page-head">
+        <h1 class="page-title">Add New <span class="hl">Trainer</span></h1>
     </header>
 
-    <form asp-controller="Trainer" asp-action="CreateTrainer" method="post">
+    <form asp-controller="Trainer" asp-action="CreateTrainer" method="post" class="journey">
 
         <!-- Trainer Info -->
-        <div class="section-header mb-3">
-            <h5 class="text-success fw-bold">Personal Information</h5>
-            <hr class="mt-2">
-        </div>
-        <div class="row g-3">
-            <div class="col-12 col-md-6">
-                <label asp-for="Name" class="form-label"></label>
-                <input asp-for="Name" type="text" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
+        <section class="station" style="--i:0">
+            <span class="node" aria-hidden="true">01</span>
+            <div class="station-card">
+                <h2 class="station-title">Personal Information</h2>
 
-            <div class="col-12 col-md-6">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
+                <div class="fields">
+                    <div class="field">
+                        <label asp-for="Name" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg>
+                            <input asp-for="Name" type="text" class="field-input" />
+                        </div>
+                        <span asp-validation-for="Name" class="text-danger field-error"></span>
+                    </div>
 
-            <div class="col-12 col-md-6">
-                <label asp-for="Phone" class="form-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
+                    <div class="field">
+                        <label asp-for="Email" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3.5 7l8.5 6 8.5-6" /></svg>
+                            <input asp-for="Email" class="field-input" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger field-error"></span>
+                    </div>
 
-            <div class="col-12 col-md-6">
-                <label asp-for="DateOfBirth" class="form-label"></label>
-                <input asp-for="DateOfBirth" class="form-control" type="date" />
-                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-            </div>
+                    <div class="field">
+                        <label asp-for="Phone" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" /></svg>
+                            <input asp-for="Phone" class="field-input" />
+                        </div>
+                        <span asp-validation-for="Phone" class="text-danger field-error"></span>
+                    </div>
 
-            <div class="col-12 col-md-6">
-                <label asp-for="Gender" class="form-label"></label>
-                <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()" class="form-select">
-                    <option value="">-- Select Gender --</option>
-                </select>
-                <span asp-validation-for="Gender" class="text-danger"></span>
-            </div>
+                    <div class="field">
+                        <label asp-for="DateOfBirth" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+                            <input asp-for="DateOfBirth" class="field-input" type="date" />
+                        </div>
+                        <span asp-validation-for="DateOfBirth" class="text-danger field-error"></span>
+                    </div>
 
-        </div>
-        <div class="section-header mb-3 mt-4">
-            <h5 class="text-success fw-bold">Address Information</h5>
-            <hr class="mt-2">
-        </div>
-        <div class="row g-3">
+                    <div class="field">
+                        <label asp-for="Gender" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="10" r="3" /><path d="M6.5 18c1.2-2.3 3.1-3.5 5.5-3.5s4.3 1.2 5.5 3.5" /></svg>
+                            <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()" class="field-select">
+                                <option value="">-- Select Gender --</option>
+                            </select>
+                            <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+                        </div>
+                        <span asp-validation-for="Gender" class="text-danger field-error"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <div class="col-12 col-md-6">
-                <label asp-for="BuildingNumber" class="form-label"></label>
-                <input asp-for="BuildingNumber" class="form-control" />
-                <span asp-validation-for="BuildingNumber" class="text-danger"></span>
-            </div>
+        <section class="station" style="--i:1">
+            <span class="node" aria-hidden="true">02</span>
+            <div class="station-card">
+                <h2 class="station-title">Address Information</h2>
 
-            <div class="col-12 col-md-6">
-                <label asp-for="Street" class="form-label"></label>
-                <input asp-for="Street" class="form-control" />
-                <span asp-validation-for="Street" class="text-danger"></span>
+                <div class="fields">
+                    <div class="field">
+                        <label asp-for="BuildingNumber" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 21v-4h4v4" /></svg>
+                            <input asp-for="BuildingNumber" class="field-input" />
+                        </div>
+                        <span asp-validation-for="BuildingNumber" class="text-danger field-error"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Street" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3v18M17 3v18M12 5v3M12 11v3M12 17v3" /></svg>
+                            <input asp-for="Street" class="field-input" />
+                        </div>
+                        <span asp-validation-for="Street" class="text-danger field-error"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="City" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                            <input asp-for="City" class="field-input" />
+                        </div>
+                        <span asp-validation-for="City" class="text-danger field-error"></span>
+                    </div>
+                </div>
             </div>
-            <div class="col-12 col-md-6">
-                <label asp-for="City" class="form-label"></label>
-                <input asp-for="City" class="form-control" />
-                <span asp-validation-for="City" class="text-danger"></span>
-            </div>
-        </div>
+        </section>
+
         <!-- Professional Information -->
-        <div class="section-header mb-3 mt-4">
-            <h5 class="text-success fw-bold">Professional Information</h5>
-            <hr class="mt-2">
-        </div>
-        <div class="row g-3">
+        <section class="station" style="--i:2">
+            <span class="node" aria-hidden="true">03</span>
+            <div class="station-card">
+                <h2 class="station-title">Professional Information</h2>
 
-            <div class="col-12 col-md-6">
-                <label asp-for="Specialties" class="form-label"></label>
-                <select asp-for="Specialties" asp-items="Html.GetEnumSelectList<TrainerSpecialties>()" class="form-select">
-                    <option value="">-- Select Specialist --</option>
-                </select>
-                <span asp-validation-for="Specialties" class="text-danger"></span>
+                <div class="fields">
+                    <div class="field">
+                        <label asp-for="Specialties" class="field-label"></label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="9" r="5" /><path d="M8.5 13.5L7 21l5-3 5 3-1.5-7.5" /></svg>
+                            <select asp-for="Specialties" asp-items="Html.GetEnumSelectList<TrainerSpecialties>()" class="field-select">
+                                <option value="">-- Select Specialist --</option>
+                            </select>
+                            <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+                        </div>
+                        <span asp-validation-for="Specialties" class="text-danger field-error"></span>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <footer class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn btn-fill">Add</button>
+        <footer class="station" style="--i:3">
+            <span class="node" aria-hidden="true">
+                <svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 21V4M5 4h11l-2 4 2 4H5" /></svg>
+            </span>
+            <div class="finish">
+                <button type="submit" class="btn-power">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></svg>
+                    Add
+                </button>
+            </div>
         </footer>
+
     </form>
 
 </div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <partial name="_AlertBox.cshtml" />
+
+    <script>
+        (function () {
+            var alertEl = document.getElementById('Alert');
+            if (!alertEl) return;
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* Close the alert smoothly (safe to call more than once) */
+            function dismiss(el) {
+                if (!el.parentNode || el.getAttribute('data-leaving')) return;
+                el.setAttribute('data-leaving', '1');
+                el.style.maxHeight = el.offsetHeight + 'px';
+                void el.offsetHeight;
+                el.classList.add('is-leaving');
+
+                var removed = false;
+                function remove() {
+                    if (removed) return;
+                    removed = true;
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+                el.addEventListener('transitionend', function (e) {
+                    if (e.target === el && e.propertyName === 'max-height') remove();
+                });
+                setTimeout(remove, reduce ? 0 : 500);
+            }
+
+            var closeBtn = alertEl.querySelector('.pf-alert-close');
+            var timer = alertEl.querySelector('.pf-alert-timer');
+            var ms = parseInt(alertEl.getAttribute('data-timeout'), 10) || 6000;
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () { dismiss(alertEl); });
+            }
+
+            /* Auto-dismiss: the timer bar drives the delay and pauses on hover/focus */
+            if (reduce || !timer) {
+                setTimeout(function () { dismiss(alertEl); }, ms);
+            } else {
+                timer.addEventListener('animationend', function () { dismiss(alertEl); });
+            }
+        })();
+    </script>
 }
