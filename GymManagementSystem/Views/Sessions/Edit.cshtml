@@ -4,95 +4,616 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --line: #6f8578;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1040px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page h2, .pf-page p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    /* ============ Alerts ============ */
+    .pf-alert {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid currentColor;
+        border-radius: 14px;
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .pf-alert--success {
+        background: #e7f3ec;
+        color: var(--primary);
+    }
+
+    .pf-alert--error {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .pf-alert-text {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .pf-alert-close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.75rem -0.5rem 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+        .pf-alert-close:hover {
+            background: rgba(6, 33, 23, 0.1);
+        }
+
+        .pf-alert-close:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 0;
+        }
+
+    .pf-alert-timer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.4;
+        transform-origin: left;
+        animation: pf-timer var(--t, 6s) linear forwards;
+    }
+
+    .pf-alert:hover .pf-alert-timer,
+    .pf-alert:focus-within .pf-alert-timer {
+        animation-play-state: paused;
+    }
+
+    .pf-alert.is-leaving {
+        max-height: 0 !important;
+        margin-block: -0.75rem;
+        padding-block: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    /* ============ Header ============ */
+    .page-head {
+        margin: 0.5rem 0 0.75rem;
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .page-sub {
+        margin-top: 0.6rem;
+        font-size: 1.125rem;
+        color: var(--text-muted);
+    }
+
+    /* ============ Two ticket panels ============ */
+    .panels {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .panel {
+        overflow: hidden;
+        border-radius: 24px 24px 24px 6px;
+        background: var(--paper);
+        box-shadow: 10px 10px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 100ms + .1s) backwards;
+    }
+
+        .panel .text-danger {
+            color: var(--danger) !important;
+        }
+
+    .panel-head {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: var(--ink);
+        color: var(--lime);
+    }
+
+        .panel-head .ico {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .panel-head h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+    .panel-body {
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+    }
+
+    .field + .field {
+        margin-top: 0.5rem;
+    }
+
+    .field-label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .field-control {
+        position: relative;
+    }
+
+        .field-control .ico {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3f5a4b;
+            pointer-events: none;
+        }
+
+        .field-control .ico-lead {
+            left: 16px;
+        }
+
+        .field-control .ico-chev {
+            right: 16px;
+            transition: transform .2s ease;
+        }
+
+        .field-control:focus-within .ico-chev {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+    .field-input,
+    .field-select,
+    .field-textarea {
+        width: 100%;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--text);
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .field-input,
+    .field-select {
+        height: 52px;
+        padding: 0 16px 0 48px;
+    }
+
+    .field-input--plain {
+        padding-left: 16px;
+    }
+
+    .field-select {
+        padding-right: 48px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+        .field-select:has(option:checked[value=""]) {
+            color: #5a6d62;
+        }
+
+        .field-select option {
+            color: var(--text);
+        }
+
+    .field-textarea {
+        display: block;
+        min-height: 140px;
+        padding: 14px 16px;
+        line-height: 1.5;
+        resize: vertical;
+    }
+
+        .field-input:hover,
+        .field-select:hover,
+        .field-textarea:hover {
+            border-color: var(--primary);
+        }
+
+        .field-input:focus,
+        .field-select:focus,
+        .field-textarea:focus {
+            outline: 2px solid transparent;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(20, 108, 67, 0.22);
+        }
+
+        .field-input.input-validation-error,
+        .field-select.input-validation-error,
+        .field-textarea.input-validation-error {
+            border-color: var(--danger);
+        }
+
+            .field-input.input-validation-error:focus,
+            .field-select.input-validation-error:focus,
+            .field-textarea.input-validation-error:focus {
+                box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.2);
+            }
+
+    .field-error {
+        display: block;
+        min-height: 1.25rem;
+        margin-top: 0.35rem;
+        font-size: 0.875rem;
+    }
+
+    /* ---- Start -> End timeline ---- */
+    .tl-row {
+        position: relative;
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 1rem;
+    }
+
+        .tl-row:not(:last-child) {
+            padding-bottom: 0.75rem;
+        }
+
+            /* dashed track between the two nodes */
+            .tl-row:not(:last-child)::before {
+                content: '';
+                position: absolute;
+                left: 20px;
+                top: 52px;
+                bottom: 0;
+
+            }
+
+    .tl-node {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin-top: 1.9rem;
+        border-radius: 50%;
+    }
+
+    .tl-node--start {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .tl-node--end {
+        border: 2px solid var(--lime);
+        background: var(--ink);
+        color: var(--lime);
+    }
+
+    /* ============ Buttons ============ */
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 2rem;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) .35s backwards;
+    }
+
+    .btn-ghost,
+    .btn-power {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.75rem;
+        border-radius: var(--radius);
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-ghost .ico,
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+    .btn-ghost {
+        border: 2px solid var(--line);
+        background: transparent;
+        color: var(--ink);
+    }
+
+        .btn-ghost:hover {
+            border-color: var(--ink);
+            background: #e9ede4;
+        }
+
+            .btn-ghost:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .btn-ghost:active {
+            transform: translateY(3px);
+        }
+
+    .btn-power {
+        border: 0;
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 4px 0 var(--primary-press);
+    }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-power:hover .ico {
+                transform: scale(1.2);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-ghost:focus-visible,
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-timer {
+        to {
+            transform: scaleX(0);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 899.98px) {
+        .panels {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .panel {
+            box-shadow: 6px 6px 0 var(--primary);
+        }
+
+        .btn-ghost,
+        .btn-power {
+            flex: 1 1 100%;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .pf-alert-timer {
+            display: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
     @if (TempData["SuccessMessage"] != null)
     {
-        <div id="Alert" class="alert alert-success alert-dismissible fade show">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div id="Alert" class="pf-alert pf-alert--success" role="status" data-timeout="6000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+            <p class="pf-alert-text">@TempData["SuccessMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:6s" aria-hidden="true"></span>
         </div>
     }
     else if (TempData["ErrorMessage"] != null)
     {
-        <div id="Alert" class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div id="Alert" class="pf-alert pf-alert--error" role="alert" data-timeout="10000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <p class="pf-alert-text">@TempData["ErrorMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:10s" aria-hidden="true"></span>
         </div>
     }
-    <header class="mb-4">
-        <h3 class="text-primary-color">Edit Session</h3>
-        <p class="text-muted">Update session information</p>
+
+    <header class="page-head">
+        <h1 class="page-title">Edit <span class="hl">Session</span></h1>
+        <p class="page-sub">Update session information</p>
     </header>
 
     <form asp-action="Edit" method="post">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
+        <div class="panels">
 
-                        <!-- Session Information -->
-                        <div class="section-header mb-3">
-                            <h5 class="text-success fw-bold">Session Information</h5>
-                            <hr class="mt-2">
+            <!-- Session Information -->
+            <section class="panel" style="--i:0">
+                <header class="panel-head">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v18M5 7h11l3 2.5-3 2.5H5zM19 15H8l-3 2.5L8 20h11" /></svg>
+                    <h2>Session Information</h2>
+                </header>
+
+                <div class="panel-body">
+                    <div class="field">
+                        <label asp-for="TrainerId" class="field-label">
+                            Trainer <span class="text-danger">*</span>
+                        </label>
+                        <div class="field-control">
+                            <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg>
+                            <select asp-for="TrainerId" asp-items="@ViewBag.Trainers" class="field-select">
+                                <option value="">Select Trainer</option>
+                            </select>
+                            <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
                         </div>
+                        <span asp-validation-for="TrainerId" class="text-danger field-error"></span>
+                    </div>
 
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label asp-for="TrainerId" class="form-label fw-semibold">
-                                    Trainer <span class="text-danger">*</span>
-                                </label>
-                                <select asp-for="TrainerId" asp-items="@ViewBag.Trainers" class="form-select">
-                                    <option value="">Select Trainer</option>
-                                </select>
-                                <span asp-validation-for="TrainerId" class="text-danger"></span>
-                            </div>
+                    <div class="field">
+                        <label asp-for="Description" class="field-label">
+                            Description <span class="text-danger">*</span>
+                        </label>
+                        <textarea asp-for="Description" class="field-textarea" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger field-error"></span>
+                    </div>
+                </div>
+            </section>
 
-                            <div class="col-12">
-                                <label asp-for="Description" class="form-label fw-semibold">
-                                    Description <span class="text-danger">*</span>
-                                </label>
-                                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
-                            </div>
+            <!-- Date & Time -->
+            <section class="panel" style="--i:1">
+                <header class="panel-head">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                    <h2>Date &amp; Time</h2>
+                </header>
+
+                <div class="panel-body">
+                    <div class="tl-row">
+                        <span class="tl-node tl-node--start" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M8 5v14l11-7z" /></svg></span>
+                        <div class="field">
+                            <label asp-for="StartDate" class="field-label">
+                                Start Date &amp; Time <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="StartDate" type="datetime-local" class="field-input field-input--plain" />
+                            <span asp-validation-for="StartDate" class="text-danger field-error"></span>
                         </div>
+                    </div>
 
-                        <!-- Date & Time -->
-                        <div class="section-header mb-3">
-                            <h5 class="text-success fw-bold">Date & Time</h5>
-                            <hr class="mt-2">
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label asp-for="StartDate" class="form-label fw-semibold">
-                                    Start Date & Time <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="StartDate" type="datetime-local" class="form-control" />
-                                <span asp-validation-for="StartDate" class="text-danger"></span>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label asp-for="EndDate" class="form-label fw-semibold">
-                                    End Date & Time <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="EndDate" type="datetime-local" class="form-control" />
-                                <span asp-validation-for="EndDate" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
-                            <a asp-action="Index" class="btn btn-outline">
-                                <i class="bi bi-arrow-left me-1"></i>Cancel
-                            </a>
-                            <button type="submit" class="btn btn-fill">
-                                <i class="bi bi-check-lg me-1"></i>Update Session
-                            </button>
+                    <div class="tl-row">
+                        <span class="tl-node tl-node--end" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 21V4M5 4h11l-2 4 2 4H5" /></svg></span>
+                        <div class="field">
+                            <label asp-for="EndDate" class="field-label">
+                                End Date &amp; Time <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="EndDate" type="datetime-local" class="field-input field-input--plain" />
+                            <span asp-validation-for="EndDate" class="text-danger field-error"></span>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+        </div>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="btn-ghost">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                Cancel
+            </a>
+            <button type="submit" class="btn-power">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                Update Session
+            </button>
         </div>
     </form>
 </div>
@@ -100,4 +621,48 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <partial name="_AlertBox.cshtml" />
+
+    <script>
+        (function () {
+            var alertEl = document.getElementById('Alert');
+            if (!alertEl) return;
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* Close the alert smoothly (safe to call more than once) */
+            function dismiss(el) {
+                if (!el.parentNode || el.getAttribute('data-leaving')) return;
+                el.setAttribute('data-leaving', '1');
+                el.style.maxHeight = el.offsetHeight + 'px';
+                void el.offsetHeight;
+                el.classList.add('is-leaving');
+
+                var removed = false;
+                function remove() {
+                    if (removed) return;
+                    removed = true;
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+                el.addEventListener('transitionend', function (e) {
+                    if (e.target === el && e.propertyName === 'max-height') remove();
+                });
+                setTimeout(remove, reduce ? 0 : 500);
+            }
+
+            var closeBtn = alertEl.querySelector('.pf-alert-close');
+            var timer = alertEl.querySelector('.pf-alert-timer');
+            var ms = parseInt(alertEl.getAttribute('data-timeout'), 10) || 6000;
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () { dismiss(alertEl); });
+            }
+
+            /* Auto-dismiss: the timer bar drives the delay and pauses on hover/focus */
+            if (reduce || !timer) {
+                setTimeout(function () { dismiss(alertEl); }, ms);
+            } else {
+                timer.addEventListener('animationend', function () { dismiss(alertEl); });
+            }
+        })();
+    </script>
 }
