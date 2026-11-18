@@ -1,109 +1,730 @@
-﻿
-@model IEnumerable<SessionViewModel>
+﻿@model IEnumerable<SessionViewModel>
 @{
     ViewData["Title"] = "Sessions";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div id="Alert" class="alert alert-success alert-dismissible fade show">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-else if (TempData["ErrorMessage"] != null)
-{
-    <div id="Alert" class="alert alert-danger alert-dismissible fade show">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-<div class="container">
-    <header class="d-flex justify-content-between mt-5 mb-4 align-items-center">
-        <div>
-            <h2 class="text-primary-color mb-0">Training Sessions</h2>
-            <p class="text-muted">Manage gym training sessions and classes</p>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1240px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page h2, .pf-page p, .pf-page ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page ul {
+            list-style: none;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    .pf-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.75rem;
+        border: 0;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 4px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .pf-btn .ico {
+            transition: transform .2s ease;
+        }
+
+        .pf-btn:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+            .pf-btn:hover .ico {
+                transform: rotate(90deg);
+            }
+
+        .pf-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .pf-btn:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Alerts ============ */
+    .pf-alert {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid currentColor;
+        border-radius: 14px;
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .pf-alert--success {
+        background: #e7f3ec;
+        color: var(--primary);
+    }
+
+    .pf-alert--error {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .pf-alert-text {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .pf-alert-close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.75rem -0.5rem 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+        .pf-alert-close:hover {
+            background: rgba(6, 33, 23, 0.1);
+        }
+
+        .pf-alert-close:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 0;
+        }
+
+    .pf-alert-timer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.4;
+        transform-origin: left;
+        animation: pf-timer var(--t, 6s) linear forwards;
+    }
+
+    .pf-alert:hover .pf-alert-timer,
+    .pf-alert:focus-within .pf-alert-timer {
+        animation-play-state: paused;
+    }
+
+    .pf-alert.is-leaving {
+        max-height: 0 !important;
+        margin-block: -0.875rem;
+        padding-block: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    /* ============ Header ============ */
+    .page-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin: 0.5rem 0 0.75rem;
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .page-sub {
+        margin-top: 0.6rem;
+        font-size: 1.125rem;
+        color: var(--text-muted);
+    }
+
+    /* ============ Session cards (status spine) ============ */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+        gap: 2.25rem 1.75rem;
+    }
+
+    .session {
+        position: relative;
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr);
+        overflow: hidden;
+        border-radius: 20px 20px 20px 6px;
+        background: var(--paper);
+        box-shadow: 8px 8px 0 var(--primary);
+        transition: transform .25s cubic-bezier(.2, .7, .2, 1), box-shadow .25s ease;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 60ms + .1s) backwards;
+    }
+
+        .session:hover,
+        .session:focus-within {
+            transform: translate(-3px, -3px);
+            box-shadow: 11px 11px 0 var(--primary);
+        }
+
+    .spine {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.7rem;
+        padding: 1.25rem 0;
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        writing-mode: vertical-rl;
+    }
+
+    .is-upcoming .spine {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .is-ongoing .spine {
+        background: var(--lime);
+        color: var(--ink);
+    }
+
+        .is-ongoing .spine::before {
+            content: '';
+            flex: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--ink);
+            animation: pf-pulse 1.6s ease-out infinite;
+        }
+
+    .is-completed .spine {
+        background: var(--ink);
+        color: var(--on-dark-muted);
+    }
+
+    .session-main {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .session-body {
+        flex: 1;
+        padding: 1.25rem 1.25rem 1rem;
+    }
+
+    .session-title {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
+        font-family: var(--font-display);
+        font-size: 1.65rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+        color: var(--ink);
+    }
+
+        .session-title .ico {
+            color: var(--primary);
+        }
+
+    .session-desc {
+        margin-bottom: 1.1rem;
+        color: var(--text-muted);
+    }
+
+        .session-desc:empty {
+            display: none;
+        }
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+        .info li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .info strong {
+            color: var(--ink);
+        }
+
+    .info-ico {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #e1efe7;
+        color: var(--primary);
+    }
+
+        .info-ico .ico {
+            width: 1.05rem;
+            height: 1.05rem;
+        }
+
+    .session-foot {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding: 1rem 1.25rem 1.25rem;
+        border-top: 2px dashed #b9c6bd;
+    }
+
+    .btn-view,
+    .btn-mini {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 10px;
+        font-family: var(--font-display);
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-view .ico,
+        .btn-mini .ico {
+            width: 1.1rem;
+            height: 1.1rem;
+            transition: transform .2s ease;
+        }
+
+    .btn-view {
+        min-height: 46px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 1.15rem;
+        box-shadow: 0 3px 0 var(--primary-press);
+    }
+
+        .btn-view:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-view:hover .ico {
+                transform: scale(1.2);
+            }
+
+        .btn-view:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+    .actions-row {
+        display: flex;
+        gap: 0.6rem;
+    }
+
+    .btn-mini {
+        flex: 1;
+        min-height: 44px;
+        border: 1.5px solid var(--primary);
+        background: transparent;
+        color: var(--primary);
+        font-size: 1.05rem;
+    }
+
+        .btn-mini:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-mini:active {
+            transform: translateY(2px);
+        }
+
+    .btn-delete {
+        border-color: var(--danger);
+        color: var(--danger);
+    }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+    .btn-view:focus-visible,
+    .btn-mini:focus-visible {
+        outline: 3px solid var(--ink);
+        outline-offset: 3px;
+    }
+
+    /* ============ Empty state ============ */
+    .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 3rem 1.5rem;
+        border: 2px dashed #b9c6bd;
+        border-radius: 28px;
+        background: var(--paper);
+        text-align: center;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .empty-art {
+        width: 120px;
+        height: 120px;
+    }
+
+    .empty-ring {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .empty-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .empty-cal {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .empty-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .empty-sub {
+        color: var(--text-muted);
+    }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes pf-timer {
+        to { transform: scaleX(0); }
+    }
+
+    @@keyframes pf-pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(6, 33, 23, 0.5); }
+        100% { box-shadow: 0 0 0 9px rgba(6, 33, 23, 0); }
+    }
+
+    @@keyframes pf-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 575.98px) {
+        .pf-btn {
+            width: 100%;
+        }
+
+        .session {
+            grid-template-columns: 1fr;
+            box-shadow: 6px 6px 0 var(--primary);
+        }
+
+        .spine {
+            padding: 0.6rem 1rem;
+            letter-spacing: 0.2em;
+            writing-mode: horizontal-tb;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .session:hover,
+        .session:focus-within {
+            transform: none;
+        }
+
+        .pf-alert-timer {
+            display: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert pf-alert--success" role="status" data-timeout="6000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+            <p class="pf-alert-text">@TempData["SuccessMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:6s" aria-hidden="true"></span>
         </div>
-        <a asp-controller="Sessions" asp-action="Create" class="btn btn-fill fw-medium rounded-pill px-4 py-3">
-            <i class="bi bi-plus-lg me-2"></i>Add Session
+    }
+    else if (TempData["ErrorMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert pf-alert--error" role="alert" data-timeout="10000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <p class="pf-alert-text">@TempData["ErrorMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:10s" aria-hidden="true"></span>
+        </div>
+    }
+
+    <header class="page-head">
+        <div>
+            <h1 class="page-title">Training <span class="hl">Sessions</span></h1>
+            <p class="page-sub">Manage gym training sessions and classes</p>
+        </div>
+        <a asp-controller="Sessions" asp-action="Create" class="pf-btn">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" /></svg>
+            Add Session
         </a>
     </header>
 
     @if (Model != null && Model.Any())
     {
-        <div class="row g-4">
+        var sessionIndex = 0;
+
+        <div class="grid">
             @foreach (var session in Model)
             {
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm border-0 session-card">
-                        <div class="card-header text-white py-3 @(session.Status == "Ongoing" ? "bg-secondary" : session.Status == "Upcoming" ? "bg-primary" : "bg-dark") ">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <i class="bi bi-calendar-event me-2"></i>@session.CategoryName
-                                </h5>
-                                <span class="badge bg-light text-dark">@session.Status</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <p class="text-muted mb-3">@session.Description</p>
+                <article class="session @(session.Status == "Ongoing" ? "is-ongoing" : session.Status == "Upcoming" ? "is-upcoming" : "is-completed")" style="--i:@(Math.Min(sessionIndex++, 12))">
 
-                            <div class="session-info mb-3">
-                                <div class="info-item mb-2">
-                                    <i class="bi bi-person-circle text-primary-color me-2"></i>
-                                    <strong>Trainer:</strong> @session.TrainerName
-                                </div>
-                                <div class="info-item mb-2">
-                                    <i class="bi bi-calendar3 text-primary-color me-2"></i>
-                                    <strong>Date:</strong> @session.DateDisplay
-                                </div>
-                                <div class="info-item mb-2">
-                                    <i class="bi bi-clock text-primary-color me-2"></i>
-                                    <strong>Time:</strong> @session.TimeRangeDisplay
-                                </div>
-                                <div class="info-item mb-2">
-                                    <i class="bi bi-hourglass-split text-primary-color me-2"></i>
-                                    <strong>Duration:</strong> @session.Duration
-                                </div>
-                                <div class="info-item">
-                                    <i class="bi bi-people text-primary-color me-2"></i>
-                                    <strong>Capacity:</strong> @session.AvailableSlots/@session.Capacity slots
-                                </div>
-                            </div>
+                    <div class="spine">@session.Status</div>
+
+                    <div class="session-main">
+                        <div class="session-body">
+                            <h2 class="session-title">
+                                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+                                @session.CategoryName
+                            </h2>
+
+                            <p class="session-desc">@session.Description</p>
+
+                            <ul class="info">
+                                <li>
+                                    <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg></span>
+                                    <span><strong>Trainer:</strong> @session.TrainerName</span>
+                                </li>
+                                <li>
+                                    <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span>
+                                    <span><strong>Date:</strong> @session.DateDisplay</span>
+                                </li>
+                                <li>
+                                    <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></span>
+                                    <span><strong>Time:</strong> @session.TimeRangeDisplay</span>
+                                </li>
+                                <li>
+                                    <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M7 3h10M7 21h10" /><path d="M8 3v3.5L12 12l-4 5.5V21M16 3v3.5L12 12l4 5.5V21" /></svg></span>
+                                    <span><strong>Duration:</strong> @session.Duration</span>
+                                </li>
+                                <li>
+                                    <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5" /><path d="M16 4.7a3.5 3.5 0 010 6.6M18.5 14.8c1.6.7 2.7 2.2 3 4.2" /></svg></span>
+                                    <span><strong>Capacity:</strong> @session.AvailableSlots/@session.Capacity slots</span>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="card-footer bg-white border-0">
-                            <div class="d-grid gap-2">
-                                <a asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline btn-sm">
-                                    <i class="bi bi-eye me-1"></i>View Details
+
+                        <div class="session-foot">
+                            <a asp-action="Details" asp-route-id="@session.Id" class="btn-view">
+                                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                                View Details
+                            </a>
+                            <div class="actions-row">
+                                <a asp-action="Edit" asp-route-id="@session.Id" class="btn-mini">
+                                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
+                                    Edit
                                 </a>
-                                <div class="d-flex gap-2">
-                                    <a asp-action="Edit" asp-route-id="@session.Id" class="btn btn-outline btn-sm flex-fill">
-                                        <i class="bi bi-pencil me-1"></i>Edit
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@session.Id" class="btn btn-outline deactiveButton text-danger btn-sm flex-fill">
-                                        <i class="bi bi-trash me-1"></i>Delete
-                                    </a>
-                                </div>
+                                <a asp-action="Delete" asp-route-id="@session.Id" class="btn-mini btn-delete deactiveButton">
+                                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12M10 11v5M14 11v5" /></svg>
+                                    Delete
+                                </a>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                </article>
             }
         </div>
     }
     else
     {
-        <div class="text-center py-5">
-            <i class="bi bi-calendar-x display-1 text-muted"></i>
-            <h4 class="mt-3 text-muted">No Sessions Available</h4>
-            <p class="text-muted">Create your first training session to get started</p>
+        <div class="empty">
+            <svg class="empty-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="empty-ring" cx="60" cy="60" r="56" />
+                <circle class="empty-plate" cx="60" cy="60" r="44" />
+                <g class="empty-cal">
+                    <rect x="38" y="43" width="44" height="38" rx="6" />
+                    <path d="M38 55h44M48 37v10M72 37v10M53 63l14 12M67 63L53 75" />
+                </g>
+            </svg>
+            <h2 class="empty-title">No Sessions Available</h2>
+            <p class="empty-sub">Create your first training session to get started</p>
         </div>
     }
 </div>
 
 @section Scripts {
     <partial name="_AlertBox.cshtml" />
+
+    <script>
+        (function () {
+            var alertEl = document.getElementById('Alert');
+            if (!alertEl) return;
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* Close the alert smoothly (safe to call more than once) */
+            function dismiss(el) {
+                if (!el.parentNode || el.getAttribute('data-leaving')) return;
+                el.setAttribute('data-leaving', '1');
+                el.style.maxHeight = el.offsetHeight + 'px';
+                void el.offsetHeight;
+                el.classList.add('is-leaving');
+
+                var removed = false;
+                function remove() {
+                    if (removed) return;
+                    removed = true;
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+                el.addEventListener('transitionend', function (e) {
+                    if (e.target === el && e.propertyName === 'max-height') remove();
+                });
+                setTimeout(remove, reduce ? 0 : 500);
+            }
+
+            var closeBtn = alertEl.querySelector('.pf-alert-close');
+            var timer = alertEl.querySelector('.pf-alert-timer');
+            var ms = parseInt(alertEl.getAttribute('data-timeout'), 10) || 6000;
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () { dismiss(alertEl); });
+            }
+
+            /* Auto-dismiss: the timer bar drives the delay and pauses on hover/focus */
+            if (reduce || !timer) {
+                setTimeout(function () { dismiss(alertEl); }, ms);
+            } else {
+                timer.addEventListener('animationend', function () { dismiss(alertEl); });
+            }
+        })();
+    </script>
 }
