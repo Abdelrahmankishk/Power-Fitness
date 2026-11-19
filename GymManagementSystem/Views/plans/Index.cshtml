@@ -1,112 +1,796 @@
-﻿@model IEnumerable<PLanViewModel> 
+﻿@model IEnumerable<PLanViewModel>
 @{
     ViewData["Title"] = "Plans";
 }
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <div class="container">
-        <main role="main" class="pb-3">
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div id="Alert" class="alert alert-success alert-dismissible fade show">
-                <i class="bi bi-check-circle-fill me-2"></i>
-                @TempData["SuccessMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1240px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
 
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
         }
-        else if (TempData["ErrorMessage"] != null)
-        {
-            <div id="Alert" class="alert alert-danger alert-dismissible fade show">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                @TempData["ErrorMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
 
+        .pf-page h1, .pf-page h2, .pf-page p {
+            margin: 0;
+            padding: 0;
         }
-            <div class="container">
-                <header class="d-flex justify-content-center mt-5 mb-4">
-                    <div>
-                        <h2 class="text-primary-color text-center mb-0">Membership Plans</h2>
-                        <p class="text-muted">Manage your gym membership packages</p>
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    /* ============ Alerts ============ */
+    .pf-alert {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid currentColor;
+        border-radius: 14px;
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .pf-alert--success {
+        background: #e7f3ec;
+        color: var(--primary);
+    }
+
+    .pf-alert--error {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .pf-alert-text {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .pf-alert-close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.75rem -0.5rem 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+        .pf-alert-close:hover {
+            background: rgba(6, 33, 23, 0.1);
+        }
+
+        .pf-alert-close:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 0;
+        }
+
+    .pf-alert-timer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.4;
+        transform-origin: left;
+        animation: pf-timer var(--t, 6s) linear forwards;
+    }
+
+    .pf-alert:hover .pf-alert-timer,
+    .pf-alert:focus-within .pf-alert-timer {
+        animation-play-state: paused;
+    }
+
+    .pf-alert.is-leaving {
+        max-height: 0 !important;
+        margin-block: -0.875rem;
+        padding-block: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    /* ============ Header ============ */
+    .page-head {
+        margin: 1rem 0 0.75rem;
+        text-align: center;
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .page-sub {
+        margin-top: 0.6rem;
+        font-size: 1.125rem;
+        color: var(--text-muted);
+    }
+
+    /* ============ Plan cards ============ */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+        gap: 2.25rem 1.75rem;
+    }
+
+    .plan {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 1.75rem 1.5rem 1.5rem;
+        border-radius: 24px 24px 24px 6px;
+        transition: transform .25s cubic-bezier(.2, .7, .2, 1), box-shadow .25s ease;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 70ms + .1s) backwards;
+    }
+
+        .plan:hover,
+        .plan:focus-within {
+            transform: translate(-3px, -3px);
+        }
+
+    /* --- Active plan: dark card --- */
+    .plan--active {
+        background: radial-gradient(420px 260px at 100% 0%, rgba(20, 108, 67, 0.75), transparent 60%), var(--ink);
+        color: #fff;
+        box-shadow: 8px 8px 0 var(--primary);
+    }
+
+        .plan--active:hover,
+        .plan--active:focus-within {
+            box-shadow: 11px 11px 0 var(--primary);
+        }
+
+        .plan--active::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            border-radius: inherit;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+        /* faint weight-plate ring in the corner */
+        .plan--active::after {
+            content: '';
+            position: absolute;
+            top: -34px;
+            right: -34px;
+            z-index: -1;
+            width: 130px;
+            height: 130px;
+            border: 3px dashed rgba(197, 240, 77, 0.35);
+            border-radius: 50%;
+        }
+
+    /* --- Inactive plan: quiet cream card --- */
+    .plan--inactive {
+        border: 2px dashed #b9c6bd;
+        background: var(--paper);
+        color: var(--text-muted);
+    }
+
+    .plan-name {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--font-display);
+        font-size: 1.9rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+    }
+
+    .plan--active .plan-name {
+        color: #fff;
+    }
+
+        .plan--active .plan-name .ico {
+            color: var(--lime);
+        }
+
+    .plan--inactive .plan-name {
+        color: #3f5a4b;
+    }
+
+        .plan--inactive .plan-name .ico {
+            color: #8aa093;
+        }
+
+    .price {
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+        margin: 1.25rem 0 1.5rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 2px dashed rgba(185, 198, 189, 0.6);
+    }
+
+    .plan--active .price {
+        border-bottom-color: rgba(233, 244, 238, 0.2);
+    }
+
+    .price-num {
+        font-family: var(--font-display);
+        font-size: clamp(3.5rem, 7vw, 4.75rem);
+        font-weight: 700;
+        line-height: 0.9;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .plan--active .price-num {
+        color: var(--lime);
+    }
+
+    .plan--inactive .price-num {
+        color: #587263;
+    }
+
+    .price-cur {
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .plan--active .price-cur {
+        color: var(--on-dark-muted);
+    }
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        flex: 1;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .info-ico {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+    }
+
+        .info-ico .ico {
+            width: 1.05rem;
+            height: 1.05rem;
+        }
+
+    .plan--active .info-ico {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--lime);
+    }
+
+    .plan--inactive .info-ico {
+        background: #e8ebe4;
+        color: #587263;
+    }
+
+    .plan--active .info-row strong,
+    .plan--active .desc-label {
+        color: #fff;
+    }
+
+    .plan--inactive .info-row strong,
+    .plan--inactive .desc-label {
+        color: var(--ink);
+    }
+
+    .desc-label {
+        display: block;
+        font-weight: 700;
+    }
+
+    .desc-text {
+        margin-top: 0.15rem;
+        font-size: 0.9375rem;
+        overflow-wrap: anywhere;
+    }
+
+    .plan--active .desc-text {
+        color: var(--on-dark-muted);
+    }
+
+    .desc-block {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .btn-view,
+    .btn-mini {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 10px;
+        font-family: var(--font-display);
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-view .ico,
+        .btn-mini .ico {
+            width: 1.1rem;
+            height: 1.1rem;
+            transition: transform .2s ease;
+        }
+
+    .btn-view {
+        min-height: 48px;
+        font-size: 1.2rem;
+    }
+
+        .btn-view:hover .ico {
+            transform: scale(1.2);
+        }
+
+        .btn-view:active {
+            transform: translateY(2px);
+        }
+
+    .plan--active .btn-view {
+        background: var(--lime);
+        color: var(--ink);
+        box-shadow: 0 3px 0 #7fa11f;
+    }
+
+        .plan--active .btn-view:hover {
+            background: #d6f77a;
+        }
+
+    .plan--inactive .btn-view {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 3px 0 var(--primary-press);
+    }
+
+        .plan--inactive .btn-view:hover {
+            background: var(--primary-dark);
+        }
+
+    .actions-row {
+        display: flex;
+        gap: 0.6rem;
+    }
+
+    .status-form {
+        flex: 1;
+        margin: 0;
+    }
+
+    .btn-mini {
+        flex: 1;
+        width: 100%;
+        min-height: 44px;
+        border: 1.5px solid;
+        background: transparent;
+        font-size: 1.05rem;
+    }
+
+        .btn-mini:active {
+            transform: translateY(2px);
+        }
+
+    .actions-row > .btn-mini {
+        flex: 1;
+    }
+
+    /* edit */
+    .plan--active .btn-edit {
+        border-color: rgba(255, 255, 255, 0.55);
+        color: #fff;
+    }
+
+        .plan--active .btn-edit:hover {
+            background: #fff;
+            color: var(--ink);
+        }
+
+    .plan--inactive .btn-edit {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+        .plan--inactive .btn-edit:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+    /* deactivate (active plans) */
+    .btn-deactivate {
+        border-color: #ffb4ab;
+        color: #ffb4ab;
+    }
+
+        .btn-deactivate:hover {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: #fff;
+        }
+
+    /* activate (inactive plans) */
+    .btn-activate {
+        border-color: #7fa11f;
+        background: var(--lime);
+        color: var(--ink);
+    }
+
+        .btn-activate:hover {
+            background: #d6f77a;
+        }
+
+    .btn-view:focus-visible,
+    .btn-mini:focus-visible {
+        outline: 3px solid var(--lime);
+        outline-offset: 3px;
+    }
+
+    .plan--inactive .btn-view:focus-visible,
+    .plan--inactive .btn-mini:focus-visible {
+        outline-color: var(--ink);
+    }
+
+    /* ============ Empty state ============ */
+    .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 3rem 1.5rem;
+        border: 2px dashed #b9c6bd;
+        border-radius: 28px;
+        background: var(--paper);
+        text-align: center;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .empty-art {
+        width: 120px;
+        height: 120px;
+    }
+
+    .empty-ring {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .empty-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .empty-inbox {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .empty-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes pf-timer {
+        to {
+            transform: scaleX(0);
+        }
+    }
+
+    @@keyframes pf-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 575.98px) {
+        .plan--active {
+            box-shadow: 6px 6px 0 var(--primary);
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .plan:hover,
+        .plan:focus-within {
+            transform: none;
+        }
+
+        .pf-alert-timer {
+            display: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert pf-alert--success" role="status" data-timeout="6000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+            <p class="pf-alert-text">@TempData["SuccessMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:6s" aria-hidden="true"></span>
+        </div>
+
+    }
+    else if (TempData["ErrorMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert pf-alert--error" role="alert" data-timeout="10000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <p class="pf-alert-text">@TempData["ErrorMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:10s" aria-hidden="true"></span>
+        </div>
+
+    }
+
+    <header class="page-head">
+        <h1 class="page-title">Membership <span class="hl">Plans</span></h1>
+        <p class="page-sub">Manage your gym membership packages</p>
+    </header>
+
+    @if (Model.Any())
+    {
+        var planIndex = 0;
+
+        <div class="grid">
+            @foreach (var Plan in Model)
+            {
+                <article class="plan @(Plan.IsActive ? "plan--active" : "plan--inactive")" style="--i:@(Math.Min(planIndex++, 12))">
+
+                    <h2 class="plan-name">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polygon points="13,2 5,13.5 11,13.5 9.5,22 19,9.5 12.5,9.5" /></svg>
+                        @Plan.Name
+                        <span class="sr-only">@(Plan.IsActive ? "(Active)" : "(Inactive)")</span>
+                    </h2>
+
+                    <div class="price">
+                        <span class="price-num">@Plan.Price</span>
+                        <span class="price-cur">EGP</span>
                     </div>
-                </header>
-                @if (Model.Any())
-                {
-                    <div class="row g-4">
-                    @foreach(var Plan in Model)
-                    {
-                     
 
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card h-100 shadow-sm border-0 plan-card">
-                                    <div class="card-header  text-white text-center py-4 @(Plan.IsActive ? "bg-primary-color" : "bg-secondary ") ">
-                                        <h4 class="mb-0">@Plan.Name</h4>
-                                    </div>
-                                    <div class="card-body d-flex flex-column">
-                                        <div class="text-center mb-4">
-                                            <div class="display-4 fw-bold text-primary-color">@Plan.Price</div>
-                                            <small class="text-muted">EGP</small>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <p class="text-muted mb-2">
-                                                <i class="bi bi-calendar-check text-primary-color me-2"></i>
-                                                <strong>Duration:</strong> @Plan.DurationDays
-                                            </p>
-                                            <p class="text-muted mb-3">
-                                                <i class="bi bi-file-text text-primary-color me-2"></i>
-                                                <strong>Description:</strong>
-                                            </p>
-                                            <p class="small">@Plan.Description</p>
-                                        </div>
-
-                                        <div class="mt-auto">
-                                            <div class="d-grid gap-2">
-
-                                                <a href="\Plans\Details\@Plan.Id" class="btn btn-outline btn-sm">
-                                                    <i class="bi bi-eye me-1"></i>View Details
-                                                </a>
-
-                                                <div class="d-flex gap-2">
-                                                <a asp-controller="Plans" asp-action="EditPlan" asp-route-id="@Plan.Id" class="btn btn-outline btn-sm flex-fill">
-                                                        <i class="bi bi-pencil me-1"></i>Edit
-                                                    </a>
-                                                <form asp-controller="PLans" asp-action="Status" asp-route-id="@Plan.Id" method="post" class="flex-fill">
-                                                        <button type="submit" class="btn btn-outline btn-sm w-100 @(Plan.IsActive ? "text-danger deactiveButton" : " activeButton")">
-                                                            @if (Plan.IsActive)
-                                                            {
-
-                                                                <i class="bi bi-x-circle me-1"> Deactivate </i>
-                                                            }
-                                                            else
-                                                            {
-                                                                <i class="bi bi-check-circle me-1"> Activate </i>
-                                                            }
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        
-                    }
+                    <div class="info">
+                        <div class="info-row">
+                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4" /></svg></span>
+                            <span><strong>Duration:</strong> @Plan.DurationDays</span>
                         </div>
-                } else
-                {
-                    <div class="text-center py-5">
-                        <i class="bi bi-inbox display-1 text-muted"></i>
-                        <h4 class="mt-3 text-muted">No Plans Available</h4>
+
+                        <div class="desc-block">
+                            <span class="info-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M6 3h9l4 4v14H6z" /><path d="M14 3v5h5M9 13h7M9 17h5" /></svg></span>
+                            <div>
+                                <span class="desc-label">Description:</span>
+                                <p class="desc-text">@Plan.Description</p>
+                            </div>
+                        </div>
                     </div>
-                }
-                
-            </div>
-        </main>
-    </div>
 
-@section Scripts{
+                    <div class="actions">
+                        <a href="\Plans\Details\@Plan.Id" class="btn-view">
+                            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                            View Details
+                        </a>
+
+                        <div class="actions-row">
+                            <a asp-controller="Plans" asp-action="EditPlan" asp-route-id="@Plan.Id" class="btn-mini btn-edit">
+                                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
+                                Edit
+                            </a>
+                            <form asp-controller="PLans" asp-action="Status" asp-route-id="@Plan.Id" method="post" class="status-form">
+                                <button type="submit" class="btn-mini @(Plan.IsActive ? "btn-deactivate deactiveButton" : "btn-activate activeButton")">
+                                    @if (Plan.IsActive)
+                                    {
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M9 9l6 6M15 9l-6 6" /></svg>
+                                        <span>Deactivate</span>
+                                    }
+                                    else
+                                    {
+                                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+                                        <span>Activate</span>
+                                    }
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </article>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty">
+            <svg class="empty-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="empty-ring" cx="60" cy="60" r="56" />
+                <circle class="empty-plate" cx="60" cy="60" r="44" />
+                <g class="empty-inbox">
+                    <path d="M38 62l5-18h34l5 18" />
+                    <path d="M38 62v16h44V62M38 62h14l3 6h10l3-6h14" />
+                </g>
+            </svg>
+            <h2 class="empty-title">No Plans Available</h2>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
     <partial name="_AlertBox" />
-}
 
+    <script>
+        (function () {
+            var alertEl = document.getElementById('Alert');
+            if (!alertEl) return;
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* Close the alert smoothly (safe to call more than once) */
+            function dismiss(el) {
+                if (!el.parentNode || el.getAttribute('data-leaving')) return;
+                el.setAttribute('data-leaving', '1');
+                el.style.maxHeight = el.offsetHeight + 'px';
+                void el.offsetHeight;
+                el.classList.add('is-leaving');
+
+                var removed = false;
+                function remove() {
+                    if (removed) return;
+                    removed = true;
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+                el.addEventListener('transitionend', function (e) {
+                    if (e.target === el && e.propertyName === 'max-height') remove();
+                });
+                setTimeout(remove, reduce ? 0 : 500);
+            }
+
+            var closeBtn = alertEl.querySelector('.pf-alert-close');
+            var timer = alertEl.querySelector('.pf-alert-timer');
+            var ms = parseInt(alertEl.getAttribute('data-timeout'), 10) || 6000;
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () { dismiss(alertEl); });
+            }
+
+            /* Auto-dismiss: the timer bar drives the delay and pauses on hover/focus */
+            if (reduce || !timer) {
+                setTimeout(function () { dismiss(alertEl); }, ms);
+            } else {
+                timer.addEventListener('animationend', function () { dismiss(alertEl); });
+            }
+        })();
+    </script>
+}
