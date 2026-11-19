@@ -239,7 +239,7 @@
 
     .hero-text {
         max-width: 34rem;
-        margin-top: 1.25rem;
+        margin-top: 1.25rem !important;
         font-size: 1.125rem;
         line-height: 1.65;
         color: var(--on-dark-muted);
@@ -437,6 +437,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: top;
         }
 
     .about-copy .section-title {
@@ -453,7 +454,7 @@
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem;
-        margin-top: 2rem;
+        margin-top: 1rem;
     }
 
     .feature {
@@ -1008,6 +1009,10 @@
             .marquee-group[aria-hidden="true"] {
                 display: none;
             }
+    }
+
+    .btn:first-child:active{
+        color: var(--lime) !important;
     }
 </style>
 

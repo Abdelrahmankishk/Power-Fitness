@@ -6,41 +6,498 @@
     ViewData["Title"] = "Create Booking";
 }
 
-<h1>Create New Booking</h1>
-<hr />
-<div class="row">
-    <div class="d-flex justify-content-center align-items-center h-100">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Booking Information</h5>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Create" method="post">
-                        <div asp-validation-summary="All" class="text-danger"></div>
-                        <div class="mb-3">
-                            <input type="hidden" asp-for="SessionId" readonly />
-                            <label asp-for="MemberId" class="form-label">Member</label>
-                            <select asp-for="MemberId" asp-items="ViewBag.Members" class="form-select">
-                                <option value="">-- Select Member --</option>
-                            </select>
-                            <span asp-validation-for="MemberId" class="text-danger"></span>
-                        </div>
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Create Booking
-                            </button>
-                            <a asp-action="GetMembersForUpcomingSession" asp-route-id="@Model.SessionId" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Back to List
-                            </a>
-                        </div>
-                    </form>
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --line: #6f8578;
+        --danger: #b42318;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 620px;
+        margin-inline: auto;
+        padding: clamp(1.5rem, 5vw, 3rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page h2, .pf-page p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .hl {
+        padding: 0 0.18em;
+        border-radius: 6px;
+        background: var(--lime);
+        color: var(--ink);
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    /* ============ Title ============ */
+    .page-title {
+        margin-bottom: 1.75rem;
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 7vw, 3.75rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.01em;
+        text-align: center;
+        text-transform: uppercase;
+        color: var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    /* ============ Admit-one ticket (the form itself) ============ */
+    .ticket-wrap {
+        filter: drop-shadow(8px 8px 0 var(--primary));
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .1s backwards;
+    }
+
+    .ticket {
+        --foot: 96px;
+        --y: calc(100% - var(--foot));
+        overflow: hidden;
+        border-radius: 22px;
+        background: var(--paper);
+        color: var(--text);
+        -webkit-mask: radial-gradient(11px at 0 var(--y), #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(11px at 100% var(--y), #0000 98%, #000) right / 51% 100% no-repeat;
+        mask: radial-gradient(11px at 0 var(--y), #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(11px at 100% var(--y), #0000 98%, #000) right / 51% 100% no-repeat;
+    }
+
+        .ticket .text-danger {
+            color: var(--danger) !important;
+        }
+
+    .ticket-head {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.1rem 1.5rem;
+        background: var(--ink);
+        color: var(--lime);
+    }
+
+        .ticket-head::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 16px);
+        }
+
+        .ticket-head .ico {
+            width: 1.6rem;
+            height: 1.6rem;
+        }
+
+    .ticket-title {
+        font-family: var(--font-display);
+        font-size: 1.7rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .ticket-body {
+        padding: 1.5rem clamp(1.25rem, 5vw, 2rem) 1.5rem;
+    }
+
+    /* validation summary (kept: asp-validation-summary="All") */
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .validation-summary-errors {
+        margin-bottom: 1.25rem;
+        padding: 0.75rem 1rem;
+        border-left: 4px solid var(--danger);
+        border-radius: 8px;
+        background: var(--danger-bg);
+        font-size: 0.9375rem;
+    }
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 1.1rem;
+        }
+
+    .field-label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .field-control {
+        position: relative;
+    }
+
+        .field-control .ico {
+            position: absolute;
+            top: 26px;
+            z-index: 2;
+            transform: translateY(-50%);
+            color: #3f5a4b;
+            pointer-events: none;
+        }
+
+        .field-control .ico-lead {
+            left: 16px;
+        }
+
+        .field-control .ico-chev {
+            right: 16px;
+            transition: transform .2s ease;
+        }
+
+        .field-control:focus-within .ico-chev {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Select2 draws its own arrow when it is active */
+        .field-control:has(.select2-container) .ico-chev {
+            display: none;
+        }
+
+    .field-select {
+        width: 100%;
+        height: 52px;
+        padding: 0 48px 0 48px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--text);
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+        .field-select:has(option:checked[value=""]) {
+            color: #5a6d62;
+        }
+
+        .field-select option {
+            color: var(--text);
+        }
+
+        .field-select:hover {
+            border-color: var(--primary);
+        }
+
+        .field-select:focus {
+            outline: 2px solid transparent;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(20, 108, 67, 0.22);
+        }
+
+        .field-select.input-validation-error {
+            border-color: var(--danger);
+        }
+
+    .field-error {
+        display: block;
+        min-height: 1.25rem;
+        margin-top: 0.35rem;
+        font-size: 0.875rem;
+    }
+
+    /* ---- Select2 (only if the library is loaded): match the field style ---- */
+    .pf-page .select2-container {
+        width: 100% !important;
+    }
+
+    .pf-page .select2-container--default .select2-selection--single {
+        display: flex;
+        align-items: center;
+        height: 52px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+        .pf-page .select2-container--default .select2-selection--single .select2-selection__rendered {
+            flex: 1;
+            padding: 0 56px 0 48px;
+            line-height: normal;
+            color: var(--text);
+        }
+
+        .pf-page .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #5a6d62;
+        }
+
+        .pf-page .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 0;
+            right: 10px;
+            height: 50px;
+        }
+
+        .pf-page .select2-container--default .select2-selection--single .select2-selection__clear {
+            margin-right: 0.5rem;
+            font-size: 1.4rem;
+            color: var(--text-muted);
+        }
+
+    .pf-page .select2-container--default.select2-container--focus .select2-selection--single,
+    .pf-page .select2-container--default.select2-container--open .select2-selection--single {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(20, 108, 67, 0.22);
+    }
+
+    .select2-dropdown {
+        overflow: hidden;
+        border: 1.5px solid #d9ded4 !important;
+        border-radius: 14px !important;
+        box-shadow: 6px 6px 0 #146c43;
+        font-family: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        padding: 0.5rem 0.75rem;
+        border: 1.5px solid #6f8578;
+        border-radius: 8px;
+    }
+
+    .select2-container--default .select2-results__option {
+        padding: 0.65rem 0.9rem;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected],
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background: #146c43;
+        color: #fff;
+    }
+
+    .select2-container--default .select2-results__option[aria-selected=true],
+    .select2-container--default .select2-results__option--selected {
+        background: #e1efe7;
+        color: #062117;
+    }
+
+    /* ---- Tear-off footer ---- */
+    .ticket-foot {
+        height: var(--foot);
+        border-top: 2px dashed #b9c6bd;
+    }
+
+        .ticket-foot .foot-inner {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            height: 100%;
+            padding: 0 clamp(1.25rem, 5vw, 2rem);
+        }
+
+    .btn-power,
+    .btn-ghost {
+        display: inline-flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-width: 0;
+        min-height: 54px;
+        padding: 0 1rem;
+        border-radius: var(--radius);
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-power .ico,
+        .btn-ghost .ico {
+            width: 1.15rem;
+            height: 1.15rem;
+            transition: transform .2s ease;
+        }
+
+    .btn-power {
+        order: 1;
+        border: 0;
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 4px 0 var(--primary-press);
+    }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+        }
+
+            .btn-power:hover .ico {
+                transform: scale(1.2);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+    .btn-ghost {
+        order: 2;
+        border: 2px solid var(--line);
+        background: transparent;
+        color: var(--ink);
+    }
+
+        .btn-ghost:hover {
+            border-color: var(--ink);
+            background: #e9ede4;
+        }
+
+            .btn-ghost:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .btn-ghost:active {
+            transform: translateY(3px);
+        }
+
+        .btn-power:focus-visible,
+        .btn-ghost:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 480px) {
+        .ticket {
+            --foot: 156px;
+        }
+
+        .ticket-wrap {
+            filter: drop-shadow(5px 5px 0 var(--primary));
+        }
+
+        .ticket-foot .foot-inner {
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            gap: 0.7rem;
+        }
+
+        .btn-power,
+        .btn-ghost {
+            flex: none;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    <h1 class="page-title">Create New <span class="hl">Booking</span></h1>
+
+    <div class="ticket-wrap">
+        <form asp-action="Create" method="post" class="ticket">
+
+            <div class="ticket-head">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4z" /><path d="M14 6v12" /></svg>
+                <h2 class="ticket-title">Booking Information</h2>
+            </div>
+
+            <div class="ticket-body">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="field">
+                    <input type="hidden" asp-for="SessionId" readonly />
+                    <label asp-for="MemberId" class="field-label">Member</label>
+                    <div class="field-control">
+                        <svg class="ico ico-lead" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg>
+                        <select asp-for="MemberId" asp-items="ViewBag.Members" class="field-select">
+                            <option value="">-- Select Member --</option>
+                        </select>
+                        <svg class="ico ico-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+                    </div>
+                    <span asp-validation-for="MemberId" class="text-danger field-error"></span>
                 </div>
             </div>
-        </div>
 
+            <div class="ticket-foot">
+                <div class="foot-inner">
+                    <button type="submit" class="btn-power">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                        Create Booking
+                    </button>
+                    <a asp-action="GetMembersForUpcomingSession" asp-route-id="@Model.SessionId" class="btn-ghost">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                        Back to List
+                    </a>
+                </div>
+            </div>
+
+        </form>
     </div>
+
 </div>
 
 @section Scripts {
@@ -48,11 +505,14 @@
     <script>
         $(document).ready(function() {
             // Initialize Select2 for better dropdown experience
-            $('#MemberId').select2({
-                placeholder: "Select a member",
-                allowClear: true,
-                width: '100%'
-            });
+            // (guarded so the page still works if the Select2 library is not loaded)
+            if ($.fn.select2) {
+                $('#MemberId').select2({
+                    placeholder: "Select a member",
+                    allowClear: true,
+                    width: '100%'
+                });
+            }
         });
     </script>
 }
