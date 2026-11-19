@@ -4,109 +4,521 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg border-0">
-                <div class="card-header  @(Model.Status == "Ongoing" ? "bg-secondary" : Model.Status == "Upcoming" ? "bg-primary" : "bg-dark") text-white text-center py-4">
-                    <i class="bi bi-calendar-event display-4 mb-3"></i>
-                    <h2 class="mb-2">@Model.CategoryName</h2>
-                    <span class="badge bg-light text-dark fs-6">@Model.Status</span>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 980px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page h2, .pf-page p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ============ Hero ============ */
+    .page-wrap {
+        position: relative;
+    }
+
+    .hero {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: clamp(2rem, 5vw, 3.25rem) clamp(1.5rem, 5vw, 3.5rem) clamp(5rem, 9vw, 6.5rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 420px at 100% 0%, rgba(20, 108, 67, 0.65), transparent 60%), radial-gradient(500px 320px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    .hero-copy {
+        min-width: 0;
+    }
+
+    .hero-title {
+        position: relative;
+        margin-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6.5vw, 4.5rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+        color: #fff;
+    }
+
+    .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.3rem 1rem;
+        border-radius: 999px;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .is-upcoming .status {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 0 0 2px var(--lime);
+    }
+
+    .is-ongoing .status {
+        background: var(--lime);
+        color: var(--ink);
+    }
+
+        .is-ongoing .status::before {
+            content: '';
+            flex: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--ink);
+            animation: pf-pulse 1.6s ease-out infinite;
+        }
+
+    .is-completed .status {
+        border: 1.5px solid rgba(233, 244, 238, 0.5);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--on-dark-muted);
+    }
+
+    .hero-art {
+        flex: none;
+        width: 120px;
+        height: 120px;
+    }
+
+    .art-ring {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .art-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .art-cal {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ============ Details card ============ */
+    .details {
+        position: relative;
+        z-index: 2;
+        margin: -3.5rem clamp(0.75rem, 4vw, 3rem) 0;
+        padding: clamp(1.25rem, 3vw, 2rem);
+        border-radius: 28px 28px 28px 6px;
+        background: var(--paper);
+        box-shadow: 12px 12px 0 var(--primary);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) .2s backwards;
+    }
+
+    .block {
+        padding: 1.1rem 1.25rem;
+        border: 1.5px solid #e2e6dc;
+        border-radius: 16px;
+        background: #fff;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 70ms + .3s) backwards;
+    }
+
+    .block-title {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.4rem;
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .block p {
+        overflow-wrap: anywhere;
+        color: var(--text);
+    }
+
+    /* ---- Start -> Duration -> End strip ---- */
+    .span {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(150px, 0.8fr) minmax(0, 1fr);
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .span-mid {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 72px;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) .5s backwards;
+    }
+
+        .span-mid::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            border-top: 3px dashed #b9c6bd;
+        }
+
+    .duration-pill {
+        position: relative;
+        z-index: 1;
+        padding: 0.5rem 1rem;
+        border-radius: 16px;
+        background: var(--ink);
+        text-align: center;
+        color: var(--lime);
+    }
+
+    .duration-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--on-dark-muted);
+    }
+
+    .duration-value {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+    }
+
+    /* ---- Info tiles (start, end, trainer, capacity) ---- */
+    .tile {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        min-width: 0;
+        padding: 1rem 1.1rem;
+        border: 1.5px solid #e2e6dc;
+        border-radius: 16px;
+        background: #fff;
+        transition: border-color .2s ease, transform .2s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 70ms + .3s) backwards;
+    }
+
+        .tile:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+    .tile-ico {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #e1efe7;
+        color: var(--primary);
+    }
+
+    .tile-body {
+        min-width: 0;
+    }
+
+    .tile-label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .tile-value {
+        display: block;
+        margin-top: 0.1rem;
+        font-size: 1.0625rem;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+        color: var(--ink);
+    }
+
+    .pair {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .actions {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px dashed #b9c6bd;
+    }
+
+    .btn-power {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        min-height: 56px;
+        padding: 0 1.5rem;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        box-shadow: 0 4px 0 var(--primary-press);
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-power .ico {
+            transition: transform .2s ease;
+        }
+
+        .btn-power:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+            .btn-power:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .btn-power:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .btn-power:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
+        }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes pf-pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(6, 33, 23, 0.5); }
+        100% { box-shadow: 0 0 0 9px rgba(6, 33, 23, 0); }
+    }
+
+    @@keyframes pf-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 767.98px) {
+        .hero-art {
+            display: none;
+        }
+
+        .span {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .span-mid {
+            min-height: 110px;
+        }
+
+            .span-mid::before {
+                top: 0;
+                bottom: 0;
+                left: 50%;
+                right: auto;
+                border-top: 0;
+                border-left: 3px dashed #b9c6bd;
+            }
+    }
+
+    @@media (max-width: 575.98px) {
+        .details {
+            box-shadow: 8px 8px 0 var(--primary);
+        }
+
+        .pair {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .tile:hover {
+            transform: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+    <div class="page-wrap @(Model.Status == "Ongoing" ? "is-ongoing" : Model.Status == "Upcoming" ? "is-upcoming" : "is-completed")">
+
+        <header class="hero">
+            <div class="hero-copy">
+                <h1 class="hero-title">@Model.CategoryName</h1>
+                <span class="status">@Model.Status</span>
+            </div>
+
+            <svg class="hero-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="art-ring" cx="60" cy="60" r="56" />
+                <circle class="art-plate" cx="60" cy="60" r="44" />
+                <g class="art-cal">
+                    <rect x="40" y="44" width="40" height="36" rx="6" />
+                    <path d="M40 56h40M50 38v10M70 38v10" />
+                </g>
+            </svg>
+        </header>
+
+        <section class="details">
+
+            <!-- Description -->
+            <div class="block" style="--i:0">
+                <h2 class="block-title">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h9l4 4v14H6z" /><path d="M14 3v5h5M9 13h7M9 17h5" /></svg>
+                    Description
+                </h2>
+                <p>@Model.Description</p>
+            </div>
+
+            <!-- Start -> Duration -> End -->
+            <div class="span">
+                <div class="tile" style="--i:1">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M10 8.5l5 3.5-5 3.5z" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Start Time</span>
+                        <strong class="tile-value">@Model.StartDate</strong>
+                    </div>
                 </div>
 
-                <div class="card-body p-4">
-                    <!-- Description -->
-                    <div class="mb-4 p-3 bg-light rounded">
-                        <h6 class="text-primary-color mb-2">
-                            <i class="bi bi-file-text me-2"></i>Description
-                        </h6>
-                        <p class="mb-0">@Model.Description</p>
-                    </div>
-
-                    <!-- Session Details -->
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="detail-box p-3 border rounded">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-box me-3">
-                                        <i class="bi bi-person-circle text-primary-color fs-3"></i>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block">Trainer</small>
-                                        <strong>@Model.TrainerName</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="detail-box p-3 border rounded">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-box me-3">
-                                        <i class="bi bi-people text-primary-color fs-3"></i>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block">Capacity</small>
-                                        <strong>@Model.AvailableSlots / @Model.Capacity spots</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="detail-box p-3 border rounded">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-box me-3">
-                                        <i class="bi bi-calendar-check text-primary-color fs-3"></i>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block">Start Time</small>
-                                        <strong>@Model.StartDate</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="detail-box p-3 border rounded">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-box me-3">
-                                        <i class="bi bi-calendar-x text-primary-color fs-3"></i>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block">End Time</small>
-                                        <strong>@Model.EndDate</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="detail-box p-3 border rounded bg-light">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-box me-3">
-                                        <i class="bi bi-hourglass-split text-primary-color fs-3"></i>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block">Duration</small>
-                                        <strong class="text-primary-color fs-5">
-                                            @Model.Duration.Hours Hours @Model.Duration.Minutes Minutes
-                                        </strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="span-mid">
+                    <div class="duration-pill">
+                        <span class="duration-label">Duration</span>
+                        <strong class="duration-value">@Model.Duration.Hours Hours @Model.Duration.Minutes Minutes</strong>
                     </div>
                 </div>
 
-                <div class="card-footer bg-white border-0 p-4">
-                    <div class="d-flex justify-content-between gap-2">
-                        <a asp-action="Index" class="btn btn-outline flex-fill">
-                            <i class="bi bi-arrow-left me-1"></i>Back to List
-                        </a>
+                <div class="tile" style="--i:2">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 21V4M5 4h11l-2 4 2 4H5" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">End Time</span>
+                        <strong class="tile-value">@Model.EndDate</strong>
                     </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Trainer + Capacity -->
+            <div class="pair">
+                <div class="tile" style="--i:3">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Trainer</span>
+                        <strong class="tile-value">@Model.TrainerName</strong>
+                    </div>
+                </div>
+
+                <div class="tile" style="--i:4">
+                    <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5" /><path d="M16 4.7a3.5 3.5 0 010 6.6M18.5 14.8c1.6.7 2.7 2.2 3 4.2" /></svg></span>
+                    <div class="tile-body">
+                        <span class="tile-label">Capacity</span>
+                        <strong class="tile-value">@Model.AvailableSlots / @Model.Capacity spots</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a asp-action="Index" class="btn-power">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+                    Back to List
+                </a>
+            </div>
+
+        </section>
+
     </div>
 </div>
