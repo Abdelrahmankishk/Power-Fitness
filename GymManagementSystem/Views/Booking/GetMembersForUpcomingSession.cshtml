@@ -5,88 +5,989 @@
     ViewData["Title"] = "Booking Details";
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div id="Alert" class="alert alert-success alert-dismissible fade show">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-else if (TempData["ErrorMessage"] != null)
-{
-    <div id="Alert" class="alert alert-danger alert-dismissible fade show">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
-<header class="bg-primary text-white rounded-3 p-4 shadow-sm mt-5 mb-4">
-    <div class="d-flex justify-content-between align-items-center">
+<style>
+    /* ============ Scope + tokens ============ */
+    .pf-page {
+        --primary: #146c43;
+        --primary-dark: #0e5636;
+        --primary-press: #0a3f27;
+        --ink: #062117;
+        --lime: #c5f04d;
+        --paper: #f6f4ec;
+        --text: #10241b;
+        --text-muted: #4b5f55;
+        --on-dark-muted: #a9c4b6;
+        --line: #6f8578;
+        --danger: #b42318;
+        --danger-dark: #9c1f15;
+        --danger-press: #7f1810;
+        --danger-bg: #fdecea;
+        --radius: 12px;
+        --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+        --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+        max-width: 1000px;
+        margin-inline: auto;
+        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.5rem) 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+        .pf-page *, .pf-page *::before, .pf-page *::after {
+            box-sizing: border-box;
+        }
+
+        .pf-page h1, .pf-page h2, .pf-page p, .pf-page ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pf-page ul {
+            list-style: none;
+        }
+
+        .pf-page a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+    .ico {
+        flex: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .pf-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-height: 56px;
+        padding: 0 1.75rem;
+        border: 0;
+        border-radius: var(--radius);
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+        .pf-btn .ico {
+            transition: transform .2s ease;
+        }
+
+        .pf-btn:active {
+            transform: translateY(3px);
+        }
+
+        .pf-btn:focus-visible {
+            outline: 3px solid var(--lime);
+            outline-offset: 3px;
+        }
+
+    .pf-btn--lime {
+        background: var(--lime);
+        color: var(--ink);
+        box-shadow: 0 4px 0 #7fa11f;
+    }
+
+        .pf-btn--lime:hover {
+            background: #d6f77a;
+        }
+
+            .pf-btn--lime:hover .ico {
+                transform: rotate(90deg);
+            }
+
+        .pf-btn--lime:active {
+            box-shadow: 0 1px 0 #7fa11f;
+        }
+
+    .pf-btn--green {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 4px 0 var(--primary-press);
+    }
+
+        .pf-btn--green:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+            .pf-btn--green:hover .ico {
+                transform: translateX(-4px);
+            }
+
+        .pf-btn--green:active {
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+        .pf-btn--green:focus-visible {
+            outline-color: var(--ink);
+        }
+
+    /* ============ Alerts ============ */
+    .pf-alert {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid currentColor;
+        border-radius: 14px;
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
+        animation: pf-rise .45s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .pf-alert--success {
+        background: #e7f3ec;
+        color: var(--primary);
+    }
+
+    .pf-alert--error {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .pf-alert-text {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .pf-alert-close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -0.5rem -0.75rem -0.5rem 0;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: background-color .2s ease;
+    }
+
+        .pf-alert-close:hover {
+            background: rgba(6, 33, 23, 0.1);
+        }
+
+        .pf-alert-close:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 0;
+        }
+
+    .pf-alert-timer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.4;
+        transform-origin: left;
+        animation: pf-timer var(--t, 6s) linear forwards;
+    }
+
+    .pf-alert:hover .pf-alert-timer,
+    .pf-alert:focus-within .pf-alert-timer {
+        animation-play-state: paused;
+    }
+
+    .pf-alert.is-leaving {
+        max-height: 0 !important;
+        margin-block: -0.75rem;
+        padding-block: 0;
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    /* ============ Header ============ */
+    .page-head {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 3rem);
+        border-radius: 28px;
+        background: radial-gradient(800px 400px at 100% 0%, rgba(20, 108, 67, 0.65), transparent 60%), radial-gradient(500px 300px at 0% 100%, rgba(197, 240, 77, 0.10), transparent 60%), var(--ink);
+        animation: pf-rise .55s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+        .page-head::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.028) 0 2px, transparent 2px 16px);
+        }
+
+    .page-title {
+        position: relative;
+        padding-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 88px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--lime);
+        }
+
+    .page-sub {
+        margin-top: 0.9rem;
+        font-size: 1.125rem;
+        color: var(--on-dark-muted);
+    }
+
+    /* ============ Booking stubs ============ */
+    .stubs {
+        display: flex;
+        flex-direction: column;
+        gap: 1.4rem;
+    }
+
+    .stub-wrap {
+        filter: drop-shadow(5px 5px 0 var(--primary));
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 60ms + .15s) backwards;
+    }
+
+    .stub {
+        --x: 88px;
+        display: grid;
+        grid-template-columns: var(--x) minmax(0, 1.4fr) minmax(0, 1fr) auto;
+        align-items: center;
+        overflow: hidden;
+        border-radius: 18px;
+        background: var(--paper);
+        -webkit-mask: radial-gradient(11px at var(--x) 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(11px at var(--x) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+        mask: radial-gradient(11px at var(--x) 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(11px at var(--x) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+    }
+
+    .stub-mark {
+        display: grid;
+        place-items: center;
+        align-self: stretch;
+        border-right: 2px dashed rgba(197, 240, 77, 0.55);
+        background: var(--ink);
+        color: var(--lime);
+        font-family: var(--font-display);
+        font-size: 1.9rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+    }
+
+        .stub-mark .ico {
+            width: 1.7rem;
+            height: 1.7rem;
+        }
+
+    .stub-cell {
+        min-width: 0;
+        padding: 1rem 1.25rem;
+    }
+
+    .cell-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .member-name {
+        display: block;
+        margin-top: 0.1rem;
+        font-family: var(--font-display);
+        font-size: 1.6rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+        color: var(--ink);
+    }
+
+    .booking-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.15rem;
+        font-weight: 600;
+        color: var(--ink);
+    }
+
+        .booking-date .ico {
+            width: 1.1rem;
+            height: 1.1rem;
+            color: var(--primary);
+        }
+
+    .stub-action {
+        padding: 1rem 1.25rem 1rem 0;
+    }
+
+    .cancel-form {
+        margin: 0;
+    }
+
+    /* Cancel booking button */
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 46px;
+        padding: 0 1.15rem;
+        border: 1.5px solid var(--danger);
+        border-radius: 10px;
+        background: transparent;
+        color: var(--danger);
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, color .2s ease, transform .15s ease;
+    }
+
+        .btn-cancel .ico {
+            width: 1.05rem;
+            height: 1.05rem;
+            transition: transform .2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+            .btn-cancel:hover .ico {
+                transform: rotate(90deg);
+            }
+
+        .btn-cancel:active {
+            transform: translateY(2px);
+        }
+
+        .btn-cancel:focus-visible {
+            outline: 3px solid var(--danger);
+            outline-offset: 3px;
+        }
+
+    .page-foot {
+        margin-top: 0.5rem;
+    }
+
+    /* ============ Confirmation dialog ============ */
+    .confirm-dialog {
+        width: min(92vw, 440px);
+        max-width: none;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        overflow: visible;
+    }
+
+        .confirm-dialog:not([open]) {
+            display: none;
+        }
+
+        .confirm-dialog::backdrop {
+            background: rgba(6, 33, 23, 0.72);
+            -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+        }
+
+        .confirm-dialog[open] {
+            animation: pf-pop .25s cubic-bezier(.2, .7, .2, 1);
+        }
+
+    .dialog-card {
+        position: relative;
+        overflow: hidden;
+        padding: calc(14px + 1.75rem) 1.75rem 1.75rem;
+        border-radius: 24px 24px 24px 6px;
+        background: var(--paper);
+        text-align: center;
+        color: var(--text);
+        box-shadow: 10px 10px 0 var(--danger);
+    }
+
+        /* Restricted-area tape */
+        .dialog-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 14px;
+            background: repeating-linear-gradient(-45deg, var(--ink) 0 12px, var(--lime) 12px 24px);
+        }
+
+    .dialog-ico {
+        display: grid;
+        place-items: center;
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        background: var(--danger);
+        color: #fff;
+        box-shadow: 0 0 0 5px var(--danger-bg);
+    }
+
+        .dialog-ico .ico {
+            width: 2rem;
+            height: 2rem;
+        }
+
+    .dialog-text {
+        font-family: var(--font-display);
+        font-size: 1.9rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    .dialog-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn-safe,
+    .btn-danger {
+        display: inline-flex;
+        flex: 1 1 150px;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 54px;
+        padding: 0 1rem;
+        border: 0;
+        border-radius: var(--radius);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+    .btn-safe {
+        background: var(--primary);
+        box-shadow: 0 4px 0 var(--primary-press);
+    }
+
+        .btn-safe:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-safe:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--primary-press);
+        }
+
+    .btn-danger {
+        background: var(--danger);
+        box-shadow: 0 4px 0 var(--danger-press);
+    }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+        }
+
+        .btn-danger:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--danger-press);
+        }
+
+    .btn-safe:focus-visible,
+    .btn-danger:focus-visible {
+        outline: 3px solid var(--ink);
+        outline-offset: 3px;
+    }
+
+    /* "Yes, cancel" loading state while the cancellation is being sent */
+    .btn-danger.loading {
+        position: relative;
+        color: transparent;
+    }
+
+        .btn-danger.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 22px;
+            height: 22px;
+            margin: -11px 0 0 -11px;
+            border: 3px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: pf-spin .7s linear infinite;
+        }
+
+    .btn-safe:disabled,
+    .btn-danger:disabled {
+        cursor: progress;
+    }
+
+    .btn-safe:disabled {
+        opacity: 0.6;
+    }
+
+    /* ============ Empty state ============ */
+    .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 3rem 1.5rem;
+        border: 2px dashed #b9c6bd;
+        border-radius: 28px;
+        background: var(--paper);
+        text-align: center;
+        animation: pf-rise .5s cubic-bezier(.2, .7, .2, 1) backwards;
+    }
+
+    .empty-art {
+        width: 120px;
+        height: 120px;
+    }
+
+    .empty-ring {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 3;
+        stroke-dasharray: 3 10;
+        stroke-linecap: round;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pf-spin 24s linear infinite;
+    }
+
+    .empty-plate {
+        fill: var(--primary);
+        stroke: var(--lime);
+        stroke-width: 4;
+    }
+
+    .empty-person {
+        fill: none;
+        stroke: var(--lime);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .empty-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--primary);
+    }
+
+    .empty-sub {
+        color: var(--text-muted);
+    }
+
+    /* ============ Keyframes ============ */
+    @@keyframes pf-rise {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes pf-pop {
+        from { opacity: 0; transform: scale(0.94); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+
+    @@keyframes pf-timer {
+        to { transform: scaleX(0); }
+    }
+
+    @@keyframes pf-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* ============ Responsive ============ */
+    @@media (max-width: 700px) {
+        .stub {
+            grid-template-columns: var(--x) minmax(0, 1fr);
+        }
+
+        .stub-mark {
+            grid-row: 1 / span 3;
+        }
+
+        .stub-action {
+            padding: 0.25rem 1.25rem 1.1rem;
+        }
+
+        .btn-cancel {
+            width: 100%;
+        }
+
+        .stub-cell {
+            padding-bottom: 0.25rem;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .pf-btn {
+            width: 100%;
+        }
+
+        .stub {
+            --x: 64px;
+        }
+
+        .stub-mark {
+            font-size: 1.5rem;
+        }
+
+        .stub-wrap {
+            filter: drop-shadow(4px 4px 0 var(--primary));
+        }
+    }
+
+    /* ============ Reduced motion ============ */
+    @@media (prefers-reduced-motion: reduce) {
+        .pf-page *, .pf-page *::before, .pf-page *::after,
+        .confirm-dialog[open] {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .pf-alert-timer {
+            display: none;
+        }
+    }
+</style>
+
+<div class="pf-page">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert pf-alert--success" role="status" data-timeout="6000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+            <p class="pf-alert-text">@TempData["SuccessMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:6s" aria-hidden="true"></span>
+        </div>
+    }
+    else if (TempData["ErrorMessage"] != null)
+    {
+        <div id="Alert" class="pf-alert pf-alert--error" role="alert" data-timeout="10000">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <p class="pf-alert-text">@TempData["ErrorMessage"]</p>
+            <button type="button" class="pf-alert-close" aria-label="Close">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <span class="pf-alert-timer" style="--t:10s" aria-hidden="true"></span>
+        </div>
+    }
+
+    <header class="page-head">
         <div>
-            <h2 class="mb-1 fw-semibold">Session Members</h2>
-            <p class="mb-0 text-light opacity-75">Members That Already Book Session</p>
+            <h1 class="page-title">Session Members</h1>
+            <p class="page-sub">Members That Already Book Session</p>
         </div>
-        <div class="text-end">
-            <a asp-action="Create"
-               asp-route-id="@ViewContext.RouteData.Values["id"]"
-               class="btn btn-light">
-                <i class="fas fa-plus me-1"></i> New Booking
-            </a>
+        <a asp-action="Create"
+           asp-route-id="@ViewContext.RouteData.Values["id"]"
+           class="pf-btn pf-btn--lime">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" /></svg>
+            New Booking
+        </a>
+    </header>
+
+    @if (Model != null && Model.Any())
+    {
+        var rowIndex = 0;
+
+        <ul class="stubs">
+            @foreach (var item in Model)
+            {
+                <li class="stub-wrap" style="--i:@(Math.Min(rowIndex++, 12))">
+                    <div class="stub">
+
+                        <div class="stub-mark" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4" /><path d="M4 20c1-4 4-6 8-6s7 2 8 6" /></svg></div>
+
+                        <div class="stub-cell">
+                            <span class="cell-label">Member</span>
+                            <span class="member-name">@item.MemberName</span>
+                        </div>
+
+                        <div class="stub-cell">
+                            <span class="cell-label">Booking Date</span>
+                            <span class="booking-date">
+                                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+                                @item.BookingDate
+                            </span>
+                        </div>
+
+                        <div class="stub-action">
+                            <form method="post" asp-action="Cancel" class="cancel-form">
+                                <input type="hidden" name="MemberId" value="@item.MemberId" readonly />
+                                <input type="hidden" name="SessionId" value="@item.SessionId" readonly />
+                                <button type="submit" class="btn-cancel"
+                                        onclick="return confirm('Are you sure you want to cancel this booking?');">
+                                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                                    Cancel
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="empty">
+            <svg class="empty-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <circle class="empty-ring" cx="60" cy="60" r="56" />
+                <circle class="empty-plate" cx="60" cy="60" r="44" />
+                <g class="empty-person">
+                    <circle cx="60" cy="50" r="10" />
+                    <path d="M40 82c2-12 10-18 20-18s18 6 20 18" />
+                </g>
+            </svg>
+            <h2 class="empty-title">No Bookings Available</h2>
+            <p class="empty-sub">Add your first booking to get started</p>
         </div>
+    }
+
+    <div class="page-foot">
+        <a asp-controller="Booking" asp-action="Index" class="pf-btn pf-btn--green">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+            Back to List
+        </a>
     </div>
-</header>
-<div class="card shadow-sm">
 
-    <div class="card-body">
-
-        @if (Model != null && Model.Any())
-        {
-            <table class="table table-striped table-hover align-middle text-center">
-                <thead>
-                    <tr>
-                        <th>Member</th>
-                        <th>Booking Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.MemberName</td>
-                            <td>@item.BookingDate</td>
-                            <td>
-                                <div class="d-flex justify-content-center gap-1">
-                                    <form method="post" asp-action="Cancel" class="m-0">
-                                        <input type="hidden" name="MemberId" value="@item.MemberId" readonly />
-                                        <input type="hidden" name="SessionId" value="@item.SessionId" readonly />
-                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                onclick="return confirm('Are you sure you want to cancel this booking?');">
-                                            <i class="fas fa-times"></i> Cancel
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div class="text-center py-5">
-                <i class="bi bi-person-workspace display-1 text-muted"></i>
-                <h4 class="mt-3 text-muted">No Bookings Available</h4>
-                <p class="text-muted">Add your first booking to get started</p>
+    <!-- Cancel-booking confirmation (replaces the browser confirm box when the browser supports it) -->
+    <dialog class="confirm-dialog" id="cancelDialog" aria-labelledby="cancelDialogText" data-index-url="@Url.Action("Index", "Booking")">
+        <div class="dialog-card">
+            <div class="dialog-ico" aria-hidden="true">
+                <svg class="ico" viewBox="0 0 24 24" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4M9.5 13.5l5 4M14.5 13.5l-5 4" /></svg>
             </div>
-        }
-    </div>
-
-    <a asp-controller="Booking" asp-action="Index" class="btn btn-fill ">Back to List</a>
+            <p class="dialog-text" id="cancelDialogText">Are you sure you want to cancel this booking?</p>
+            <div class="dialog-actions">
+                <button type="button" class="btn-safe" data-dismiss autofocus>No, keep it</button>
+                <button type="button" class="btn-danger" data-confirm>Yes, cancel</button>
+            </div>
+        </div>
+    </dialog>
 
 </div>
+
 @section Scripts {
     <partial name="_AlertBox.cshtml" />
+
+    <script>
+        (function () {
+            var root = document.querySelector('.pf-page');
+            if (!root) return;
+
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* 1. Alert: close button + auto-dismiss (the timer bar drives the delay and pauses on hover/focus) */
+            var alertEl = document.getElementById('Alert');
+
+            function dismiss(el) {
+                if (!el.parentNode || el.getAttribute('data-leaving')) return;
+                el.setAttribute('data-leaving', '1');
+                el.style.maxHeight = el.offsetHeight + 'px';
+                void el.offsetHeight;
+                el.classList.add('is-leaving');
+
+                var removed = false;
+                function remove() {
+                    if (removed) return;
+                    removed = true;
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+                el.addEventListener('transitionend', function (e) {
+                    if (e.target === el && e.propertyName === 'max-height') remove();
+                });
+                setTimeout(remove, reduce ? 0 : 500);
+            }
+
+            if (alertEl) {
+                var closeBtn = alertEl.querySelector('.pf-alert-close');
+                var timer = alertEl.querySelector('.pf-alert-timer');
+                var ms = parseInt(alertEl.getAttribute('data-timeout'), 10) || 6000;
+
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () { dismiss(alertEl); });
+                }
+
+                if (reduce || !timer) {
+                    setTimeout(function () { dismiss(alertEl); }, ms);
+                } else {
+                    timer.addEventListener('animationend', function () { dismiss(alertEl); });
+                }
+            }
+
+            /* 2. Member initials in the stub instead of the placeholder icon */
+            root.querySelectorAll('.stub').forEach(function (stub) {
+                var nameEl = stub.querySelector('.member-name');
+                var mark = stub.querySelector('.stub-mark');
+                if (!nameEl || !mark) return;
+
+                var parts = (nameEl.textContent || '').trim().split(/\s+/).filter(Boolean);
+                if (!parts.length) return;
+
+                var initials = parts[0].charAt(0);
+                if (parts.length > 1) initials += parts[parts.length - 1].charAt(0);
+                mark.textContent = initials.toUpperCase();
+            });
+
+            /* 3. Cancel booking: styled confirmation dialog.
+                  The button keeps its original onclick="return confirm(...)" as the fallback,
+                  which still runs if this dialog is not available in the browser.
+                  After "Yes, cancel" the cancellation is sent, then the user is taken to the
+                  Booking Index page, where the result message is shown. */
+            var dialog = document.getElementById('cancelDialog');
+            var pendingForm = null;
+            var busy = false;
+
+            if (dialog && typeof dialog.showModal === 'function') {
+                var keepBtn = dialog.querySelector('[data-dismiss]');
+                var confirmBtn = dialog.querySelector('[data-confirm]');
+                var indexUrl = dialog.getAttribute('data-index-url') || '/';
+
+                function setBusy(on) {
+                    busy = on;
+                    keepBtn.disabled = on;
+                    confirmBtn.disabled = on;
+                    confirmBtn.classList.toggle('loading', on);
+                    dialog.setAttribute('aria-busy', on ? 'true' : 'false');
+                }
+
+                function goToIndex(flash) {
+                    try { sessionStorage.setItem('pf-flash', JSON.stringify(flash)); } catch (err) { }
+                    window.location.assign(indexUrl);
+                }
+
+                document.addEventListener('click', function (e) {
+                    var btn = e.target.closest ? e.target.closest('.btn-cancel') : null;
+                    if (!btn || !root.contains(btn)) return;
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                    pendingForm = btn.form;
+                    dialog.showModal();
+                }, true);
+
+                keepBtn.addEventListener('click', function () {
+                    pendingForm = null;
+                    dialog.close();
+                });
+
+                confirmBtn.addEventListener('click', function () {
+                    var form = pendingForm;
+                    if (!form || busy) return;
+
+                    /* very old browsers: plain form post, exactly as before */
+                    if (!window.fetch || !window.URLSearchParams || !window.DOMParser) {
+                        pendingForm = null;
+                        dialog.close();
+                        form.submit();
+                        return;
+                    }
+
+                    setBusy(true);
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: new URLSearchParams(new FormData(form)),
+                        credentials: 'same-origin'
+                    }).then(function (res) {
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        return res.text();
+                    }).then(function (html) {
+                        var flash = { type: 'success', text: 'Booking canceled successfully' };
+
+                        /* if the server answered with its own message, use that one */
+                        try {
+                            var doc = new DOMParser().parseFromString(html, 'text/html');
+                            var serverAlert = doc.getElementById('Alert');
+                            if (serverAlert) {
+                                var failed = serverAlert.classList.contains('pf-alert--error') || serverAlert.classList.contains('alert-danger');
+                                var textEl = serverAlert.querySelector('.pf-alert-text');
+                                var text = ((textEl ? textEl.textContent : serverAlert.textContent) || '').trim();
+                                flash = { type: failed ? 'error' : 'success', text: text || (failed ? 'Failed to cancel booking' : flash.text) };
+                            }
+                        } catch (err) { }
+
+                        goToIndex(flash);
+                    }).catch(function () {
+                        goToIndex({ type: 'error', text: 'Failed to cancel booking' });
+                    });
+                });
+
+                /* Escape and the dark backdrop close the dialog, except while it is busy */
+                dialog.addEventListener('cancel', function (e) {
+                    if (busy) e.preventDefault();
+                });
+
+                dialog.addEventListener('click', function (e) {
+                    if (e.target === dialog && !busy) {
+                        pendingForm = null;
+                        dialog.close();
+                    }
+                });
+            }
+        })();
+    </script>
 }
