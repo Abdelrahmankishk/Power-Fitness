@@ -24,7 +24,7 @@ public class PlanService(IUnitOfWork _unitOfWork,IMapper _mapper) : IPlanService
             return Result.Validation("This Plan Has Active Memberships");
 
         Plan.IsActive = !Plan.IsActive;
-        Plan.UpdatedAt = DateTime.Now;
+        Plan.UpdatedAt = DateTime.UtcNow;
         unitOfWork.GetRepository<Plan>().Update(Plan);
         int result = await unitOfWork.SaveChangesAsync(ct);
 
@@ -75,7 +75,7 @@ public class PlanService(IUnitOfWork _unitOfWork,IMapper _mapper) : IPlanService
             return Result.NotFound("Plan Not Found");
 
         mapper.Map(UpdatedPlan, plan);
-        plan.UpdatedAt = DateTime.Now;
+        plan.UpdatedAt = DateTime.UtcNow;
         
         unitOfWork.GetRepository<Plan>().Update(plan);
         var result = await unitOfWork.SaveChangesAsync(ct);

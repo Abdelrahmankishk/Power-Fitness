@@ -20,7 +20,7 @@ public class BookingService(IUnitOfWork _unitOfWork, IMapper _mapper) : IBooking
         if (session is null) 
             return Result.NotFound("Session Not Found");
 
-        if (session.StartDate <= DateTime.Now)
+        if (session.StartDate <= DateTime.UtcNow)
             return Result.Fail("Cannot Cancel this booking as if has already started");
 
         var booking = await unitOfWork.BookingRepository.FirstOrDefaultAsync(b => b.SessionId == sessionId && b.MemberId == memberId, tracking: true, ct: ct);
@@ -38,7 +38,7 @@ public class BookingService(IUnitOfWork _unitOfWork, IMapper _mapper) : IBooking
         if (session is null) 
             return Result.NotFound("Session Not Found");
 
-        if (session.StartDate <= DateTime.Now)
+        if (session.StartDate <= DateTime.UtcNow)
             return Result.Fail("Cannot book this session as it has already started");
 
         var hasActiveMembership = await unitOfWork.MembershipRepository.AnyAsync(m => m.MemberId == NewBooking.MemberId && m.EndDate > DateTime.Now, ct);
@@ -58,7 +58,7 @@ public class BookingService(IUnitOfWork _unitOfWork, IMapper _mapper) : IBooking
             MemberId = NewBooking.MemberId,
             SessionId = NewBooking.SessionId,
             IsAttended = false,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
         });
 
         var result = await unitOfWork.SaveChangesAsync(ct);
@@ -115,7 +115,7 @@ public class BookingService(IUnitOfWork _unitOfWork, IMapper _mapper) : IBooking
             SessionId = Id,
             MemberName = b.Member.Name,
             BookingDate = b.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
-            IsAttended = session?.EndDate > DateTime.Now ? false : b.IsAttended
+            IsAttended = session?.EndDate > DateTime.UtcNow ? false : b.IsAttended
         }).ToList();
     }
 
@@ -125,7 +125,7 @@ public class BookingService(IUnitOfWork _unitOfWork, IMapper _mapper) : IBooking
         if (booking is null) return Result.NotFound("Booking Not Found");
 
         booking.IsAttended = true;
-        booking.UpdatedAt = DateTime.Now;
+        booking.UpdatedAt = DateTime.UtcNow;
         unitOfWork.BookingRepository.Update(booking);
 
         var result = await unitOfWork.SaveChangesAsync(ct);

@@ -50,10 +50,10 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachment
         if(memeber == null) 
             return Result.NotFound("Member Not Found");
 
-        var Memberships = await unitOfWork.MembershipRepository.GetAllMembershipsWithMemberAndPlanAsync(m => m.MemberId == id && m.EndDate > DateTime.Now);
+        var Memberships = await unitOfWork.MembershipRepository.GetAllMembershipsWithMemberAndPlanAsync(m => m.MemberId == id && m.EndDate > DateTime.UtcNow);
         if (Memberships.Count > 0)
             return Result.Fail("Can Not Delete Members with an Active Membership");
-        var hasFuture = await unitOfWork.GetRepository<Booking>().AnyAsync(b=>b.MemberId == id && b.Session.StartDate > DateTime.Now);
+        var hasFuture = await unitOfWork.GetRepository<Booking>().AnyAsync(b=>b.MemberId == id && b.Session.StartDate > DateTime.UtcNow);
         if(hasFuture) 
             return Result.Validation("Member has Upcoming booked Sessions");
 
@@ -79,7 +79,7 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachment
             return Result<MemberViewModel>.NotFound("Member Not Found");
 
         var ReturnedMember = mapper.Map<Member,MemberViewModel>(member);
-        var ActiveMembership = await unitOfWork.GetRepository<MemberShip>().FirstOrDefaultAsync(x=>x.MemberId == id && x.EndDate > DateTime.Now);
+        var ActiveMembership = await unitOfWork.GetRepository<MemberShip>().FirstOrDefaultAsync(x=>x.MemberId == id && x.EndDate > DateTime.UtcNow);
         if(ActiveMembership is not null)
         {
             var ActivePlan = await unitOfWork.GetRepository<Plan>().GetByIdAsync(ActiveMembership.Id, ct);
@@ -121,7 +121,7 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachment
             return Result.Validation("Email or Phone Already exits for other Member");
 
         mapper.Map(member,GetMember);
-        GetMember.UpdatedAt = DateTime.Now;
+        GetMember.UpdatedAt = DateTime.UtcNow;
 
         unitOfWork.GetRepository<Member>().Update(GetMember);
         var result = await unitOfWork.SaveChangesAsync(ct);

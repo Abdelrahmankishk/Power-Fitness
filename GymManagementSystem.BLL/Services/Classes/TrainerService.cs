@@ -32,7 +32,7 @@ public class TrainerService(IUnitOfWork _unitOfWork, IMapper _mapper) : ITrainer
         var trainer = await unitOfWork.GetRepository<Trainer>().GetByIdAsync(id,ct);
         if (trainer == null) 
             return Result.NotFound("Trainer Not Found");
-        var HasSessions = await unitOfWork.GetRepository<Session>().AnyAsync(s => s.TrainerId == id && s.StartDate > DateTime.Now);
+        var HasSessions = await unitOfWork.GetRepository<Session>().AnyAsync(s => s.TrainerId == id && s.StartDate > DateTime.UtcNow);
         if(HasSessions)
             return Result.Validation("Trainer is Assigned to Upcoming Sessions");
 
@@ -83,7 +83,7 @@ public class TrainerService(IUnitOfWork _unitOfWork, IMapper _mapper) : ITrainer
             return Result.Validation("Email or Phone Already exits for other user");
 
         mapper.Map(UpdatedTrainer,trainer);
-        trainer.UpdatedAt = DateTime.Now;
+        trainer.UpdatedAt = DateTime.UtcNow;
 
          unitOfWork.GetRepository<Trainer>().Update(trainer);
         var result = await unitOfWork.SaveChangesAsync(ct);

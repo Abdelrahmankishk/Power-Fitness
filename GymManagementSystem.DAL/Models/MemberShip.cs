@@ -18,6 +18,6 @@ public class MemberShip : BaseEntity
 
     public DateTime EndDate { get; set; }
 
-    public string Status => EndDate > DateTime.Now ? "Active" : "Expired";
-    public bool IsActive => EndDate > DateTime.Now;
+    public string Status => EndDate > DateTime.UtcNow ? "Active" : "Expired";
+    public bool IsActive => EndDate > DateTime.UtcNow;
 }

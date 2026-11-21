@@ -12,7 +12,7 @@ public class HomeService(IUnitOfWork _unitOfWork) : IHomeService
 
     public async Task<HomeViewModel> GetAllAnalytics(CancellationToken ct = default)
     {
-        var TimeNow = DateTime.Now;
+        var TimeNow = DateTime.UtcNow;
        var UpcomingSessions = await unitOfWork.GetRepository<Session>().CountAsync(s=>s.StartDate > TimeNow);
        var OngoingSessions = await unitOfWork.GetRepository<Session>().CountAsync(s=>s.StartDate <= TimeNow && s.EndDate >= TimeNow);
        var CompletedSessions = await unitOfWork.GetRepository<Session>().CountAsync(s => s.EndDate < TimeNow);

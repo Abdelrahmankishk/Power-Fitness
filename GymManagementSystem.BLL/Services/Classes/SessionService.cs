@@ -18,7 +18,7 @@ public class SessionService(IUnitOfWork _unitOfWork, IMapper _mapper) : ISession
         if (NewSession.EndDate <= NewSession.StartDate)
             return Result.Validation("End Date Must be After Start Date");
 
-        if (NewSession.StartDate <= DateTime.Now)
+        if (NewSession.StartDate <= DateTime.UtcNow)
             return Result.Validation("Start Date must be in the Future");
 
         if (NewSession.Capacity < 1 || NewSession.Capacity > 25)
@@ -47,7 +47,7 @@ public class SessionService(IUnitOfWork _unitOfWork, IMapper _mapper) : ISession
         var session = await unitOfWork.SessionRepository.GetByIdAsync(id,ct);
         if (session == null)
             return Result.NotFound("Session Not Found");
-        if (session.EndDate >= DateTime.Now)
+        if (session.EndDate >= DateTime.UtcNow)
             return Result.Fail("Can not Delete Session That has Not Ended Yet");
         var BookedCount = await unitOfWork.SessionRepository.GetCountOfBookedPlacesAsync(id,ct);
         if (BookedCount > 0)
@@ -96,7 +96,7 @@ public class SessionService(IUnitOfWork _unitOfWork, IMapper _mapper) : ISession
         if (session == null)
             return Result<UpdateSessionViewModel>.NotFound("Session Not Found");
 
-        if (session.StartDate <= DateTime.Now)
+        if (session.StartDate <= DateTime.UtcNow)
             return Result<UpdateSessionViewModel>.Fail("Can Not Update Session that has Already Started or Ended");
 
         var bookingCount = await unitOfWork.SessionRepository.GetCountOfBookedPlacesAsync(id, ct);
@@ -119,16 +119,16 @@ public class SessionService(IUnitOfWork _unitOfWork, IMapper _mapper) : ISession
         if (session == null)
             return Result.NotFound("Session Not Found");
 
-        if (session.StartDate <= DateTime.Now)
+        if (session.StartDate <= DateTime.UtcNow)
             return Result.Fail("Can Not Edit the Session as it Already Started");
-        if (updatedSession.EndDate <= DateTime.Now)
+        if (updatedSession.EndDate <= DateTime.UtcNow)
             return Result.Validation("End Date Must be After Start Date");
 
         var bookingCount = await unitOfWork.SessionRepository.GetCountOfBookedPlacesAsync(id, ct);
         if (bookingCount > 0)
             return Result.Fail("Can Not Update Session that has Bookings");
 
-        if(updatedSession.StartDate <= DateTime.Now)
+        if(updatedSession.StartDate <= DateTime.UtcNow)
             return Result.Fail("Start Date must be in the future");
 
         var trainer = await unitOfWork.GetRepository<Trainer>().GetByIdAsync(updatedSession.TrainerId);
@@ -143,7 +143,7 @@ public class SessionService(IUnitOfWork _unitOfWork, IMapper _mapper) : ISession
             return Result.Validation("Can Not Assign this Session to the Trainer");
 
         mapper.Map(updatedSession, session);
-        session.UpdatedAt = DateTime.Now;
+        session.UpdatedAt = DateTime.UtcNow;
         unitOfWork.SessionRepository.Update(session);
         var result = await unitOfWork.SaveChangesAsync(ct);
         return result > 0 ? Result.OK() : Result.Fail("Failed to update Session");

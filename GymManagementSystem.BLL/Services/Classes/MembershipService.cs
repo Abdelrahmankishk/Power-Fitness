@@ -27,7 +27,7 @@ public class MembershipService(IUnitOfWork _unitOfWork,IMapper _mapper) : IMembe
 
 
         var hasActive = await unitOfWork.MembershipRepository
-            .AnyAsync(m => m.MemberId == model.MemberId && m.EndDate > DateTime.Now, ct);
+            .AnyAsync(m => m.MemberId == model.MemberId && m.EndDate > DateTime.UtcNow, ct);
         if (hasActive) 
             return Result.Fail("Member  has an Active Membership");
 
@@ -35,8 +35,8 @@ public class MembershipService(IUnitOfWork _unitOfWork,IMapper _mapper) : IMembe
         {
             MemberId = model.MemberId,
             PlanId = plan.Id,
-            CreatedAt = DateTime.Now,
-            EndDate = (model.StartDate ?? DateTime.Now).AddDays(plan.DurationDays),
+            CreatedAt = DateTime.UtcNow,
+            EndDate = (model.StartDate ?? DateTime.UtcNow).AddDays(plan.DurationDays),
         };
 
         unitOfWork.MembershipRepository.Add(entity);
@@ -47,7 +47,7 @@ public class MembershipService(IUnitOfWork _unitOfWork,IMapper _mapper) : IMembe
 
     public async Task<Result> DeleteActiveMembershipAsync(int Id, CancellationToken ct = default)
     {
-        var active = await unitOfWork.MembershipRepository.FirstOrDefaultAsync( m => m.MemberId == Id && m.EndDate > DateTime.Now, tracking: true, ct: ct);
+        var active = await unitOfWork.MembershipRepository.FirstOrDefaultAsync( m => m.MemberId == Id && m.EndDate > DateTime.UtcNow, tracking: true, ct: ct);
 
         if (active is null) 
             return Result.NotFound("No active membership for this member.");
@@ -60,7 +60,7 @@ public class MembershipService(IUnitOfWork _unitOfWork,IMapper _mapper) : IMembe
 
     public async Task<IEnumerable<MembershipViewModel>> GetAllMembershipsAsync(CancellationToken ct = default)
     {
-        var memberships = await unitOfWork.MembershipRepository.GetAllMembershipsWithMemberAndPlanAsync(m => m.EndDate > DateTime.Now, ct);
+        var memberships = await unitOfWork.MembershipRepository.GetAllMembershipsWithMemberAndPlanAsync(m => m.EndDate > DateTime.UtcNow, ct);
         return mapper.Map<IEnumerable<MemberShip>,IEnumerable<MembershipViewModel>>(memberships);
     }
 
