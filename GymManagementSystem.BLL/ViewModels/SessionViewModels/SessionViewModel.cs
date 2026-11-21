@@ -1,4 +1,6 @@
-﻿namespace GymManagementSystem.BLL.ViewModels.SessionViewModels;
+﻿using GymManagementSystem.BLL.Common;
+
+namespace GymManagementSystem.BLL.ViewModels.SessionViewModels;
 
 public class SessionViewModel
 {
@@ -12,16 +14,21 @@ public class SessionViewModel
     public int AvailableSlots { get; set; }
 
     // Computed properties
-    public string DateDisplay => $"{StartDate:MMM dd , yyyy}";
-    public string TimeRangeDisplay => $"{StartDate:hh:mm tt} - {EndDate:hh:mm tt}";
+    public DateTime StartDateEgypt => EgyptTimeZone.ToEgyptLocal(StartDate);
+    public DateTime EndDateEgypt => EgyptTimeZone.ToEgyptLocal(EndDate);
+    public string DateDisplay => $"{StartDateEgypt:MMM dd, yyyy}";
+    public string TimeRangeDisplay => $"{StartDateEgypt:hh:mm tt} - {EndDateEgypt:hh:mm tt}";
     public TimeSpan Duration => EndDate - StartDate;
+
     public string Status
     {
         get
         {
-            if (StartDate > DateTime.Now)
+            var nowUtc = DateTime.UtcNow;
+
+            if (StartDate > nowUtc)
                 return "Upcoming";
-            else if (StartDate <= DateTime.Now && EndDate >= DateTime.Now)
+            else if (EndDate >= nowUtc)
                 return "Ongoing";
             else
                 return "Completed";

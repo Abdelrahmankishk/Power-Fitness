@@ -41,7 +41,7 @@ public class BookingService(IUnitOfWork _unitOfWork, IMapper _mapper) : IBooking
         if (session.StartDate <= DateTime.UtcNow)
             return Result.Fail("Cannot book this session as it has already started");
 
-        var hasActiveMembership = await unitOfWork.MembershipRepository.AnyAsync(m => m.MemberId == NewBooking.MemberId && m.EndDate > DateTime.Now, ct);
+        var hasActiveMembership = await unitOfWork.MembershipRepository.AnyAsync(m => m.MemberId == NewBooking.MemberId && m.EndDate > DateTime.UtcNow, ct);
         if (!hasActiveMembership)
             return Result.Fail("Member does not have an Active Membership.");
 

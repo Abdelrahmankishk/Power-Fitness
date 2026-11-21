@@ -472,7 +472,7 @@
                     <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M10 8.5l5 3.5-5 3.5z" /></svg></span>
                     <div class="tile-body">
                         <span class="tile-label">Start Time</span>
-                        <strong class="tile-value">@Model.StartDate</strong>
+                        <strong class="tile-value">@Model.StartDateEgypt.ToString("MMM dd, yyyy hh:mm tt")</strong>
                     </div>
                 </div>
 
@@ -487,7 +487,7 @@
                     <span class="tile-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" focusable="false"><path d="M5 21V4M5 4h11l-2 4 2 4H5" /></svg></span>
                     <div class="tile-body">
                         <span class="tile-label">End Time</span>
-                        <strong class="tile-value">@Model.EndDate</strong>
+                        <strong class="tile-value">@Model.EndDateEgypt.ToString("MMM dd, yyyy hh:mm tt")</strong>
                     </div>
                 </div>
             </div>
