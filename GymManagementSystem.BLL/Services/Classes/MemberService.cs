@@ -66,8 +66,6 @@ public class MemberService(IUnitOfWork _unitOfWork, IMapper _mapper, IAttachment
     public async Task<Result<IEnumerable<MemberViewModel>>> GetAllMemberAsync(CancellationToken ct)
     {
         var members = await unitOfWork.GetRepository<Member>().GetAllAsync(ct: ct);
-        if(!members.Any())
-            return Result<IEnumerable<MemberViewModel>>.NotFound("Member Not Found");
 
         var memberViewModel = mapper.Map<IEnumerable<Member>, IEnumerable<MemberViewModel>>(members);
 

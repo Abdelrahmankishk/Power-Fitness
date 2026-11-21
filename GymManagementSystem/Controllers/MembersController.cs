@@ -35,7 +35,7 @@ namespace GymManagementSystem.PL.Controllers
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var members = await memberService.GetAllMemberAsync(ct);
-            return View(members.Value);
+            return View(members.Value ?? Enumerable.Empty<MemberViewModel>());
         }
 
         // GET BaseURL/Members/MemberDetails/{id}
